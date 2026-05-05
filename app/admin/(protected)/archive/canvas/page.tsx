@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { AdminCanvas } from '@/components/admin/AdminCanvas'
 import type { Memento } from '@/lib/types'
@@ -20,12 +21,12 @@ export default async function AdminCanvasPage() {
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <p className="font-serif italic text-2xl text-mist">Noch keine Mementos.</p>
-          <a
+          <Link
             href="/admin/archive/new"
             className="mt-6 inline-block font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"
           >
             Erstes Memento erstellen →
-          </a>
+          </Link>
         </div>
       </div>
     )

@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
+import Link from 'next/link'
 import { MementoCard } from '@/components/MementoCard'
 import type { Memento } from '@/lib/types'
 
@@ -32,7 +33,7 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
   // Drag refs — no re-renders during drag
   const stageOffsetRef = useRef({ x: 0, y: 0 })
   const positionsRef = useRef<PosMap>(positions)
-  positionsRef.current = positions
+  useEffect(() => { positionsRef.current = positions })
 
   const stageDrag = useRef({ active: false, moved: false, startClient: { x: 0, y: 0 }, startOffset: { x: 0, y: 0 } })
   const memDrag = useRef({ active: false, moved: false, id: '', startClient: { x: 0, y: 0 }, startPos: { x: 0, y: 0 } })
@@ -225,12 +226,12 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
 
       {/* Top bar */}
       <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between border-b border-white/8 bg-ink/90 px-6 py-4 backdrop-blur-sm">
-        <a
+        <Link
           href="/admin/archive"
           className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash"
         >
           ← Archive
-        </a>
+        </Link>
 
         <span className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
           Canvas Layout

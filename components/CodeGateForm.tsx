@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useCallback } from 'react'
 
@@ -78,12 +79,12 @@ export function CodeGateForm({ next }: { next: string }) {
       </div>
 
       {/* Back link — barely there */}
-      <a
+      <Link
         href="/"
         className="absolute bottom-10 left-1/2 -translate-x-1/2 font-sans text-[10px] tracking-[0.3em] text-white/15 uppercase transition-colors hover:text-white/30"
       >
         ← Zurück
-      </a>
+      </Link>
     </main>
   )
 }

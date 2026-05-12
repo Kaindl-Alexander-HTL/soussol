@@ -35,8 +35,16 @@ body {
   *                                              { cursor: inherit; }
   body                                           { cursor: default; }
   a, button, [role="button"], [data-clickable]   { cursor: pointer; }
-  .canvas-viewport                               { cursor: grab; }
-  body.dragging, body.dragging *                 { cursor: grabbing !important; }
+
+  /* Pinnadel-Cursor für den Archive Canvas */
+  .canvas-viewport {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='30' viewBox='0 0 22 30'%3E%3Ccircle cx='11' cy='9' r='8' fill='%23F2EDE3' opacity='0.95'/%3E%3Ccircle cx='11' cy='9' r='3.5' fill='%230A0A0A' opacity='0.4'/%3E%3Cline x1='11' y1='17' x2='11' y2='29' stroke='%23F2EDE3' stroke-width='2.5' stroke-linecap='round' opacity='0.9'/%3E%3C/svg%3E") 11 29, crosshair;
+  }
+
+  body.dragging .canvas-viewport,
+  body.dragging .canvas-viewport * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='30' viewBox='0 0 22 30'%3E%3Ccircle cx='11' cy='9' r='8' fill='%23F2EDE3'/%3E%3Ccircle cx='11' cy='9' r='3.5' fill='%230A0A0A' opacity='0.5'/%3E%3Cline x1='11' y1='17' x2='11' y2='29' stroke='%23F2EDE3' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E") 11 29, crosshair !important;
+  }
 }
 
 /* Memento float animation */

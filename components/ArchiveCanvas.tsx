@@ -10,8 +10,17 @@ const STAGE_H = 3000
 const DRAG_THRESHOLD = 5
 
 type PosMap = Record<string, { x: number; y: number }>
+type Connection = { id: string; from_memento_id: string; to_memento_id: string }
 
-export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
+function ropePath(x1: number, y1: number, x2: number, y2: number) {
+  const mx = (x1 + x2) / 2
+  const my = (y1 + y2) / 2
+  const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+  const sag = dist * 0.13
+  return `M ${x1} ${y1} Q ${mx} ${my + sag} ${x2} ${y2}`
+}
+
+export function ArchiveCanvas({ mementos, connections = [] }: { mementos: Memento[]; connections?: Connection[] }) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const [stageOffset, setStageOffset] = useState({ x: 0, y: 0 })
   const [positions, setPositions] = useState<PosMap>(() =>
@@ -147,6 +156,26 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
             willChange: 'transform',
           }}
         >
+          {/* ── Seile ────────────────────────────────────────────────── */}
+          <svg style={{ position: 'absolute', inset: 0, width: STAGE_W, height: STAGE_H, pointerEvents: 'none', overflow: 'visible', zIndex: 5000 }}>
+            {connections.map((conn) => {
+              const from = positions[conn.from_memento_id]
+              const to   = positions[conn.to_memento_id]
+              if (!from || !to) return null
+              const x1 = STAGE_W / 2 + from.x
+              const y1 = STAGE_H / 2 + from.y
+              const x2 = STAGE_W / 2 + to.x
+              const y2 = STAGE_H / 2 + to.y
+              return (
+                <g key={conn.id}>
+                  <path d={ropePath(x1, y1, x2, y2)} stroke="#F2EDE3" strokeWidth={1.5} strokeOpacity={0.35} fill="none" strokeLinecap="round" />
+                  <circle cx={x1} cy={y1} r={4} fill="#F2EDE3" fillOpacity={0.4} />
+                  <circle cx={x2} cy={y2} r={4} fill="#F2EDE3" fillOpacity={0.4} />
+                </g>
+              )
+            })}
+          </svg>
+
           {mementos.map((m) => {
             const pos = positions[m.id]
             const isDragging = draggingId === m.id

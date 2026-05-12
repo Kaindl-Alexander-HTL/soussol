@@ -16,13 +16,19 @@ export default async function ArchivePage({
   const isGrid = view === 'grid'
 
   const supabase = await createClient()
-  const { data } = await supabase
-    .from('mementos')
-    .select('id, kind, image_url, caption, body, date_label, event_id, x, y, rotation, scale, z_index, is_visible')
-    .eq('is_visible', true)
-    .order('z_index', { ascending: true })
+  const [{ data }, { data: connData }] = await Promise.all([
+    supabase
+      .from('mementos')
+      .select('id, kind, image_url, caption, body, date_label, event_id, x, y, rotation, scale, z_index, is_visible')
+      .eq('is_visible', true)
+      .order('z_index', { ascending: true }),
+    supabase
+      .from('memento_connections')
+      .select('id, from_memento_id, to_memento_id'),
+  ])
 
   const mementos = (data ?? []) as Memento[]
+  const connections = connData ?? []
 
   if (isGrid) {
     return (
@@ -67,7 +73,7 @@ export default async function ArchivePage({
           <p className="font-serif italic text-2xl text-mist">Bald.</p>
         </div>
       ) : (
-        <ArchiveCanvas mementos={mementos} />
+        <ArchiveCanvas mementos={mementos} connections={connections} />
       )}
     </>
   )

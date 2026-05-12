@@ -9,12 +9,18 @@ export const metadata: Metadata = { title: 'Canvas Layout — SOUS SOL Admin' }
 export default async function AdminCanvasPage() {
   const supabase = await createClient()
 
-  const { data } = await supabase
-    .from('mementos')
-    .select('id, kind, image_url, caption, body, date_label, event_id, x, y, rotation, scale, z_index, is_visible')
-    .order('z_index', { ascending: true })
+  const [{ data }, { data: connData }] = await Promise.all([
+    supabase
+      .from('mementos')
+      .select('id, kind, image_url, caption, body, date_label, event_id, x, y, rotation, scale, z_index, is_visible')
+      .order('z_index', { ascending: true }),
+    supabase
+      .from('memento_connections')
+      .select('id, from_memento_id, to_memento_id'),
+  ])
 
   const mementos = (data ?? []) as Memento[]
+  const connections = connData ?? []
 
   if (!mementos.length) {
     return (
@@ -32,5 +38,5 @@ export default async function AdminCanvasPage() {
     )
   }
 
-  return <AdminCanvas mementos={mementos} />
+  return <AdminCanvas mementos={mementos} initialConnections={connections} />
 }

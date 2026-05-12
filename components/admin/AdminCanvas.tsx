@@ -7,6 +7,7 @@ import type { Memento } from '@/lib/types'
 
 type Pos = { x: number; y: number; rotation: number; scale: number; z_index: number }
 type PosMap = Record<string, Pos>
+type Connection = { id: string; from_memento_id: string; to_memento_id: string }
 
 const STAGE_W = 4000
 const STAGE_H = 3000
@@ -21,7 +22,15 @@ function initPositions(mementos: Memento[]): PosMap {
   )
 }
 
-export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
+function ropePath(x1: number, y1: number, x2: number, y2: number) {
+  const mx = (x1 + x2) / 2
+  const my = (y1 + y2) / 2
+  const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+  const sag = dist * 0.13
+  return `M ${x1} ${y1} Q ${mx} ${my + sag} ${x2} ${y2}`
+}
+
+export function AdminCanvas({ mementos, initialConnections }: { mementos: Memento[]; initialConnections: Connection[] }) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const [stageOffset, setStageOffset] = useState({ x: 0, y: 0 })
   const [positions, setPositions] = useState<PosMap>(() => initPositions(mementos))
@@ -29,6 +38,9 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
   const [hasChanges, setHasChanges] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'ok' | 'error'>('idle')
+  const [ropeMode, setRopeMode] = useState(false)
+  const [ropeStart, setRopeStart] = useState<string | null>(null)
+  const [connections, setConnections] = useState<Connection[]>(initialConnections)
 
   // Drag refs — no re-renders during drag
   const stageOffsetRef = useRef({ x: 0, y: 0 })
@@ -111,9 +123,37 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
 
   // ── Memento pointer down (stop propagation → prevents stage drag) ───────────
 
+  const ropeModeRef = useRef(false)
+  const ropeStartRef = useRef<string | null>(null)
+  useEffect(() => { ropeModeRef.current = ropeMode }, [ropeMode])
+  useEffect(() => { ropeStartRef.current = ropeStart }, [ropeStart])
+
   const onMementoPointerDown = useCallback(
-    (e: React.PointerEvent, id: string) => {
+    async (e: React.PointerEvent, id: string) => {
       e.stopPropagation()
+
+      // ── Seil-Modus ──────────────────────────────────────────────────────────
+      if (ropeModeRef.current) {
+        const start = ropeStartRef.current
+        if (!start) {
+          setRopeStart(id)
+        } else if (start !== id) {
+          // Create connection
+          const res = await fetch('/api/admin/mementos/connections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from_memento_id: start, to_memento_id: id }),
+          })
+          if (res.ok) {
+            const conn = await res.json()
+            setConnections((c) => [...c, conn])
+          }
+          setRopeStart(null)
+        }
+        return
+      }
+
+      // ── Drag-Modus ──────────────────────────────────────────────────────────
       viewportRef.current?.setPointerCapture(e.pointerId)
       const pos = positionsRef.current[id]
       memDrag.current = {
@@ -127,6 +167,15 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
     },
     []
   )
+
+  async function deleteConnection(connId: string) {
+    await fetch('/api/admin/mementos/connections', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: connId }),
+    })
+    setConnections((c) => c.filter((x) => x.id !== connId))
+  }
 
   // ── Controls ────────────────────────────────────────────────────────────────
 
@@ -198,9 +247,52 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
             willChange: 'transform',
           }}
         >
+          {/* ── Seil SVG-Overlay ─────────────────────────────────────── */}
+          <svg
+            style={{ position: 'absolute', inset: 0, width: STAGE_W, height: STAGE_H, pointerEvents: 'none', overflow: 'visible', zIndex: 5000 }}
+          >
+            {connections.map((conn) => {
+              const from = positions[conn.from_memento_id]
+              const to   = positions[conn.to_memento_id]
+              if (!from || !to) return null
+              const x1 = STAGE_W / 2 + from.x
+              const y1 = STAGE_H / 2 + from.y
+              const x2 = STAGE_W / 2 + to.x
+              const y2 = STAGE_H / 2 + to.y
+              return (
+                <g key={conn.id}>
+                  {/* Unsichtbarer dicker Klickbereich */}
+                  <path
+                    d={ropePath(x1, y1, x2, y2)}
+                    stroke="transparent"
+                    strokeWidth={18}
+                    fill="none"
+                    style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
+                    onClick={() => deleteConnection(conn.id)}
+                  />
+                  {/* Sichtbares Seil */}
+                  <path
+                    d={ropePath(x1, y1, x2, y2)}
+                    stroke="#F2EDE3"
+                    strokeWidth={1.5}
+                    strokeOpacity={0.45}
+                    fill="none"
+                    strokeLinecap="round"
+                    style={{ pointerEvents: 'none' }}
+                  />
+                  {/* Pins an den Enden */}
+                  <circle cx={x1} cy={y1} r={4} fill="#F2EDE3" fillOpacity={0.5} style={{ pointerEvents: 'none' }} />
+                  <circle cx={x2} cy={y2} r={4} fill="#F2EDE3" fillOpacity={0.5} style={{ pointerEvents: 'none' }} />
+                </g>
+              )
+            })}
+          </svg>
+
+          {/* ── Mementos ─────────────────────────────────────────────── */}
           {mementos.map((m) => {
             const pos = positions[m.id]
             const isSelected = selectedId === m.id
+            const isRopeStart = ropeStart === m.id
             return (
               <div
                 key={m.id}
@@ -211,9 +303,13 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
                   top: STAGE_H / 2 + pos.y,
                   transform: `translate(-50%, -50%) rotate(${pos.rotation}deg) scale(${pos.scale})`,
                   zIndex: pos.z_index,
-                  
-                  outline: isSelected ? '2px solid rgba(255,255,255,0.4)' : 'none',
-                  outlineOffset: 4,
+                  outline: isRopeStart
+                    ? '2px dashed rgba(242,237,227,0.7)'
+                    : isSelected
+                    ? '2px solid rgba(255,255,255,0.4)'
+                    : 'none',
+                  outlineOffset: 6,
+                  cursor: ropeMode ? 'crosshair' : undefined,
                 }}
               >
                 <MementoCard memento={{ ...m, ...pos }} />
@@ -232,9 +328,16 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
           ← Archive
         </Link>
 
-        <span className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-          Canvas Layout
-        </span>
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => { setRopeMode((v) => !v); setRopeStart(null) }}
+            className={`font-sans text-[10px] tracking-[0.25em] uppercase transition-colors ${
+              ropeMode ? 'text-spark' : 'text-mist hover:text-ash'
+            }`}
+          >
+            {ropeMode ? (ropeStart ? 'Ziel wählen …' : 'Seil-Modus ✕') : 'Seil spannen'}
+          </button>
+        </div>
 
         <button
           onClick={saveLayout}
@@ -312,7 +415,7 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
       {/* Hint */}
       {mementos.length > 0 && (
         <div className="pointer-events-none fixed bottom-8 right-6 z-30 font-sans text-[9px] tracking-[0.2em] text-white/15 uppercase">
-          Tap = auswählen · Drag = verschieben
+          {ropeMode ? 'Memento A → Memento B = Seil · Seil klicken = löschen' : 'Tap = auswählen · Drag = verschieben'}
         </div>
       )}
     </>

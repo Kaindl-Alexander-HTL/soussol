@@ -30,7 +30,7 @@ export async function sendRegistrationNotification(params: RegistrationEmailPara
   ].join('\n')
 
   await resend.emails.send({
-    from: 'SOUS SOL <noreply@sous.club>',
+    from: 'SOUS SOL <noreply@soussol-archive.com>',
     to: process.env.ADMIN_EMAIL!,
     subject,
     text,

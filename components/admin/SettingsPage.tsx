@@ -232,7 +232,7 @@ function LinksSection({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="tim@sous.club"
+            placeholder="tim@soussol-archive.com"
             className={inputClass}
           />
         </div>

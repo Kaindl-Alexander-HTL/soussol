@@ -36,12 +36,12 @@ export const metadata: Metadata = {
   },
   description:
     'Underground Sport Community in Linz. Running, Rennrad, Volleyball. Built in the basement. Raised in the streets.',
-  metadataBase: new URL('https://sous.club'),
+  metadataBase: new URL('https://soussol-archive.com'),
   alternates: { canonical: '/' },
   openGraph: {
     title: 'SOUS SOL',
     description: 'Underground Sport Community — Linz.',
-    url: 'https://sous.club',
+    url: 'https://soussol-archive.com',
     siteName: 'SOUS SOL',
     locale: 'de_AT',
     type: 'website',

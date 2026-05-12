@@ -37,30 +37,39 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
   return (
     <>
       {/* ── Magazine Grid (Masonry, natürliche Proportionen) ─────────── */}
-      <div className="columns-2 gap-px sm:columns-3 md:columns-4 [column-gap:1px]">
-        {photos.map((photo, i) => (
-          <button
-            key={photo.id}
-            onClick={() => open(i)}
-            className="group relative mb-px block w-full overflow-hidden bg-white/[0.03] focus:outline-none break-inside-avoid"
-            aria-label={photo.caption ?? `Foto ${i + 1}`}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={photo.url}
-              alt={photo.caption ?? ''}
-              className="block w-full h-auto transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
-              loading={i < 6 ? 'eager' : 'lazy'}
-              draggable={false}
-            />
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-ink/0 transition-colors duration-300 group-hover:bg-ink/20" />
-            {/* Index */}
-            <span className="absolute bottom-2.5 right-2.5 font-sans text-[10px] tracking-[0.2em] text-white/0 transition-colors duration-300 group-hover:text-white/50">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-          </button>
-        ))}
+      <div className="px-6 sm:px-12 md:px-20 lg:px-32">
+        <div className="columns-1 gap-3 sm:columns-2 md:columns-3 [column-gap:12px]">
+          {photos.map((photo, i) => (
+            <div key={photo.id} className="mb-3 break-inside-avoid">
+              <button
+                onClick={() => open(i)}
+                className="group relative block w-full overflow-hidden focus:outline-none"
+                aria-label={photo.caption ?? `Foto ${i + 1}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo.url}
+                  alt={photo.caption ?? ''}
+                  className="block w-full h-auto transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+                  loading={i < 4 ? 'eager' : 'lazy'}
+                  draggable={false}
+                />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-ink/0 transition-colors duration-500 group-hover:bg-ink/15" />
+                {/* Index */}
+                <span className="absolute bottom-3 right-3 font-sans text-[10px] tracking-[0.2em] text-white/0 transition-colors duration-300 group-hover:text-white/40">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </button>
+              {/* Caption außerhalb des Bildes */}
+              {photo.caption && (
+                <p className="mt-2 font-sans text-[10px] tracking-[0.12em] text-mist">
+                  {photo.caption}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── Lightbox ──────────────────────────────────────────────────── */}

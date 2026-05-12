@@ -71,7 +71,9 @@ export default async function GaleriePage({
       </header>
 
       {/* ── Gallery Grid ─────────────────────────────────────────────── */}
-      <GalleryView photos={photos} />
+      <div className="pb-4 pt-10">
+        <GalleryView photos={photos} />
+      </div>
 
       {/* ── Footer ──────────────────────────────────────────────────── */}
       <div className="px-6 py-16 sm:px-12 md:px-20 lg:px-32">

@@ -25,7 +25,7 @@ export default async function AdminArchivePage() {
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="font-serif italic text-3xl text-spark">Archive</h1>
+        <h1 className="font-serif italic text-3xl text-paper">Archive</h1>
         <div className="flex items-center gap-6">
           <Link
             href="/admin/archive/canvas"

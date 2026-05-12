@@ -50,7 +50,7 @@ export default async function EventsPage({
   return (
     <div className="max-w-3xl">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="font-serif italic text-3xl text-spark">Events</h1>
+        <h1 className="font-serif italic text-3xl text-paper">Events</h1>
         <Link
           href="/admin/events/new"
           className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"

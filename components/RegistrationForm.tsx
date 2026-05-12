@@ -42,7 +42,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
   if (state === 'success') {
     return (
       <div className="border-t border-white/8 pt-12">
-        <p className="font-serif italic text-2xl text-spark">Du bist dabei.</p>
+        <p className="opsz-body font-serif italic text-2xl text-paper">Du bist dabei.</p>
         <p className="mt-3 font-sans text-sm font-light text-mist">
           Bis dann.
         </p>
@@ -53,7 +53,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
   if (state === 'waitlist') {
     return (
       <div className="border-t border-white/8 pt-12">
-        <p className="font-serif italic text-2xl text-spark">Warteliste.</p>
+        <p className="opsz-body font-serif italic text-2xl text-paper">Warteliste.</p>
         <p className="mt-3 font-sans text-sm font-light text-mist">
           Du stehst auf der Warteliste. Wir melden uns wenn ein Platz frei wird.
         </p>

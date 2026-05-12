@@ -1,19 +1,27 @@
 @import "tailwindcss";
 
 @theme {
+  /* ── Farben ──────────────────────────────────────────────────────────────── */
   --color-ink:   #0A0A0A;
-  --color-paper: #F5F1E8;
-  --color-bone:  #E8E2D0;
-  --color-ash:   rgba(255, 255, 255, 0.5);
-  --color-mist:  rgba(255, 255, 255, 0.3);
-  --color-spark: #FFFFFF;
+  --color-paper: #F2EDE3;   /* Primäre Akzentfarbe — aus Logo abgeleitet    */
+  --color-bone:  #E8E2D0;   /* Memento-Surfaces (Polaroids etc.)             */
+  --color-spark: #FFFFFF;   /* Maximum contrast — sparsam                    */
+  --color-ash:   rgba(255, 255, 255, 0.78);  /* Body-Text, lesbar            */
+  --color-smoke: rgba(255, 255, 255, 0.55);  /* Sekundär-Labels, Captions    */
+  --color-mist:  rgba(255, 255, 255, 0.3);   /* Nur für feinste Hints        */
 
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-cormorant);
-  --font-hand: var(--font-caveat);
+  /* ── Schriften ───────────────────────────────────────────────────────────── */
+  --font-sans:  var(--font-inter);
+  --font-serif: var(--font-serif);
+  --font-hand:  var(--font-caveat);
 
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* opsz-Achse Utilities (Fraunces Variable Font) */
+.opsz-display  { font-variation-settings: 'opsz' 96; }
+.opsz-heading  { font-variation-settings: 'opsz' 36; }
+.opsz-body     { font-variation-settings: 'opsz' 20; }
 
 html,
 body {
@@ -22,11 +30,13 @@ body {
   min-height: 100%;
 }
 
-/* Custom cursor — hide default on mouse devices */
+/* ── Cursor ───────────────────────────────────────────────────────────────── */
 @media (pointer: fine) {
-  *, *::before, *::after {
-    cursor: none !important;
-  }
+  *                                              { cursor: inherit; }
+  body                                           { cursor: default; }
+  a, button, [role="button"], [data-clickable]   { cursor: pointer; }
+  .canvas-viewport                               { cursor: grab; }
+  body.dragging, body.dragging *                 { cursor: grabbing !important; }
 }
 
 /* Memento float animation */

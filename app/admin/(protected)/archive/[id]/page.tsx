@@ -30,7 +30,7 @@ export default async function EditMementoPage({
         >
           ← Archive
         </Link>
-        <h1 className="font-serif italic text-3xl text-spark">Memento</h1>
+        <h1 className="font-serif italic text-3xl text-paper">Memento</h1>
       </div>
       <MementoForm
         events={events ?? []}

@@ -21,7 +21,7 @@ export default async function NewMementoPage() {
         >
           ← Archive
         </Link>
-        <h1 className="font-serif italic text-3xl text-spark">Neues Memento</h1>
+        <h1 className="font-serif italic text-3xl text-paper">Neues Memento</h1>
       </div>
       <MementoForm events={events ?? []} />
     </div>

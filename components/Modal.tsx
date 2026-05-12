@@ -85,7 +85,7 @@ export function Modal({
 
                 {/* Title */}
                 {memento.caption && (
-                  <h2 className="mb-5 font-serif italic text-[clamp(1.5rem,4vw,2.2rem)] leading-tight text-spark">
+                  <h2 className="opsz-heading mb-5 font-serif italic text-[clamp(1.5rem,4vw,2.2rem)] leading-tight text-paper">
                     {memento.caption}
                   </h2>
                 )}

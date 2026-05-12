@@ -68,19 +68,19 @@ export default async function EventPage({
 
       {/* Meta */}
       <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-1">
-        <span className="font-sans text-[11px] tracking-[0.2em] text-mist uppercase">
+        <span className="font-sans text-[10px] tracking-[0.22em] text-smoke uppercase">
           {SPORT_LABELS[event.sport] ?? event.sport}
         </span>
-        <span className="font-sans text-[11px] text-white/25">
+        <span className="font-sans text-[10px] tracking-[0.15em] text-ash uppercase">
           {dateStr} · {timeStr}{endsStr ? `–${endsStr}` : ''}
         </span>
         {event.meeting_point && (
-          <span className="font-sans text-[11px] text-white/25">{event.meeting_point}</span>
+          <span className="font-sans text-[10px] text-smoke">{event.meeting_point}</span>
         )}
       </div>
 
       {/* Title */}
-      <h1 className="mb-10 font-serif italic text-[clamp(2rem,6vw,4.5rem)] leading-[1.1] text-spark">
+      <h1 className="opsz-display mb-10 font-serif italic text-[clamp(2rem,6vw,4.5rem)] leading-[1.1] text-paper">
         {event.title}
       </h1>
 

@@ -50,7 +50,7 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
       startOffset: { ...stageOffsetRef.current },
     }
     setSelectedId(null)
-    window.dispatchEvent(new CustomEvent('cursor-state', { detail: 'grabbing' }))
+    document.body.classList.add('dragging')
   }, [])
 
   const onViewportPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -95,7 +95,7 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
   }, [])
 
   const onViewportPointerUp = useCallback(() => {
-    window.dispatchEvent(new CustomEvent('cursor-state', { detail: 'default' }))
+    document.body.classList.remove('dragging')
 
     if (memDrag.current.active) {
       if (!memDrag.current.moved) {
@@ -123,7 +123,7 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
         startClient: { x: e.clientX, y: e.clientY },
         startPos: { x: pos.x, y: pos.y },
       }
-      document.body.style.cursor = 'grabbing'
+      document.body.classList.add('dragging')
     },
     []
   )
@@ -180,7 +180,6 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
       <div
         ref={viewportRef}
         className="fixed inset-0 overflow-hidden select-none"
-        data-cursor="grab"
         style={{ touchAction: 'none' }}
         onPointerDown={onViewportPointerDown}
         onPointerMove={onViewportPointerMove}
@@ -212,7 +211,7 @@ export function AdminCanvas({ mementos }: { mementos: Memento[] }) {
                   top: STAGE_H / 2 + pos.y,
                   transform: `translate(-50%, -50%) rotate(${pos.rotation}deg) scale(${pos.scale})`,
                   zIndex: pos.z_index,
-                  cursor: 'grab',
+                  
                   outline: isSelected ? '2px solid rgba(255,255,255,0.4)' : 'none',
                   outlineOffset: 4,
                 }}

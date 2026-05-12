@@ -14,7 +14,7 @@ export default function NewEventPage() {
         >
           ← Events
         </Link>
-        <h1 className="font-serif italic text-3xl text-spark">Neuer Event</h1>
+        <h1 className="font-serif italic text-3xl text-paper">Neuer Event</h1>
       </div>
       <EventForm />
     </div>

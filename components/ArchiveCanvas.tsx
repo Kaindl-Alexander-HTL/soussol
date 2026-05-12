@@ -15,17 +15,14 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
   const [hintVisible, setHintVisible] = useState(true)
   const [transitioning, setTransitioning] = useState(false)
 
-  // All drag state as refs — never causes re-renders during drag
   const drag = useRef({
     active: false,
     moved: false,
     startClient: { x: 0, y: 0 },
     startOffset: { x: 0, y: 0 },
   })
-  // Mirror of offset state for reading in handlers without stale closures
   const offsetRef = useRef({ x: 0, y: 0 })
 
-  // Fade hint after 6s
   useEffect(() => {
     const t = setTimeout(() => setHintVisible(false), 6000)
     return () => clearTimeout(t)
@@ -39,7 +36,7 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
       startClient: { x: e.clientX, y: e.clientY },
       startOffset: { ...offsetRef.current },
     }
-    window.dispatchEvent(new CustomEvent('cursor-state', { detail: 'grabbing' }))
+    document.body.classList.add('dragging')
   }, [])
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -64,11 +61,10 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
 
   const onPointerUp = useCallback(() => {
     drag.current.active = false
-    window.dispatchEvent(new CustomEvent('cursor-state', { detail: 'grab' }))
+    document.body.classList.remove('dragging')
   }, [])
 
   const openModal = useCallback((m: Memento) => {
-    // Only open if the pointer didn't move (click, not drag-end)
     if (!drag.current.moved) setSelected(m)
   }, [])
 
@@ -83,8 +79,7 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
     <>
       {/* Viewport */}
       <div
-        data-cursor="grab"
-        className="fixed inset-0 overflow-hidden select-none"
+        className="canvas-viewport fixed inset-0 overflow-hidden select-none"
         style={{ touchAction: 'none' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -107,14 +102,12 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
           }}
         >
           {mementos.map((m) => {
-            // Deterministic float values from id — no randomness on re-render
             const h = m.id.charCodeAt(0) + m.id.charCodeAt(2) + m.id.charCodeAt(4)
             const duration = 3.2 + (h % 22) * 0.1
             const delay = -((h % 30) * 0.1)
             const yAmp = 4 + (h % 5)
 
             return (
-              // Outer: position + float (Y only)
               <div
                 key={m.id}
                 style={{
@@ -126,7 +119,6 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
                   '--float-y': `${yAmp}px`,
                 } as React.CSSProperties}
               >
-                {/* Inner: center + rotate + scale */}
                 <button
                   onClick={() => openModal(m)}
                   className="block focus:outline-none"
@@ -146,7 +138,7 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
       {/* Reset button */}
       <button
         onClick={resetView}
-        className="fixed right-6 z-40 font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-spark sm:right-12"
+        className="fixed right-6 z-40 font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-paper sm:right-12"
         style={{ top: 72 }}
         aria-label="Ansicht zurücksetzen"
       >
@@ -163,7 +155,6 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
         </div>
       )}
 
-      {/* Detail modal */}
       <Modal memento={selected} onClose={() => setSelected(null)} />
     </>
   )

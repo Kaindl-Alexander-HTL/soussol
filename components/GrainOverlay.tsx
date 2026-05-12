@@ -30,7 +30,11 @@ export function GrainOverlay() {
       className="pointer-events-none fixed inset-0 z-50 opacity-[0.42]"
       style={{ mixBlendMode: 'overlay' }}
     >
-      <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="h-full w-full"
+        xmlns="http://www.w3.org/2000/svg"
+        pointerEvents="none"
+      >
         <filter id="grain" x="0%" y="0%" width="100%" height="100%">
           <feTurbulence
             ref={turbRef}
@@ -41,7 +45,7 @@ export function GrainOverlay() {
           />
           <feColorMatrix type="saturate" values="0" />
         </filter>
-        <rect width="100%" height="100%" filter="url(#grain)" />
+        <rect width="100%" height="100%" filter="url(#grain)" pointerEvents="none" />
       </svg>
     </div>
   )

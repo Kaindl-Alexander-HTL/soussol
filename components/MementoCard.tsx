@@ -209,7 +209,7 @@ function StravaCard({ m }: { m: Memento }) {
       )}
 
       {m.caption && (
-        <p className="font-serif italic text-[17px] leading-tight text-spark">{m.caption}</p>
+        <p className="font-serif italic text-[17px] leading-tight text-paper">{m.caption}</p>
       )}
       {m.body && (
         <p className="mt-2 whitespace-pre-line font-sans text-[11px] leading-relaxed text-mist">
@@ -243,7 +243,7 @@ function OtherCard({ m }: { m: Memento }) {
         />
       )}
       {m.caption && (
-        <p className="font-serif italic text-[16px] text-spark">{m.caption}</p>
+        <p className="font-serif italic text-[16px] text-paper">{m.caption}</p>
       )}
       {m.date_label && (
         <p className="mt-1 font-sans text-[10px] text-mist">{m.date_label}</p>

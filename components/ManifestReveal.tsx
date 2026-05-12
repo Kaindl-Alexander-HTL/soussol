@@ -15,7 +15,7 @@ export function ManifestReveal({ paragraphs }: { paragraphs: string[] }) {
             delay: 0.1 + i * 0.11,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className={`font-serif italic text-spark leading-[1.55] mb-7 last:mb-0 ${
+          className={`opsz-body font-serif italic text-paper leading-[1.55] mb-7 last:mb-0 ${
             i === 0
               ? 'text-[clamp(1.75rem,4vw,3rem)]'
               : 'text-[clamp(1.1rem,2.2vw,1.6rem)]'

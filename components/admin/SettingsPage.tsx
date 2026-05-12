@@ -253,7 +253,7 @@ export function SettingsPage({
 }: Props) {
   return (
     <div className="max-w-xl">
-      <h1 className="mb-12 font-serif italic text-3xl text-spark">Settings</h1>
+      <h1 className="mb-12 font-serif italic text-3xl text-paper">Settings</h1>
       <div className="flex flex-col gap-12">
         <CodeSection initial={accessCode} />
         <ManifestSection initial={manifest.content} />

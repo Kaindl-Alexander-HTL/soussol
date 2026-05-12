@@ -53,7 +53,7 @@ export default async function EventEditPage({
         >
           ← Events
         </Link>
-        <h1 className="font-serif italic text-3xl text-spark">{event.title}</h1>
+        <h1 className="font-serif italic text-3xl text-paper">{event.title}</h1>
       </div>
 
       <EventForm

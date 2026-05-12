@@ -9,8 +9,29 @@ type Photo = {
   caption: string | null
 }
 
+async function downloadPhoto(url: string, caption: string | null) {
+  const res = await fetch(url)
+  const blob = await res.blob()
+  const ext = blob.type.split('/')[1]?.replace('jpeg', 'jpg') ?? 'jpg'
+  const name = caption ? `${caption.replace(/\s+/g, '-').toLowerCase()}.${ext}` : `soussol-${Date.now()}.${ext}`
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = name
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
 export function GalleryView({ photos }: { photos: Photo[] }) {
   const [lightbox, setLightbox] = useState<number | null>(null)
+  const [downloading, setDownloading] = useState<string | null>(null)
+
+  async function handleDownload(e: React.MouseEvent, url: string, caption: string | null, key: string) {
+    e.stopPropagation()
+    if (downloading === key) return
+    setDownloading(key)
+    await downloadPhoto(url, caption)
+    setDownloading(null)
+  }
 
   const open = useCallback((i: number) => setLightbox(i), [])
   const close = useCallback(() => setLightbox(null), [])
@@ -56,6 +77,14 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
                 />
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-ink/0 transition-colors duration-500 group-hover:bg-ink/15" />
+                {/* Download button */}
+                <button
+                  onClick={(e) => handleDownload(e, photo.url, photo.caption, photo.id)}
+                  className="absolute left-3 top-3 flex items-center gap-1.5 font-sans text-[9px] tracking-[0.2em] text-white/0 uppercase transition-colors duration-300 group-hover:text-white/50 hover:!text-white"
+                  aria-label="Foto herunterladen"
+                >
+                  {downloading === photo.id ? '...' : '↓'}
+                </button>
                 {/* Index */}
                 <span className="absolute bottom-3 right-3 font-sans text-[10px] tracking-[0.2em] text-white/0 transition-colors duration-300 group-hover:text-white/40">
                   {String(i + 1).padStart(2, '0')}
@@ -101,12 +130,20 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
                 <span className="font-sans text-[10px] tracking-[0.3em] text-mist">
                   {String(lightbox + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}
                 </span>
-                <button
-                  onClick={close}
-                  className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-spark"
-                >
-                  Schließen ✕
-                </button>
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={(e) => handleDownload(e, photos[lightbox].url, photos[lightbox].caption, `lb-${lightbox}`)}
+                    className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-spark"
+                  >
+                    {downloading === `lb-${lightbox}` ? '...' : '↓ Download'}
+                  </button>
+                  <button
+                    onClick={close}
+                    className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-spark"
+                  >
+                    Schließen ✕
+                  </button>
+                </div>
               </div>
 
               {/* Image */}

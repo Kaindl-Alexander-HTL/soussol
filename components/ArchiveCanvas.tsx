@@ -118,8 +118,9 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
     setTransitioning(true)
     stageOffsetRef.current = { x: 0, y: 0 }
     setStageOffset({ x: 0, y: 0 })
+    setPositions(Object.fromEntries(mementos.map((m) => [m.id, { x: m.x, y: m.y }])))
     setTimeout(() => setTransitioning(false), 800)
-  }, [])
+  }, [mementos])
 
   return (
     <>

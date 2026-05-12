@@ -29,15 +29,12 @@ export default function ImpressumPage() {
           </h2>
           <p>
             Tim Tanzer<br />
-            {/* TODO: Anschrift von Tim eintragen */}
-            [Straße Nr.]<br />
-            [PLZ] Linz<br />
+            Mittelpromende 127<br />
+            4048 Puchenau<br />
             Österreich
           </p>
           <p>
-            {/* TODO: Kontaktdaten von Tim eintragen */}
-            E-Mail: <a href="mailto:tim@sous.club" className="text-spark underline underline-offset-2">tim@sous.club</a><br />
-            Telefon: [+43 ...]
+            E-Mail: <a href="mailto:tim.tobs24@gmail.com" className="text-spark underline underline-offset-2">tim.tobs24@gmail.com</a>
           </p>
         </section>
 

@@ -29,7 +29,8 @@ export default function DatenschutzPage() {
           </h2>
           <p>
             Tim Tanzer<br />
-            E-Mail: <a href="mailto:tim@sous.club" className="text-spark underline underline-offset-2">tim@sous.club</a>
+            Mittelpromende 127, 4048 Puchenau<br />
+            E-Mail: <a href="mailto:tim.tobs24@gmail.com" className="text-spark underline underline-offset-2">tim.tobs24@gmail.com</a>
           </p>
           <p>
             Für Auskünfte, Berichtigungen oder Löschungen deiner gespeicherten Daten wende
@@ -156,7 +157,7 @@ export default function DatenschutzPage() {
           <p>
             Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der
             Verarbeitung sowie Datenübertragbarkeit (Art. 15–20 DSGVO). Wende dich dazu
-            an <a href="mailto:tim@sous.club" className="text-spark underline underline-offset-2">tim@sous.club</a>.
+            an <a href="mailto:tim.tobs24@gmail.com" className="text-spark underline underline-offset-2">tim.tobs24@gmail.com</a>.
           </p>
           <p>
             Du hast außerdem das Recht, Beschwerde bei der österreichischen Datenschutzbehörde

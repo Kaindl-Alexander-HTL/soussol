@@ -167,7 +167,7 @@ export default function DatenschutzPage() {
 
         <section className="border-t border-white/5 pt-8">
           <p className="font-sans text-[10px] text-white/20">
-            Stand: Mai 2026 · Vor Live-Schaltung rechtlich prüfen lassen.
+            Stand: Mai 2026
           </p>
         </section>
 

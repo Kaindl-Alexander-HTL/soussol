@@ -1,10 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export function GatedNav() {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function leaveSession() {
+    await fetch('/api/leave', { method: 'POST' })
+    router.push('/')
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between bg-ink/80 px-6 py-5 backdrop-blur-sm sm:px-12 md:px-20 lg:px-32">
@@ -33,6 +39,12 @@ export function GatedNav() {
         >
           Upcoming
         </Link>
+        <button
+          onClick={leaveSession}
+          className="font-sans text-[10px] tracking-[0.3em] text-white/20 uppercase transition-colors hover:text-white/50"
+        >
+          Leave
+        </button>
       </nav>
     </header>
   )

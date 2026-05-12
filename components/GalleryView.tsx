@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type Photo = {
@@ -37,37 +36,31 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
 
   return (
     <>
-      {/* ── Magazine Grid ─────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-px sm:grid-cols-3 md:grid-cols-4 bg-white/[0.04]">
-        {photos.map((photo, i) => {
-          // Editorial rhythm: first photo spans 2 cols, every 7th also spans 2
-          const wide = i === 0 || (i > 0 && i % 7 === 0)
-          return (
-            <button
-              key={photo.id}
-              onClick={() => open(i)}
-              className={`group relative overflow-hidden bg-ink focus:outline-none ${wide ? 'col-span-2' : ''}`}
-              style={{ aspectRatio: wide ? '16/9' : '1/1' }}
-              aria-label={photo.caption ?? `Foto ${i + 1}`}
-            >
-              <Image
-                src={photo.url}
-                alt={photo.caption ?? ''}
-                fill
-                className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
-                sizes={wide
-                  ? '(max-width: 640px) 100vw, (max-width: 768px) 66vw, 50vw'
-                  : '(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw'}
-              />
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25" />
-              {/* Index */}
-              <span className="absolute bottom-3 right-3 font-sans text-[10px] tracking-[0.2em] text-white/0 transition-colors duration-300 group-hover:text-white/50">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-            </button>
-          )
-        })}
+      {/* ── Magazine Grid (Masonry, natürliche Proportionen) ─────────── */}
+      <div className="columns-2 gap-px sm:columns-3 md:columns-4 [column-gap:1px]">
+        {photos.map((photo, i) => (
+          <button
+            key={photo.id}
+            onClick={() => open(i)}
+            className="group relative mb-px block w-full overflow-hidden bg-white/[0.03] focus:outline-none break-inside-avoid"
+            aria-label={photo.caption ?? `Foto ${i + 1}`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photo.url}
+              alt={photo.caption ?? ''}
+              className="block w-full h-auto transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
+              loading={i < 6 ? 'eager' : 'lazy'}
+              draggable={false}
+            />
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-ink/0 transition-colors duration-300 group-hover:bg-ink/20" />
+            {/* Index */}
+            <span className="absolute bottom-2.5 right-2.5 font-sans text-[10px] tracking-[0.2em] text-white/0 transition-colors duration-300 group-hover:text-white/50">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+          </button>
+        ))}
       </div>
 
       {/* ── Lightbox ──────────────────────────────────────────────────── */}

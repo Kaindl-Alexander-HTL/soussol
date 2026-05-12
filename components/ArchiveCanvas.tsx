@@ -179,7 +179,9 @@ export function ArchiveCanvas({ mementos }: { mementos: Memento[] }) {
                   }}
                   aria-label={m.caption ?? m.kind}
                 >
-                  <MementoCard memento={m} />
+                  <div className="scale-[0.62] origin-center sm:scale-100">
+                    <MementoCard memento={m} />
+                  </div>
                 </div>
               </div>
             )

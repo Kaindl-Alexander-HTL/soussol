@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import type { Memento } from '@/lib/types'
 
 const KIND_LABELS: Record<string, string> = {
@@ -110,6 +111,17 @@ export function Modal({
                     {memento.body}
                   </div>
                 )}
+
+                {/* Detail link */}
+                <div className="mt-8 border-t border-white/8 pt-5">
+                  <Link
+                    href={`/archive/${memento.id}`}
+                    className="group inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] text-mist uppercase transition-colors hover:text-spark"
+                  >
+                    <span>Galerie & Details</span>
+                    <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">→</span>
+                  </Link>
+                </div>
               </div>
             </div>
           </motion.div>

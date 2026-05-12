@@ -40,9 +40,9 @@ export default async function ArchivePage({
         </div>
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
           {mementos.map((m) => (
-            <div key={m.id} className="flex justify-center">
+            <Link key={m.id} href={`/archive/${m.id}`} className="flex justify-center transition-opacity hover:opacity-80">
               <MementoCard memento={m} />
-            </div>
+            </Link>
           ))}
         </div>
       </div>

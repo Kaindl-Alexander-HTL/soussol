@@ -8,9 +8,15 @@ import { sendRegistrationNotification } from '@/lib/email'
 const schema = z.object({
   event_id: z.string().uuid(),
   guest_name: z.string().min(1).max(200),
-  instagram_handle: z.string().min(1).max(100).transform((v) => v.replace(/^@/, '')),
+  instagram_handle: z.string().max(100).transform((v) => v.replace(/^@/, '')).optional(),
+  strava_handle: z.string().max(100).optional(),
+  phone: z.string().max(30).optional(),
+  email: z.string().email().max(200).optional(),
   notes: z.string().max(1000).optional(),
-})
+}).refine(
+  (d) => d.instagram_handle || d.strava_handle || d.phone || d.email,
+  { message: 'Mindestens eine Kontaktmöglichkeit angeben.' }
+)
 
 async function isGated(): Promise<boolean> {
   const cookieStore = await cookies()
@@ -38,7 +44,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { event_id, guest_name, instagram_handle, notes } = parsed.data
+  const { event_id, guest_name, instagram_handle, strava_handle, phone, email, notes } = parsed.data
 
   const { data: event, error: eventError } = await supabaseAdmin
     .from('events')
@@ -69,7 +75,10 @@ export async function POST(request: NextRequest) {
   const { error: insertError } = await supabaseAdmin.from('registrations').insert({
     event_id,
     guest_name,
-    instagram_handle,
+    instagram_handle: instagram_handle ?? null,
+    strava_handle: strava_handle ?? null,
+    phone: phone ?? null,
+    email: email ?? null,
     notes: notes ?? null,
     is_waitlist,
   })
@@ -82,6 +91,9 @@ export async function POST(request: NextRequest) {
   sendRegistrationNotification({
     guestName: guest_name,
     instagramHandle: instagram_handle,
+    stravaHandle: strava_handle,
+    phone,
+    email,
     eventTitle: event.title,
     startsAt: event.starts_at,
     isWaitlist: is_waitlist,

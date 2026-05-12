@@ -8,12 +8,15 @@ import { de } from 'date-fns/locale'
 
 export const metadata: Metadata = { title: 'Event bearbeiten — SOUS SOL Admin' }
 
-function csvExport(registrations: { guest_name: string; instagram_handle: string; is_waitlist: boolean; notes: string | null; created_at: string }[]) {
+function csvExport(registrations: { guest_name: string; instagram_handle: string | null; strava_handle: string | null; phone: string | null; email: string | null; is_waitlist: boolean; notes: string | null; created_at: string }[]) {
   const rows = [
-    ['Name', 'Instagram', 'Warteliste', 'Notiz', 'Angemeldet am'],
+    ['Name', 'Instagram', 'Strava', 'Telefon', 'E-Mail', 'Warteliste', 'Notiz', 'Angemeldet am'],
     ...registrations.map((r) => [
       r.guest_name,
-      r.instagram_handle,
+      r.instagram_handle ? `@${r.instagram_handle}` : '',
+      r.strava_handle ?? '',
+      r.phone ?? '',
+      r.email ?? '',
       r.is_waitlist ? 'Ja' : 'Nein',
       r.notes ?? '',
       format(new Date(r.created_at), 'dd.MM.yyyy HH:mm'),
@@ -34,7 +37,7 @@ export default async function EventEditPage({
     supabase.from('events').select('*').eq('id', id).single(),
     supabase
       .from('registrations')
-      .select('*')
+      .select('id, guest_name, instagram_handle, strava_handle, phone, email, is_waitlist, notes, created_at')
       .eq('event_id', id)
       .order('created_at', { ascending: true }),
   ])
@@ -98,7 +101,12 @@ export default async function EventEditPage({
                   <span className="flex-1 font-sans text-sm font-light text-ash">
                     {r.guest_name}
                   </span>
-                  <span className="font-sans text-[11px] text-mist">@{r.instagram_handle}</span>
+                  <span className="flex flex-wrap gap-x-3 gap-y-0.5 font-sans text-[11px] text-mist">
+                    {r.instagram_handle && <span>@{r.instagram_handle}</span>}
+                    {r.strava_handle && <span>Strava: {r.strava_handle}</span>}
+                    {r.phone && <span>{r.phone}</span>}
+                    {r.email && <span>{r.email}</span>}
+                  </span>
                   {r.is_waitlist && (
                     <span className="font-sans text-[9px] tracking-[0.2em] text-white/30 uppercase">
                       Warteliste

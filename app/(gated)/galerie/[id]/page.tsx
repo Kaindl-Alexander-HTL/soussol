@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { GalleryView } from '@/components/GalleryView'
 
 export const metadata: Metadata = { title: 'Galerie — SOUS SOL' }
 
@@ -31,44 +31,58 @@ export default async function GaleriePage({
   if (!photos?.length) notFound()
 
   return (
-    <main className="min-h-screen bg-ink px-6 pb-32 pt-16 sm:px-12 md:px-20 lg:px-32">
-      <div className="mb-12 flex items-baseline gap-6">
+    <div className="min-h-screen bg-ink">
+
+      {/* ── Editorial Header ────────────────────────────────────────── */}
+      <header className="px-6 pb-10 pt-16 sm:px-12 md:px-20 lg:px-32">
         <Link
           href={`/archive/${id}`}
-          className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
+          className="mb-10 inline-block font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
         >
-          ← Memento
+          ← Zurück
         </Link>
-        {memento.caption && (
-          <h1 className="font-serif italic text-[clamp(1.4rem,3vw,2rem)] text-paper">
-            {memento.caption}
-          </h1>
-        )}
-        {memento.date_label && (
-          <span className="font-sans text-[10px] text-mist">{memento.date_label}</span>
-        )}
-      </div>
 
-      <div className="columns-2 gap-3 sm:columns-3 md:columns-4">
-        {photos.map((photo) => (
-          <div key={photo.id} className="mb-3 break-inside-avoid overflow-hidden bg-white/5">
-            <Image
-              src={photo.url}
-              alt={photo.caption ?? ''}
-              width={600}
-              height={600}
-              className="w-full object-cover"
-              style={{ display: 'block' }}
-              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-            />
-            {photo.caption && (
-              <p className="px-2 pb-2 pt-1.5 font-sans text-[10px] text-mist">
-                {photo.caption}
-              </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            {memento.caption && (
+              <h1
+                className="opsz-display font-serif italic leading-none text-paper"
+                style={{ fontSize: 'clamp(2.5rem, 8vw, 6rem)' }}
+              >
+                {memento.caption}
+              </h1>
             )}
           </div>
-        ))}
+
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            {memento.date_label && (
+              <span className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
+                {memento.date_label}
+              </span>
+            )}
+            <span className="font-sans text-[10px] tracking-[0.25em] text-white/20 uppercase">
+              {photos.length} {photos.length === 1 ? 'Foto' : 'Fotos'}
+            </span>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mt-8 h-px bg-white/8" />
+      </header>
+
+      {/* ── Gallery Grid ─────────────────────────────────────────────── */}
+      <GalleryView photos={photos} />
+
+      {/* ── Footer ──────────────────────────────────────────────────── */}
+      <div className="px-6 py-16 sm:px-12 md:px-20 lg:px-32">
+        <Link
+          href={`/archive/${id}`}
+          className="group inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] text-mist uppercase transition-colors hover:text-spark"
+        >
+          <span className="inline-block transition-transform duration-300 group-hover:-translate-x-1.5">←</span>
+          <span>Zurück zum Memento</span>
+        </Link>
       </div>
-    </main>
+    </div>
   )
 }

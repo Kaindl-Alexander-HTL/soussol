@@ -62,25 +62,25 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
         <div className="columns-1 gap-3 sm:columns-2 md:columns-3 [column-gap:12px]">
           {photos.map((photo, i) => (
             <div key={photo.id} className="mb-3 break-inside-avoid">
-              <button
-                onClick={() => open(i)}
-                className="group relative block w-full overflow-hidden focus:outline-none"
-                aria-label={photo.caption ?? `Foto ${i + 1}`}
-              >
+              <div className="group relative overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photo.url}
                   alt={photo.caption ?? ''}
-                  className="block w-full h-auto transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+                  onClick={() => open(i)}
+                  className="block w-full h-auto cursor-pointer transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
                   loading={i < 4 ? 'eager' : 'lazy'}
                   draggable={false}
                 />
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-ink/0 transition-colors duration-500 group-hover:bg-ink/15" />
+                {/* Hover overlay — non-interactive */}
+                <div
+                  onClick={() => open(i)}
+                  className="absolute inset-0 cursor-pointer bg-ink/0 transition-colors duration-500 group-hover:bg-ink/15"
+                />
                 {/* Download button */}
                 <button
                   onClick={(e) => handleDownload(e, photo.url, photo.caption, photo.id)}
-                  className="absolute left-3 top-3 flex items-center gap-1.5 font-sans text-[9px] tracking-[0.2em] text-white/0 uppercase transition-colors duration-300 group-hover:text-white/50 hover:!text-white"
+                  className="absolute left-3 top-3 font-sans text-[9px] tracking-[0.2em] text-white/0 uppercase transition-colors duration-300 group-hover:text-white/50 hover:!text-white"
                   aria-label="Foto herunterladen"
                 >
                   {downloading === photo.id ? '...' : '↓'}
@@ -89,7 +89,7 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
                 <span className="absolute bottom-3 right-3 font-sans text-[10px] tracking-[0.2em] text-white/0 transition-colors duration-300 group-hover:text-white/40">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-              </button>
+              </div>
               {/* Caption außerhalb des Bildes */}
               {photo.caption && (
                 <p className="mt-2 font-sans text-[10px] tracking-[0.12em] text-mist">

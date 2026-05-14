@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { ArchiveCanvas } from '@/components/ArchiveCanvas'
 import { MementoCard } from '@/components/MementoCard'
@@ -7,13 +8,20 @@ import type { Memento } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Archive — SOUS SOL' }
 
+function isMobileUA(ua: string) {
+  return /iPhone|Android|Mobile|BlackBerry|IEMobile/i.test(ua)
+}
+
 export default async function ArchivePage({
   searchParams,
 }: {
   searchParams: Promise<{ view?: string }>
 }) {
   const { view } = await searchParams
-  const isGrid = view === 'grid'
+  const headersList = await headers()
+  const ua = headersList.get('user-agent') ?? ''
+  // Mobile devices default to grid; explicit ?view=canvas overrides
+  const isGrid = view === 'grid' || (isMobileUA(ua) && view !== 'canvas')
 
   const supabase = await createClient()
   const [{ data }, { data: connData }] = await Promise.all([
@@ -38,7 +46,7 @@ export default async function ArchivePage({
             {mementos.length} Mementos
           </p>
           <Link
-            href="/archive"
+            href="/archive?view=canvas"
             className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
           >
             Canvas →
@@ -55,19 +63,9 @@ export default async function ArchivePage({
     )
   }
 
-  // Canvas view (default)
+  // Canvas view
   return (
     <>
-      {/* Mobile fallback link */}
-      <div className="pointer-events-none fixed bottom-6 right-6 z-30 sm:hidden">
-        <Link
-          href="/archive?view=grid"
-          className="pointer-events-auto font-sans text-[9px] tracking-[0.25em] text-mist uppercase"
-        >
-          Grid ↗
-        </Link>
-      </div>
-
       {mementos.length === 0 ? (
         <div className="flex h-screen items-center justify-center">
           <p className="font-serif italic text-2xl text-mist">Bald.</p>

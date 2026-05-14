@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type Photo = {
@@ -21,9 +21,12 @@ async function downloadPhoto(url: string, caption: string | null) {
   URL.revokeObjectURL(a.href)
 }
 
+const SWIPE_THRESHOLD = 50
+
 export function GalleryView({ photos }: { photos: Photo[] }) {
   const [lightbox, setLightbox] = useState<number | null>(null)
   const [downloading, setDownloading] = useState<string | null>(null)
+  const swipe = useRef<{ startX: number; startY: number } | null>(null)
 
   async function handleDownload(e: React.MouseEvent, url: string, caption: string | null, key: string) {
     e.stopPropagation()
@@ -37,6 +40,22 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
   const close = useCallback(() => setLightbox(null), [])
   const prev = useCallback(() => setLightbox((i) => (i === null ? null : (i - 1 + photos.length) % photos.length)), [photos.length])
   const next = useCallback(() => setLightbox((i) => (i === null ? null : (i + 1) % photos.length)), [photos.length])
+
+  // Touch swipe handlers for lightbox
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    swipe.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY }
+  }, [])
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!swipe.current) return
+    const dx = e.changedTouches[0].clientX - swipe.current.startX
+    const dy = e.changedTouches[0].clientY - swipe.current.startY
+    swipe.current = null
+    // Only horizontal swipes (dx dominates)
+    if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dy) > Math.abs(dx)) return
+    if (dx < 0) next()
+    else prev()
+  }, [next, prev])
 
   useEffect(() => {
     if (lightbox === null) return
@@ -116,7 +135,7 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
               onClick={close}
             />
 
-            {/* Content */}
+            {/* Content — swipeable on touch */}
             <motion.div
               key="lb-wrap"
               className="fixed inset-0 z-[61] flex flex-col items-center justify-center p-4 sm:p-8"
@@ -124,6 +143,8 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
+              onTouchStart={onTouchStart}
+              onTouchEnd={onTouchEnd}
             >
               {/* Top bar */}
               <div className="mb-4 flex w-full max-w-5xl items-center justify-between">

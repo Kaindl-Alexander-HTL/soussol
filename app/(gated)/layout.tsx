@@ -29,7 +29,7 @@ export default async function GatedLayout({
   return (
     <div className="min-h-screen bg-ink">
       <GatedNav />
-      <main>{children}</main>
+      <main className="pb-16 sm:pb-0">{children}</main>
     </div>
   )
 }

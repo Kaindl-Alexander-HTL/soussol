@@ -52,10 +52,16 @@ export default async function ArchivePage({
             Canvas →
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3 md:grid-cols-4">
           {mementos.map((m) => (
-            <Link key={m.id} href={`/archive/${m.id}`} className="flex justify-center transition-opacity hover:opacity-80">
-              <MementoCard memento={m} />
+            <Link
+              key={m.id}
+              href={`/archive/${m.id}`}
+              className="flex justify-center transition-opacity hover:opacity-80 overflow-hidden"
+            >
+              <div className="[zoom:0.72] sm:[zoom:1] origin-top-left">
+                <MementoCard memento={m} />
+              </div>
             </Link>
           ))}
         </div>

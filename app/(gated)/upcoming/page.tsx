@@ -22,7 +22,6 @@ export default async function UpcomingPage() {
     .eq('status', 'upcoming')
     .order('starts_at', { ascending: true })
 
-  // Group by month
   const groups: { month: Date; events: typeof events }[] = []
   for (const event of events ?? []) {
     const d = new Date(event.starts_at)
@@ -39,14 +38,14 @@ export default async function UpcomingPage() {
       {!events?.length ? (
         <p className="font-serif italic text-2xl text-smoke">Bald.</p>
       ) : (
-        <div className="flex flex-col gap-24">
+        <div className="flex flex-col gap-16 sm:gap-24">
           {groups.map(({ month, events: monthEvents }) => (
             <section key={month.toISOString()}>
 
-              {/* Month header — paper/60, large, ghost-like but warm */}
+              {/* Month header */}
               <h2
-                className="opsz-display mb-6 font-serif italic leading-none text-paper/60 select-none"
-                style={{ fontSize: 'clamp(4rem, 12vw, 9rem)' }}
+                className="opsz-display mb-4 sm:mb-6 font-serif italic leading-none text-paper/60 select-none"
+                style={{ fontSize: 'clamp(2.8rem, 12vw, 9rem)' }}
               >
                 {format(month, 'MMMM', { locale: de })}
               </h2>
@@ -57,17 +56,44 @@ export default async function UpcomingPage() {
                   <Link
                     key={event.id}
                     href={`/event/${event.slug}`}
-                    className="group py-7"
+                    className="group py-5 sm:py-7"
                   >
-                    <div className="flex items-baseline gap-8 sm:gap-12">
-                      {/* Date column — ash, always readable */}
-                      <span
-                        className="w-36 shrink-0 font-sans text-[10px] tracking-[0.22em] text-ash uppercase"
-                      >
+                    {/* ── Mobile layout: gestackt ─────────────────────── */}
+                    <div className="flex items-start justify-between gap-4 sm:hidden">
+                      <div className="flex flex-col gap-1.5">
+                        <span className="font-sans text-[10px] tracking-[0.2em] text-ash uppercase">
+                          {format(new Date(event.starts_at), 'eeee, d. MMM', { locale: de })}
+                        </span>
+                        <span
+                          className="opsz-heading font-serif italic leading-tight text-paper"
+                          style={{ fontSize: 'clamp(1.4rem, 6vw, 1.9rem)' }}
+                        >
+                          {event.title}
+                        </span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-sans text-[9px] tracking-[0.2em] text-smoke uppercase">
+                            {SPORT_LABELS[event.sport] ?? event.sport}
+                          </span>
+                          {event.meeting_point && (
+                            <>
+                              <span className="text-mist text-[9px]">·</span>
+                              <span className="font-sans text-[9px] tracking-[0.12em] text-smoke">
+                                {event.meeting_point}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <span className="shrink-0 mt-1 font-sans text-sm text-smoke/60 transition-colors duration-300 group-hover:text-paper">
+                        →
+                      </span>
+                    </div>
+
+                    {/* ── Desktop layout: horizontal ───────────────────── */}
+                    <div className="hidden sm:flex items-baseline gap-12">
+                      <span className="w-36 shrink-0 font-sans text-[10px] tracking-[0.22em] text-ash uppercase">
                         {format(new Date(event.starts_at), 'eeee, d. MMM', { locale: de })}
                       </span>
-
-                      {/* Right: title + meta */}
                       <div className="flex flex-1 flex-col gap-2">
                         <span
                           className="opsz-heading font-serif italic leading-tight text-paper transition-opacity duration-300 group-hover:opacity-70"
@@ -75,8 +101,6 @@ export default async function UpcomingPage() {
                         >
                           {event.title}
                         </span>
-
-                        {/* Meta line — smoke, readable secondary */}
                         <div className="flex items-center gap-3">
                           <span className="font-sans text-[10px] tracking-[0.22em] text-smoke uppercase">
                             {SPORT_LABELS[event.sport] ?? event.sport}
@@ -91,8 +115,6 @@ export default async function UpcomingPage() {
                           )}
                         </div>
                       </div>
-
-                      {/* Arrow — paper on group hover */}
                       <span className="shrink-0 font-sans text-sm text-smoke transition-colors duration-300 group-hover:text-paper">
                         →
                       </span>

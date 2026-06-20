@@ -5,7 +5,7 @@ export const contentType = 'image/png'
 
 export default async function Icon() {
   const font = await fetch(
-    'https://fonts.gstatic.com/s/fraunces/v38/6NVf8FyLNQOQZAnv9ZwNjucMHVn85Ni7emAe9lKqZTnbB-gzTK0K1ChJdt9vIVYX9G37lvd9sPEKsxx664UJf1hLTf7W.ttf'
+    'https://fonts.gstatic.com/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jDOjw.ttf'
   ).then((res) => res.arrayBuffer())
 
   return new ImageResponse(
@@ -22,7 +22,7 @@ export default async function Icon() {
       >
         <span
           style={{
-            fontFamily: 'Fraunces',
+            fontFamily: 'Cormorant Garamond',
             fontStyle: 'italic',
             fontSize: 24,
             color: '#F2EDE3',
@@ -36,7 +36,7 @@ export default async function Icon() {
     ),
     {
       ...size,
-      fonts: [{ name: 'Fraunces', data: font, style: 'italic', weight: 400 }],
+      fonts: [{ name: 'Cormorant Garamond', data: font, style: 'italic', weight: 400 }],
     }
   )
 }

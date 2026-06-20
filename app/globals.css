@@ -11,17 +11,17 @@
   --color-mist:  rgba(255, 255, 255, 0.3);   /* Nur für feinste Hints        */
 
   /* ── Schriften ───────────────────────────────────────────────────────────── */
-  --font-sans:  var(--font-inter);
+  --font-sans:  var(--font-sans);
   --font-serif: var(--font-serif);
-  --font-hand:  var(--font-caveat);
+  --font-hand:  var(--font-hand);
 
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* opsz-Achse Utilities (Fraunces Variable Font) */
-.opsz-display  { font-variation-settings: 'opsz' 96; }
-.opsz-heading  { font-variation-settings: 'opsz' 36; }
-.opsz-body     { font-variation-settings: 'opsz' 20; }
+/* Cormorant Garamond — optische Größen via Gewicht */
+.opsz-display  { font-weight: 300; letter-spacing: 0.04em; }
+.opsz-heading  { font-weight: 400; }
+.opsz-body     { font-weight: 400; }
 
 html,
 body {

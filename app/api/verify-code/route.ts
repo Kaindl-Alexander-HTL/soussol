@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
   }
 
   const signed = signCookie(code)
-  const expires = new Date(setting.valid_until)
+  const expires = new Date()
+  expires.setFullYear(expires.getFullYear() + 1)
 
   const response = NextResponse.json({ ok: true })
   response.cookies.set('sous_pass', signed, {

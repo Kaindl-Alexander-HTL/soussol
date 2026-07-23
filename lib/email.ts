@@ -44,3 +44,77 @@ export async function sendRegistrationNotification(params: RegistrationEmailPara
     text,
   })
 }
+
+type TicketConfirmationParams = {
+  buyerName: string
+  buyerEmail: string
+  eventTitle: string
+  startsAt: string
+  ticketTypeName: string
+  quantity: number
+  totalAmountCents: number
+}
+
+export async function sendTicketConfirmation(params: TicketConfirmationParams) {
+  const { buyerName, buyerEmail, eventTitle, startsAt, ticketTypeName, quantity, totalAmountCents } = params
+
+  const dateStr = format(new Date(startsAt), 'dd. MMMM yyyy, HH:mm', { locale: de })
+  const amountStr = (totalAmountCents / 100).toFixed(2).replace('.', ',')
+
+  const text = [
+    `Hallo ${buyerName},`,
+    '',
+    `dein Ticket für ${eventTitle} ist bestätigt.`,
+    '',
+    `Ticket:  ${ticketTypeName}`,
+    `Menge:   ${quantity}`,
+    `Betrag:  ${amountStr} €`,
+    `Datum:   ${dateStr}`,
+    '',
+    'Bis dann.',
+  ].join('\n')
+
+  await resend.emails.send({
+    from: 'SOUS SOL <noreply@soussol-archive.com>',
+    to: buyerEmail,
+    subject: `Ticket bestätigt — ${eventTitle}`,
+    text,
+  })
+}
+
+type TicketSaleNotificationParams = {
+  buyerName: string
+  buyerEmail: string
+  eventTitle: string
+  ticketTypeName: string
+  quantity: number
+  totalAmountCents: number
+  overbooked: boolean
+}
+
+export async function sendTicketSaleNotification(params: TicketSaleNotificationParams) {
+  const { buyerName, buyerEmail, eventTitle, ticketTypeName, quantity, totalAmountCents, overbooked } = params
+
+  const amountStr = (totalAmountCents / 100).toFixed(2).replace('.', ',')
+  const subject = overbooked
+    ? `⚠️ ÜBERBUCHT — ${buyerName} — ${eventTitle}`
+    : `Neuer Ticket-Verkauf: ${buyerName} — ${eventTitle}`
+
+  const lines = [
+    overbooked ? '⚠️ ÜBERBUCHT — MANUELL PRÜFEN' : 'NEUER TICKET-VERKAUF',
+    '',
+    `Käufer:  ${buyerName}`,
+    `E-Mail:  ${buyerEmail}`,
+    `Event:   ${eventTitle}`,
+    `Ticket:  ${ticketTypeName}`,
+    `Menge:   ${quantity}`,
+    `Betrag:  ${amountStr} €`,
+  ]
+
+  await resend.emails.send({
+    from: 'SOUS SOL <noreply@soussol-archive.com>',
+    to: process.env.ADMIN_EMAIL!,
+    subject,
+    text: lines.join('\n'),
+  })
+}

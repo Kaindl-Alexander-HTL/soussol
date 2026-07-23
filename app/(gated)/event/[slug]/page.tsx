@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { RegistrationForm } from '@/components/RegistrationForm'
+import { TicketPurchaseForm, type TicketTypeWithAvailability } from '@/components/TicketPurchaseForm'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 
@@ -26,10 +28,13 @@ export async function generateMetadata({
 
 export default async function EventPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ ticket?: string }>
 }) {
   const { slug } = await params
+  const { ticket: ticketStatus } = await searchParams
   const supabase = await createClient()
 
   const { data: event } = await supabase
@@ -40,6 +45,35 @@ export default async function EventPage({
     .single()
 
   if (!event) notFound()
+
+  let ticketTypesWithAvailability: TicketTypeWithAvailability[] = []
+  if (event.ticketing_enabled) {
+    const { data: ticketTypes } = await supabase
+      .from('ticket_types')
+      .select('id, name, price_cents, capacity_per_ticket, max_tickets')
+      .eq('event_id', event.id)
+      .eq('is_active', true)
+
+    const { data: paidOrders } = await supabaseAdmin
+      .from('ticket_orders')
+      .select('ticket_type_id, quantity')
+      .eq('event_id', event.id)
+      .eq('status', 'paid')
+
+    ticketTypesWithAvailability = (ticketTypes ?? []).map((t) => {
+      const soldSpots = (paidOrders ?? [])
+        .filter((o) => o.ticket_type_id === t.id)
+        .reduce((sum, o) => sum + o.quantity * t.capacity_per_ticket, 0)
+
+      return {
+        id: t.id,
+        name: t.name,
+        price_cents: t.price_cents,
+        capacity_per_ticket: t.capacity_per_ticket,
+        remaining: t.max_tickets !== null ? Math.max(0, t.max_tickets - soldSpots) : null,
+      }
+    })
+  }
 
   const registrationOpen = event.registration_enabled
 
@@ -102,8 +136,21 @@ export default async function EventPage({
         </p>
       )}
 
-      {/* Registration */}
-      {registrationOpen ? (
+      {/* Ticket purchase / Success-Cancel banner */}
+      {event.ticketing_enabled && ticketStatus === 'success' && (
+        <p className="mb-8 border-t border-white/8 pt-8 font-sans text-sm text-spark">
+          Zahlung erfolgreich — Bestätigung kommt per Mail.
+        </p>
+      )}
+      {event.ticketing_enabled && ticketStatus === 'cancelled' && (
+        <p className="mb-8 border-t border-white/8 pt-8 font-sans text-sm text-mist">
+          Zahlung abgebrochen.
+        </p>
+      )}
+
+      {event.ticketing_enabled ? (
+        <TicketPurchaseForm eventId={event.id} ticketTypes={ticketTypesWithAvailability} />
+      ) : registrationOpen ? (
         <RegistrationForm eventId={event.id} />
       ) : (
         <p className="border-t border-white/8 pt-10 font-sans text-sm text-mist">

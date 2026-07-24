@@ -16,6 +16,7 @@ export type EventFormValues = {
   description: string
   max_participants: string
   registration_enabled: boolean
+  external_signup_url: string
   status: Status
 }
 
@@ -28,6 +29,7 @@ const defaultValues: EventFormValues = {
   description: '',
   max_participants: '',
   registration_enabled: true,
+  external_signup_url: '',
   status: 'upcoming',
 }
 
@@ -90,6 +92,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
       description: values.description || null,
       max_participants: values.max_participants ? parseInt(values.max_participants) : null,
       registration_enabled: values.registration_enabled,
+      external_signup_url: values.external_signup_url.trim() || null,
       status: values.status,
     }
 
@@ -207,6 +210,17 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
           onChange={(e) => set('max_participants', e.target.value)}
           className={inputClass}
           placeholder="leer = unbegrenzt"
+        />
+      </Field>
+
+      {/* External signup URL (z.B. Turnier über Partner) */}
+      <Field label="Externe Anmeldung (URL)">
+        <input
+          type="url"
+          value={values.external_signup_url}
+          onChange={(e) => set('external_signup_url', e.target.value)}
+          className={inputClass}
+          placeholder="leer = interne Anmeldung. Sonst: https://…"
         />
       </Field>
 

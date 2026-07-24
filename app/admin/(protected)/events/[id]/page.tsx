@@ -70,6 +70,7 @@ export default async function EventEditPage({
           description: event.description ?? '',
           max_participants: event.max_participants?.toString() ?? '',
           registration_enabled: event.registration_enabled,
+          external_signup_url: event.external_signup_url ?? '',
           status: event.status,
         }}
       />

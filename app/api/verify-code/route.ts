@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { signCookie } from '@/lib/access-cookie'
 
 const schema = z.object({
-  code: z.string().min(1).max(64),
+  token: z.string().min(1).max(64),
 })
 
 export async function POST(request: NextRequest) {
@@ -14,25 +14,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false }, { status: 400 })
   }
 
-  const { code } = parsed.data
+  const { token } = parsed.data
 
-  const { data, error } = await supabaseAdmin
-    .from('settings')
-    .select('value')
-    .eq('key', 'access_code')
+  const { data: member } = await supabaseAdmin
+    .from('members')
+    .select('id, is_active')
+    .eq('access_token', token)
     .single()
 
-  if (error || !data) {
-    return NextResponse.json({ ok: false }, { status: 500 })
-  }
-
-  const setting = data.value as { code: string; valid_until: string }
-
-  if (code !== setting.code) {
+  if (!member || !member.is_active) {
     return NextResponse.json({ ok: false }, { status: 401 })
   }
 
-  const signed = signCookie(code)
+  const signed = signCookie(member.id)
   const expires = new Date()
   expires.setFullYear(expires.getFullYear() + 1)
 

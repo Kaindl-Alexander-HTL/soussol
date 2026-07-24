@@ -30,7 +30,7 @@ export function CodeGateForm({ next }: { next: string }) {
       const res = await fetch('/api/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code.trim() }),
+        body: JSON.stringify({ token: code.trim() }),
       })
 
       if (res.ok) {
@@ -66,7 +66,7 @@ export function CodeGateForm({ next }: { next: string }) {
           spellCheck={false}
           disabled={loading}
           className="w-44 border-b border-white/15 bg-transparent pb-2 text-center font-serif italic text-2xl tracking-widest text-spark placeholder-white/25 outline-none transition-all duration-500 focus:border-white/35 disabled:opacity-40 sm:w-56 sm:text-3xl"
-          aria-label="Zugangscode eingeben"
+          aria-label="Zugangscode oder Token eingeben"
         />
         <button
           onClick={submit}

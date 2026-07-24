@@ -15,3 +15,15 @@ export type Memento = {
   z_index: number
   is_visible: boolean
 }
+
+export type MemberRole = 'surrounding' | 'outer' | 'inner'
+
+export type Member = {
+  id: string
+  name: string
+  email: string
+  role: MemberRole
+  access_token: string
+  is_active: boolean
+  created_at: string
+}

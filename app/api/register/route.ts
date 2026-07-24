@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { cookies } from 'next/headers'
-import { verifyCookie } from '@/lib/access-cookie'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendRegistrationNotification } from '@/lib/email'
+import { getCurrentMember } from '@/lib/member'
 
 const schema = z.object({
   event_id: z.string().uuid(),
@@ -19,18 +18,7 @@ const schema = z.object({
 )
 
 async function isGated(): Promise<boolean> {
-  const cookieStore = await cookies()
-  const cookieValue = cookieStore.get('sous_pass')?.value
-  if (!cookieValue) return false
-  const { valid, code } = verifyCookie(cookieValue)
-  if (!valid) return false
-  const { data } = await supabaseAdmin
-    .from('settings')
-    .select('value')
-    .eq('key', 'access_code')
-    .single()
-  const current = (data?.value as { code: string } | null)?.code
-  return code === current
+  return (await getCurrentMember()) !== null
 }
 
 export async function POST(request: NextRequest) {

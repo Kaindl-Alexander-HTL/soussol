@@ -27,3 +27,14 @@ export type Member = {
   is_active: boolean
   created_at: string
 }
+
+export type ApplicationStatus = 'pending' | 'approved' | 'rejected'
+
+export type Application = {
+  id: string
+  name: string
+  email: string
+  message: string | null
+  status: ApplicationStatus
+  created_at: string
+}

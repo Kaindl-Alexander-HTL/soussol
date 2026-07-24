@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { LongPressCircle } from '@/components/LongPressCircle'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -20,6 +21,8 @@ export function LandingPage({
 
   return (
     <main className="relative flex min-h-screen flex-col bg-ink px-6 pb-10 pt-20 sm:px-12 md:px-20 lg:px-32">
+      <LongPressCircle href="/apply" />
+
       {/* Wordmark — first to appear */}
       <motion.header
         className="mb-20 sm:mb-32"
@@ -56,14 +59,26 @@ export function LandingPage({
 
       {/* Enter CTA — last content to appear */}
       <motion.div
-        className="mt-20 sm:mt-28"
+        className="mt-20 flex flex-wrap items-center gap-x-10 gap-y-4 sm:mt-28"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: enterDelay, ease }}
       >
         <Link
-          href="/enter"
+          href="/upcoming"
           className="group inline-flex items-center gap-3 font-sans text-[11px] font-light tracking-[0.35em] text-ash uppercase transition-colors duration-500 hover:text-spark"
+        >
+          <span>Events</span>
+          <span
+            className="inline-block transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5"
+            aria-hidden="true"
+          >
+            →
+          </span>
+        </Link>
+        <Link
+          href="/enter"
+          className="group inline-flex items-center gap-3 font-sans text-[11px] font-light tracking-[0.35em] text-smoke uppercase transition-colors duration-500 hover:text-spark"
         >
           <span>Enter</span>
           <span

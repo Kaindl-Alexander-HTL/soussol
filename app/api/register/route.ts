@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendRegistrationNotification } from '@/lib/email'
-import { getCurrentMember } from '@/lib/member'
 
 const schema = z.object({
   event_id: z.string().uuid(),
@@ -17,15 +16,8 @@ const schema = z.object({
   { message: 'Mindestens eine Kontaktmöglichkeit angeben.' }
 )
 
-async function isGated(): Promise<boolean> {
-  return (await getCurrentMember()) !== null
-}
-
 export async function POST(request: NextRequest) {
-  if (!(await isGated())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
+  // Events sind öffentlich — die Anmeldung zu offenen Events ist bewusst nicht gated.
   const body = await request.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) {

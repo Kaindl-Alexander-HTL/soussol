@@ -44,3 +44,35 @@ export async function sendRegistrationNotification(params: RegistrationEmailPara
     text,
   })
 }
+
+type MemberInviteParams = {
+  name: string
+  email: string
+  accessToken: string
+}
+
+export async function sendMemberInvite(params: MemberInviteParams) {
+  const { name, email, accessToken } = params
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sous.club'
+  const link = `${siteUrl}/api/enter?token=${accessToken}`
+
+  const text = [
+    `Hallo ${name},`,
+    '',
+    'du bist dabei. Über diesen Link kommst du rein:',
+    link,
+    '',
+    'Falls der Link nicht funktioniert, kannst du diesen Code auf der Seite eingeben:',
+    accessToken,
+    '',
+    'Bis bald.',
+  ].join('\n')
+
+  await resend.emails.send({
+    from: 'SOUS SOL <noreply@soussol-archive.com>',
+    to: email,
+    subject: 'Willkommen bei SOUS SOL',
+    text,
+  })
+}

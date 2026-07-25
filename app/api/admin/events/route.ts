@@ -17,6 +17,7 @@ const createSchema = z.object({
   max_participants: z.number().int().positive().nullable().optional(),
   registration_enabled: z.boolean().default(true),
   external_signup_url: z.string().url().nullable().optional(),
+  ticketing_enabled: z.boolean().default(false),
   status: statusEnum.default('upcoming'),
 })
 

@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 const HOLD_MS = 1600 // Halten: Paper-Kreis wächst, bis die Seite voll ist
-const INK_MS = 650 // danach: Ink flutet über das Paper
-const PAUSE_MS = 350 // kurze Ruhe auf Ink, dann Navigation
+const INK_MS = 600 // danach: Ink flutet über das Paper
+const HOLD_ON_INK_MS = 1050 // Ink voll → „SOUS SOL" erscheint kurz → dann Navigation
 const RETRACT_MS = 520 // Zurückziehen bei frühem Loslassen
 
 type Phase = 'idle' | 'holding' | 'inking'
@@ -33,7 +33,7 @@ export function LongPressCircle({ href = '/apply' }: { href?: string }) {
     if (holdTimer.current) clearTimeout(holdTimer.current)
     holdTimer.current = setTimeout(() => {
       setPhase('inking')
-      navTimer.current = setTimeout(() => router.push(href), INK_MS + PAUSE_MS)
+      navTimer.current = setTimeout(() => router.push(href), INK_MS + HOLD_ON_INK_MS)
     }, HOLD_MS)
   }
 
@@ -136,6 +136,18 @@ export function LongPressCircle({ href = '/apply' }: { href?: string }) {
           transition: phase === 'inking' ? `clip-path ${INK_MS}ms cubic-bezier(0.83,0,0.17,1)` : 'none',
         }}
       />
+
+      {/* „SOUS SOL" — erscheint kurz, sobald das Ink die Seite voll bedeckt */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-[47] flex items-center justify-center"
+        style={{
+          opacity: phase === 'inking' ? 1 : 0,
+          transition: phase === 'inking' ? `opacity 500ms ease ${INK_MS - 150}ms` : 'opacity 200ms ease',
+        }}
+      >
+        <span className="font-serif text-[13px] tracking-[0.55em] text-paper uppercase">SOUS SOL</span>
+      </div>
 
       <style>{`
         @keyframes sous-breathe { 0%,100% { opacity: 0.5 } 50% { opacity: 1 } }

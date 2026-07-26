@@ -178,11 +178,12 @@ create policy "public read memento_connections" on memento_connections for selec
 drop policy if exists "public read active ticket_types" on ticket_types;
 create policy "public read active ticket_types" on ticket_types for select using (is_active = true);
 
--- Grants: die anon/authenticated-Rollen brauchen zusätzlich zum RLS-Policy die
--- Tabellen-Berechtigung. RLS gated die Zeilen weiterhin — sensible Tabellen
--- (members/applications/ticket_orders) haben keine Policy = anon sieht nichts,
--- trotz GRANT. Schreibzugriffe laufen ausschließlich über den Service-Role-Client.
-grant usage on schema public to anon, authenticated;
+-- Grants. service_role (supabaseAdmin) braucht VOLLE Rechte (Admin/Inserts);
+-- anon/authenticated nur SELECT (RLS gated die Zeilen zusätzlich — sensible
+-- Tabellen ohne Policy = anon sieht nichts, trotz GRANT).
+grant usage on schema public to anon, authenticated, service_role;
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;
 grant select on all tables in schema public to anon, authenticated;
 
 -- ── Storage-Bucket für Archiv-Bilder ────────────────────────────────────────

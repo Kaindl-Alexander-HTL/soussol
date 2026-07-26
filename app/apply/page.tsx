@@ -16,8 +16,8 @@ export default function ApplyPage() {
           Outer Circle
         </h1>
         <p className="mb-4 max-w-xl font-sans text-sm font-light leading-relaxed text-ash">
-          Der Outer Circle ist für Leute, die dabei sind — und die das Archiv sehen dürfen.
-          Erzähl uns kurz von dir. Tim entscheidet, wer reinkommt.
+          Der Outer Circle ist für Leute mit Drive. Mit Passion. Für die, die wirklich dabei sind.
+          Erzähl uns kurz von dir — Tim entscheidet, wer reinkommt.
         </p>
         <ApplicationForm />
       </div>

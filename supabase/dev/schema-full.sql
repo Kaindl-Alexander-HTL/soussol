@@ -178,6 +178,13 @@ create policy "public read memento_connections" on memento_connections for selec
 drop policy if exists "public read active ticket_types" on ticket_types;
 create policy "public read active ticket_types" on ticket_types for select using (is_active = true);
 
+-- Grants: die anon/authenticated-Rollen brauchen zusätzlich zum RLS-Policy die
+-- Tabellen-Berechtigung. RLS gated die Zeilen weiterhin — sensible Tabellen
+-- (members/applications/ticket_orders) haben keine Policy = anon sieht nichts,
+-- trotz GRANT. Schreibzugriffe laufen ausschließlich über den Service-Role-Client.
+grant usage on schema public to anon, authenticated;
+grant select on all tables in schema public to anon, authenticated;
+
 -- ── Storage-Bucket für Archiv-Bilder ────────────────────────────────────────
 insert into storage.buckets (id, name, public)
 values ('mementos', 'mementos', true)

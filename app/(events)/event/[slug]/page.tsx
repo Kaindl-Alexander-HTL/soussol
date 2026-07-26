@@ -165,9 +165,6 @@ export default async function EventPage({
               →
             </span>
           </a>
-          <p className="mt-4 font-sans text-[11px] text-mist">
-            Die Anmeldung läuft über unseren Partner.
-          </p>
         </div>
       ) : event.ticketing_enabled ? (
         <TicketPurchaseForm eventId={event.id} ticketTypes={ticketTypesWithAvailability} />

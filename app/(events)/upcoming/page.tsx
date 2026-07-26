@@ -18,7 +18,7 @@ export default async function UpcomingPage() {
 
   const { data: events } = await supabase
     .from('events')
-    .select('id, slug, title, sport, starts_at, meeting_point, registration_enabled')
+    .select('id, slug, title, sport, starts_at, meeting_point, description, registration_enabled')
     .eq('status', 'upcoming')
     .order('starts_at', { ascending: true })
 
@@ -52,7 +52,9 @@ export default async function UpcomingPage() {
 
               {/* Event list */}
               <div className="flex flex-col divide-y divide-white/[0.06]">
-                {monthEvents!.map((event) => (
+                {monthEvents!.map((event) => {
+                  const blurb = event.description?.split('\n\n')[0]?.trim() ?? ''
+                  return (
                   <Link
                     key={event.id}
                     href={`/event/${event.slug}`}
@@ -83,6 +85,11 @@ export default async function UpcomingPage() {
                             </>
                           )}
                         </div>
+                        {blurb && (
+                          <p className="mt-1 line-clamp-2 font-sans text-[12px] font-light leading-relaxed text-mist">
+                            {blurb}
+                          </p>
+                        )}
                       </div>
                       <span className="shrink-0 mt-1 font-sans text-sm text-smoke/60 transition-colors duration-300 group-hover:text-paper">
                         →
@@ -114,13 +121,19 @@ export default async function UpcomingPage() {
                             </>
                           )}
                         </div>
+                        {blurb && (
+                          <p className="mt-1 max-w-xl line-clamp-2 font-sans text-[13px] font-light leading-relaxed text-mist">
+                            {blurb}
+                          </p>
+                        )}
                       </div>
                       <span className="shrink-0 font-sans text-sm text-smoke transition-colors duration-300 group-hover:text-paper">
                         →
                       </span>
                     </div>
                   </Link>
-                ))}
+                  )
+                })}
               </div>
 
             </section>

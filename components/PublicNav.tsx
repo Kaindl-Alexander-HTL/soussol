@@ -25,12 +25,6 @@ export function PublicNav() {
         >
           Events
         </Link>
-        <Link
-          href="/enter"
-          className="font-sans text-[10px] tracking-[0.3em] text-smoke uppercase transition-colors hover:text-ash"
-        >
-          Enter
-        </Link>
       </nav>
     </header>
   )

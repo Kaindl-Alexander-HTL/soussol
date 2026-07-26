@@ -76,18 +76,6 @@ export function LandingPage({
             →
           </span>
         </Link>
-        <Link
-          href="/enter"
-          className="group inline-flex items-center gap-3 font-sans text-[11px] font-light tracking-[0.35em] text-smoke uppercase transition-colors duration-500 hover:text-spark"
-        >
-          <span>Enter</span>
-          <span
-            className="inline-block transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5"
-            aria-hidden="true"
-          >
-            →
-          </span>
-        </Link>
       </motion.div>
 
       {/* Footer — very last */}

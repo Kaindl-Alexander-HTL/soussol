@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendRegistrationNotification } from '@/lib/email'
 
 const schema = z.object({
-  event_id: z.string().uuid(),
+  event_id: z.guid(),
   guest_name: z.string().min(1).max(200),
   instagram_handle: z.string().max(100).transform((v) => v.replace(/^@/, '')).optional(),
   strava_handle: z.string().max(100).optional(),

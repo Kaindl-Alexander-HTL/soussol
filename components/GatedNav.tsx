@@ -1,16 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { MemberMenu } from '@/components/MemberMenu'
 
-export function GatedNav() {
+export function GatedNav({ memberName }: { memberName: string }) {
   const pathname = usePathname()
-  const router = useRouter()
 
-  async function leaveSession() {
-    await fetch('/api/leave', { method: 'POST' })
-    router.push('/')
-  }
 
   const isArchive  = pathname.startsWith('/archive') || pathname.startsWith('/galerie')
   const isUpcoming = pathname.startsWith('/upcoming') || pathname.startsWith('/event')
@@ -26,31 +22,30 @@ export function GatedNav() {
           SOUS SOL
         </Link>
 
-        {/* Desktop links — hidden on mobile */}
-        <nav className="hidden sm:flex items-center gap-8">
-          <Link
-            href="/archive"
-            className={`font-sans text-[10px] tracking-[0.3em] uppercase transition-colors ${
-              isArchive ? 'text-paper' : 'text-smoke hover:text-ash'
-            }`}
-          >
-            Archive
-          </Link>
-          <Link
-            href="/upcoming"
-            className={`font-sans text-[10px] tracking-[0.3em] uppercase transition-colors ${
-              isUpcoming ? 'text-paper' : 'text-smoke hover:text-ash'
-            }`}
-          >
-            Upcoming
-          </Link>
-          <button
-            onClick={leaveSession}
-            className="font-sans text-[10px] tracking-[0.3em] text-white/20 uppercase transition-colors hover:text-white/50"
-          >
-            Leave
-          </button>
-        </nav>
+        <div className="flex items-center gap-5 sm:gap-8">
+          {/* Desktop links — hidden on mobile, dort übernimmt die Bottom-Nav */}
+          <nav className="hidden sm:flex items-center gap-8">
+            <Link
+              href="/archive"
+              className={`font-sans text-[10px] tracking-[0.3em] uppercase transition-colors ${
+                isArchive ? 'text-paper' : 'text-smoke hover:text-ash'
+              }`}
+            >
+              Archive
+            </Link>
+            <Link
+              href="/upcoming"
+              className={`font-sans text-[10px] tracking-[0.3em] uppercase transition-colors ${
+                isUpcoming ? 'text-paper' : 'text-smoke hover:text-ash'
+              }`}
+            >
+              Upcoming
+            </Link>
+          </nav>
+
+          {/* Wer ist eingeloggt — Name und Abmelden liegen im Dropdown */}
+          <MemberMenu name={memberName} />
+        </div>
       </header>
 
       {/* ── Mobile Bottom Nav ──────────────────────────────────────────────── */}
@@ -85,17 +80,6 @@ export function GatedNav() {
           <span className="font-sans text-[8px] tracking-[0.2em] uppercase">Upcoming</span>
         </Link>
 
-        <button
-          onClick={leaveSession}
-          className="flex flex-1 flex-col items-center gap-1 py-4 text-white/20 transition-colors active:text-white/50"
-        >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M7 3H3a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-            <path d="M12 13l4-4-4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="16" y1="9" x2="7" y2="9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-          </svg>
-          <span className="font-sans text-[8px] tracking-[0.2em] uppercase">Leave</span>
-        </button>
       </nav>
     </>
   )

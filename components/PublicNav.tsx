@@ -2,9 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { MemberMenu } from '@/components/MemberMenu'
 
-export function PublicNav() {
+export function PublicNav({
+  isMember = false,
+  memberName = '',
+}: {
+  isMember?: boolean
+  memberName?: string
+}) {
   const pathname = usePathname()
+
+
   const isEvents = pathname.startsWith('/upcoming') || pathname.startsWith('/event')
 
   return (
@@ -16,7 +25,7 @@ export function PublicNav() {
         SOUS SOL
       </Link>
 
-      <nav className="flex items-center gap-8">
+      <nav className="flex items-center gap-6 sm:gap-8">
         <Link
           href="/upcoming"
           className={`font-sans text-[10px] tracking-[0.3em] uppercase transition-colors ${
@@ -25,6 +34,20 @@ export function PublicNav() {
         >
           Events
         </Link>
+
+        {/* Mitglieder kommen von den öffentlichen Seiten zurück ins Archiv und
+            sehen, als wer sie unterwegs sind. Gäste sehen den Weg hinein. */}
+        {isMember ? (
+          <>
+            <Link
+              href="/archive"
+              className="font-sans text-[10px] tracking-[0.3em] text-spark uppercase transition-opacity hover:opacity-70"
+            >
+              Archive
+            </Link>
+            <MemberMenu name={memberName} />
+          </>
+        ) : null}
       </nav>
     </header>
   )

@@ -1,5 +1,6 @@
 'use client'
 
+import { errorMessage } from '@/lib/form-error'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { TicketType } from '@/lib/types'
@@ -70,7 +71,7 @@ export function TicketTypesManager({ eventId, initial }: { eventId: string; init
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      setError(json.error ?? 'Fehler beim Speichern.')
+      setError(errorMessage(json.error, 'Fehler beim Speichern.'))
       setLoading(false)
       return
     }

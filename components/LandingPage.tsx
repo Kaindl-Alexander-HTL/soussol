@@ -9,9 +9,11 @@ const ease = [0.22, 1, 0.36, 1] as const
 export function LandingPage({
   paragraphs,
   instagramUrl,
+  footerCredit,
 }: {
   paragraphs: string[]
   instagramUrl: string
+  footerCredit: string
 }) {
   // Stagger timing
   const paraDelay = (i: number) => 0.25 + i * 0.12
@@ -110,7 +112,7 @@ export function LandingPage({
           )}
         </nav>
         <span className="ml-auto font-sans text-[10px] tracking-[0.2em] text-white/15 uppercase">
-          Made by Studioaix
+          {footerCredit}
         </span>
       </motion.footer>
     </main>

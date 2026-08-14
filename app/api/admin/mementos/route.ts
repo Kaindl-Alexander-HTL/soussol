@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 const kindEnum = z.enum(['polaroid', 'note', 'stamp', 'scan', 'strava', 'other'])
@@ -11,20 +11,18 @@ const createSchema = z.object({
   caption: z.string().max(500).nullable().optional(),
   body: z.string().nullable().optional(),
   date_label: z.string().max(100).nullable().optional(),
-  event_id: z.string().uuid().nullable().optional(),
+  event_id: z.guid().nullable().optional(),
   is_visible: z.boolean().default(true),
 })
 
 const updateSchema = createSchema.partial().extend({
-  id: z.string().uuid(),
+  id: z.guid(),
 })
 
-const deleteSchema = z.object({ id: z.string().uuid() })
+const deleteSchema = z.object({ id: z.guid() })
 
 async function requireAdmin() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  return getAdminUser()
 }
 
 export async function POST(request: NextRequest) {

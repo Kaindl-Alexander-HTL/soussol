@@ -5,8 +5,8 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { stripe } from '@/lib/stripe'
 
 const schema = z.object({
-  event_id: z.string().uuid(),
-  ticket_type_id: z.string().uuid(),
+  event_id: z.guid(),
+  ticket_type_id: z.guid(),
   quantity: z.number().int().min(1).max(20),
   buyer_name: z.string().min(1).max(200),
   buyer_email: z.string().email().max(200),

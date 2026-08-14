@@ -1,12 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getSettings, text } from '@/lib/settings'
 
 export const metadata: Metadata = {
   title: '404',
   robots: { index: false, follow: false },
 }
 
-export default function NotFound() {
+export default async function NotFound() {
+  const settings = await getSettings(['not_found_text'])
+  const notFoundText = text(settings, 'not_found_text', 'Nicht gefunden')
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-ink px-6">
       <span
@@ -17,7 +21,7 @@ export default function NotFound() {
         404
       </span>
       <p className="mt-2 font-sans text-[11px] tracking-[0.35em] text-mist uppercase">
-        Nicht gefunden
+        {notFoundText}
       </p>
       <Link
         href="/"

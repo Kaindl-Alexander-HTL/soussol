@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 const createSchema = z.object({
-  memento_id: z.string().uuid(),
+  memento_id: z.guid(),
   url: z.string().url(),
   caption: z.string().max(500).nullable().optional(),
   sort_order: z.number().int().default(0),
 })
 
-const deleteSchema = z.object({ id: z.string().uuid() })
+const deleteSchema = z.object({ id: z.guid() })
 
 async function requireAdmin() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  return getAdminUser()
 }
 
 export async function POST(request: NextRequest) {

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { getEventAccess } from '@/lib/events'
 import { RegistrationForm } from '@/components/RegistrationForm'
 import { TicketPurchaseForm, type TicketTypeWithAvailability } from '@/components/TicketPurchaseForm'
 import { format } from 'date-fns'
@@ -21,8 +22,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createClient()
-  const { data } = await supabase.from('events').select('title').eq('slug', slug).single()
+  const { db, visibilities } = await getEventAccess()
+  const { data } = await db
+    .from('events')
+    .select('title')
+    .eq('slug', slug)
+    .in('visibility', visibilities)
+    .single()
   return { title: data ? `${data.title} — SOUS SOL` : 'SOUS SOL' }
 }
 
@@ -37,11 +43,15 @@ export default async function EventPage({
   const { ticket: ticketStatus } = await searchParams
   const supabase = await createClient()
 
-  const { data: event } = await supabase
+  // Outer-Circle-Events sind auch über die direkte URL nicht erreichbar:
+  // Gäste bekommen 404 statt eines Hinweises, dass es das Event gibt.
+  const { db, visibilities } = await getEventAccess()
+  const { data: event } = await db
     .from('events')
     .select('*')
     .eq('slug', slug)
     .eq('status', 'upcoming')
+    .in('visibility', visibilities)
     .single()
 
   if (!event) notFound()

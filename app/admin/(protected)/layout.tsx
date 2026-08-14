@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAdminUser } from '@/lib/admin'
 import { AdminNav } from '@/components/admin/AdminNav'
 
 export default async function ProtectedAdminLayout({
@@ -7,17 +7,15 @@ export default async function ProtectedAdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Prüft nicht nur "eingeloggt", sondern auch "in ADMIN_EMAILS".
+  const user = await getAdminUser()
 
   if (!user) redirect('/admin/login')
 
   return (
     <div className="min-h-screen bg-ink">
       <AdminNav />
-      <div className="px-6 py-8 sm:px-10">{children}</div>
+      <div className="px-8 py-14 sm:px-14 lg:px-20 lg:py-20">{children}</div>
     </div>
   )
 }

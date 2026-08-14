@@ -113,6 +113,7 @@ export default async function EventEditPage({
           external_signup_url: event.external_signup_url ?? '',
           ticketing_enabled: event.ticketing_enabled,
           status: event.status,
+          visibility: event.visibility ?? 'public',
         }}
       />
 

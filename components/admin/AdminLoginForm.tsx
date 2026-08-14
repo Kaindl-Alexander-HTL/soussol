@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/browser'
 
 export function AdminLoginForm() {
@@ -79,6 +80,15 @@ export function AdminLoginForm() {
           >
             {loading ? '...' : 'Einloggen →'}
           </button>
+
+          <div className="mt-6 border-t border-white/[0.06] pt-5">
+            <Link
+              href="/admin/forgot-password"
+              className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
+            >
+              Passwort vergessen?
+            </Link>
+          </div>
         </form>
       </div>
     </main>

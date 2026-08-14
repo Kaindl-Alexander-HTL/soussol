@@ -18,11 +18,14 @@ export async function POST(request: NextRequest) {
 
   const { data: member } = await supabaseAdmin
     .from('members')
-    .select('id, is_active')
+    .select('id, is_active, role')
     .eq('access_token', token)
     .single()
 
-  if (!member || !member.is_active) {
+  // Gleiche Prüfung wie im Link-Weg (/api/enter): nur outer/inner bekommen ein
+  // Cookie. Ohne die Rollenprüfung käme ein 'surrounding'-Token hier durch,
+  // während der Link ihn abweist.
+  if (!member || !member.is_active || (member.role !== 'outer' && member.role !== 'inner')) {
     return NextResponse.json({ ok: false }, { status: 401 })
   }
 

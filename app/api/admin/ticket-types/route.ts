@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 const createSchema = z.object({
-  event_id: z.string().uuid(),
+  event_id: z.guid(),
   name: z.string().min(1).max(255),
   price_cents: z.number().int().min(0),
   capacity_per_ticket: z.number().int().min(1).default(1),
@@ -12,7 +12,7 @@ const createSchema = z.object({
 })
 
 const updateSchema = z.object({
-  id: z.string().uuid(),
+  id: z.guid(),
   name: z.string().min(1).max(255).optional(),
   price_cents: z.number().int().min(0).optional(),
   capacity_per_ticket: z.number().int().min(1).optional(),
@@ -21,11 +21,7 @@ const updateSchema = z.object({
 })
 
 async function requireAdmin() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  return user
+  return getAdminUser()
 }
 
 export async function POST(request: NextRequest) {

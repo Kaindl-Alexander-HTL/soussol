@@ -1,5 +1,6 @@
 'use client'
 
+import { errorMessage } from '@/lib/form-error'
 import { useState } from 'react'
 
 type State = 'idle' | 'loading' | 'success' | 'waitlist' | 'error'
@@ -39,7 +40,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
     const json = await res.json().catch(() => ({}))
 
     if (!res.ok) {
-      setErrorMsg(json.error ?? 'Etwas ist schiefgelaufen.')
+      setErrorMsg(errorMessage(json.error, 'Etwas ist schiefgelaufen.'))
       setState('error')
       return
     }

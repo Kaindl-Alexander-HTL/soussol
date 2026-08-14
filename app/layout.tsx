@@ -1,30 +1,10 @@
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, DM_Mono, Caveat } from 'next/font/google'
+import { fontVariables, resolveFontTheme } from '@/lib/fonts'
+import { getSettings } from '@/lib/settings'
 import { GrainOverlay } from '@/components/GrainOverlay'
 import { PageTransition } from '@/components/PageTransition'
+import { RecoveryRedirect } from '@/components/RecoveryRedirect'
 import './globals.css'
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  variable: '--font-serif',
-  weight: ['300', '400', '500', '600'],
-  display: 'swap',
-})
-
-const dmMono = DM_Mono({
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  variable: '--font-sans',
-  weight: ['300', '400', '500'],
-  display: 'swap',
-})
-
-const caveat = Caveat({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-hand',
-})
 
 export const viewport: Viewport = {
   themeColor: '#0A0A0A',
@@ -60,15 +40,28 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Welches Font-Paar aktiv ist, entscheidet Tim im Admin. Alle Paare liegen als
+  // CSS-Variablen an <html>; hier wird nur umgehängt, worauf --font-serif und
+  // --font-sans zeigen — die Tailwind-Klassen im ganzen Projekt bleiben gleich.
+  const settings = await getSettings(['font_theme'])
+  const fontTheme = resolveFontTheme(settings.font_theme)
+
   return (
     <html
       lang="de"
-      className={`${cormorant.variable} ${dmMono.variable} ${caveat.variable} h-full`}
+      className={`${fontVariables} h-full`}
+      style={
+        {
+          '--font-serif': fontTheme.serif,
+          '--font-sans': fontTheme.sans,
+        } as React.CSSProperties
+      }
     >
       <body className="min-h-full font-sans font-light text-ash antialiased">
+        <RecoveryRedirect />
         <GrainOverlay />
         <PageTransition>{children}</PageTransition>
       </body>

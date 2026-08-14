@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getEventAccess } from '@/lib/events'
 import { format, isSameMonth } from 'date-fns'
 import { de } from 'date-fns/locale'
 
@@ -14,12 +14,13 @@ const SPORT_LABELS: Record<string, string> = {
 }
 
 export default async function UpcomingPage() {
-  const supabase = await createClient()
+  const { db, visibilities } = await getEventAccess()
 
-  const { data: events } = await supabase
+  const { data: events } = await db
     .from('events')
-    .select('id, slug, title, sport, starts_at, meeting_point, description, registration_enabled')
+    .select('id, slug, title, sport, starts_at, meeting_point, description, registration_enabled, visibility')
     .eq('status', 'upcoming')
+    .in('visibility', visibilities)
     .order('starts_at', { ascending: true })
 
   const groups: { month: Date; events: typeof events }[] = []
@@ -84,6 +85,11 @@ export default async function UpcomingPage() {
                               </span>
                             </>
                           )}
+                          {event.visibility === 'outer' && (
+                            <span className="border border-spark/40 px-1.5 py-0.5 font-sans text-[8px] tracking-[0.2em] text-spark uppercase">
+                              Outer Circle
+                            </span>
+                          )}
                         </div>
                         {blurb && (
                           <p className="mt-1 line-clamp-2 font-sans text-[12px] font-light leading-relaxed text-mist">
@@ -119,6 +125,11 @@ export default async function UpcomingPage() {
                                 {event.meeting_point}
                               </span>
                             </>
+                          )}
+                          {event.visibility === 'outer' && (
+                            <span className="border border-spark/40 px-1.5 py-0.5 font-sans text-[9px] tracking-[0.2em] text-spark uppercase">
+                              Outer Circle
+                            </span>
                           )}
                         </div>
                         {blurb && (

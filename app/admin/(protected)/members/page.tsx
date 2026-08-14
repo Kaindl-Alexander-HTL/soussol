@@ -9,21 +9,25 @@ export const metadata: Metadata = {
 }
 
 export default async function MembersPage() {
+  // Beide Listen neueste zuerst. Der Name als zweites Kriterium hält die
+  // Reihenfolge stabil — die Seed-Mitglieder wurden in einem einzigen Insert
+  // angelegt und haben deshalb exakt denselben Zeitstempel.
   const [{ data: members }, { data: applications }] = await Promise.all([
     supabaseAdmin
       .from('members')
       .select('*')
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false })
+      .order('name', { ascending: true }),
     supabaseAdmin
       .from('applications')
       .select('*')
       .eq('status', 'pending')
-      .order('created_at', { ascending: true }),
+      .order('created_at', { ascending: false }),
   ])
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-10 font-serif italic text-3xl text-paper">Mitglieder</h1>
+      <h1 className="mb-16 font-serif italic text-4xl text-paper">Mitglieder</h1>
       <MembersManager
         initialMembers={(members ?? []) as Member[]}
         initialApplications={(applications ?? []) as Application[]}

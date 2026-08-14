@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { toSlug } from '@/lib/slug'
 
 const sportEnum = z.enum(['running', 'cycling', 'volleyball', 'other'])
 const statusEnum = z.enum(['upcoming', 'past', 'cancelled'])
+const visibilityEnum = z.enum(['public', 'outer'])
 
 const createSchema = z.object({
   title: z.string().min(1).max(255),
@@ -19,18 +20,17 @@ const createSchema = z.object({
   external_signup_url: z.string().url().nullable().optional(),
   ticketing_enabled: z.boolean().default(false),
   status: statusEnum.default('upcoming'),
+  visibility: visibilityEnum.default('public'),
 })
 
 const updateSchema = createSchema.partial().extend({
-  id: z.string().uuid(),
+  id: z.guid(),
 })
 
-const deleteSchema = z.object({ id: z.string().uuid() })
+const deleteSchema = z.object({ id: z.guid() })
 
 async function requireAdmin() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  return getAdminUser()
 }
 
 export async function POST(request: NextRequest) {

@@ -44,7 +44,7 @@ on conflict (id) do update set
 insert into events (id, slug, title, sport, starts_at, meeting_point, description, registration_enabled, external_signup_url, ticketing_enabled, status)
 values ('33333333-3333-3333-3333-333333333333', 'volleyball-turnier', 'SOUS SOL Beach Turnier', 'volleyball',
         '2026-09-06 11:00:00+02', 'Beach Arena Linz', 'Das grosse Turnier. Anmeldung laeuft ueber unseren Partner.',
-        false, 'https://example.com/turnier-anmeldung', false, 'upcoming')
+        false, 'https://shop.good-karma.at/p/beach-volleyball-under-the-bridge-19-09/', false, 'upcoming')
 on conflict (id) do update set
   slug = excluded.slug, title = excluded.title, external_signup_url = excluded.external_signup_url, status = excluded.status;
 

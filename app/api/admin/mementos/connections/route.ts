@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 async function requireAdmin() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  return getAdminUser()
 }
 
 export async function POST(request: NextRequest) {
@@ -15,8 +13,8 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json().catch(() => null)
   const parsed = z.object({
-    from_memento_id: z.string().uuid(),
-    to_memento_id: z.string().uuid(),
+    from_memento_id: z.guid(),
+    to_memento_id: z.guid(),
   }).safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
 
@@ -38,7 +36,7 @@ export async function DELETE(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json().catch(() => null)
-  const parsed = z.object({ id: z.string().uuid() }).safeParse(body)
+  const parsed = z.object({ id: z.guid() }).safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
 
   const { error } = await supabaseAdmin

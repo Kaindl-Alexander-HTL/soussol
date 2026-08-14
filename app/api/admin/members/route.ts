@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { generateAccessToken } from '@/lib/member'
-import { sendMemberInvite } from '@/lib/email'
+import { sendMemberInvite, sendMemberAccessRenewed } from '@/lib/email'
 
 const roleEnum = z.enum(['surrounding', 'outer', 'inner'])
 
@@ -14,20 +14,16 @@ const createSchema = z.object({
 })
 
 const patchSchema = z.object({
-  id: z.string().uuid(),
+  id: z.guid(),
   name: z.string().min(1).max(200).optional(),
   email: z.string().email().max(200).optional(),
   role: roleEnum.optional(),
   is_active: z.boolean().optional(),
-  action: z.enum(['rotate', 'resend']).optional(),
+  action: z.enum(['renew', 'resend']).optional(),
 })
 
 async function requireAdmin() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  return user
+  return getAdminUser()
 }
 
 function hasArchiveRole(role: string): boolean {
@@ -59,7 +55,9 @@ export async function POST(request: NextRequest) {
   }
 
   if (hasArchiveRole(data.role)) {
-    sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch(() => {})
+    sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
+      console.error('[members] Invite-Mail (neues Mitglied) fehlgeschlagen:', e?.message ?? e)
+    )
   }
 
   return NextResponse.json({ ok: true }, { status: 201 })
@@ -75,8 +73,10 @@ export async function PATCH(request: NextRequest) {
 
   const { id, action, ...fields } = parsed.data
 
-  // Rotate: neuen Token erzeugen, speichern, Invite mit neuem Token senden.
-  if (action === 'rotate') {
+  // Zugang erneuern: neuen Token erzeugen und per Mail schicken. Der alte
+  // Link/Code wird dadurch ungültig — dafür gibt es eine eigene Mail, nicht
+  // die Willkommens-Mail.
+  if (action === 'renew') {
     const access_token = generateAccessToken()
     const { data, error } = await supabaseAdmin
       .from('members')
@@ -84,9 +84,11 @@ export async function PATCH(request: NextRequest) {
       .eq('id', id)
       .select('name, email, role, access_token')
       .single()
-    if (error || !data) return NextResponse.json({ error: 'Fehler beim Rotieren.' }, { status: 500 })
+    if (error || !data) return NextResponse.json({ error: 'Zugang konnte nicht erneuert werden.' }, { status: 500 })
     if (hasArchiveRole(data.role)) {
-      sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch(() => {})
+      sendMemberAccessRenewed({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
+        console.error('[members] Mail "Neuer Zugang" fehlgeschlagen:', e?.message ?? e)
+      )
     }
     return NextResponse.json({ ok: true })
   }
@@ -102,7 +104,9 @@ export async function PATCH(request: NextRequest) {
     if (!hasArchiveRole(data.role)) {
       return NextResponse.json({ error: 'Nur outer/inner erhalten Zugang.' }, { status: 409 })
     }
-    sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch(() => {})
+    sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
+      console.error('[members] Invite-Mail (erneut senden) fehlgeschlagen:', e?.message ?? e)
+    )
     return NextResponse.json({ ok: true })
   }
 

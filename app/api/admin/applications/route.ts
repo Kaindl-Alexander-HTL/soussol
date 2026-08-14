@@ -1,21 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { generateAccessToken } from '@/lib/member'
 import { sendMemberInvite } from '@/lib/email'
 
 const schema = z.object({
-  id: z.string().uuid(),
+  id: z.guid(),
   action: z.enum(['approve', 'reject']),
 })
 
 async function requireAdmin() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  return user
+  return getAdminUser()
 }
 
 export async function PATCH(request: NextRequest) {
@@ -85,7 +81,11 @@ export async function PATCH(request: NextRequest) {
   await supabaseAdmin.from('applications').update({ status: 'approved' }).eq('id', id)
 
   if (invite) {
-    sendMemberInvite(invite).catch(() => {})
+    // Fehler nicht verschlucken: sonst meldet das Admin-UI "angenommen",
+    // während die Einladung nie rausgeht (z.B. Absender-Domain nicht verifiziert).
+    sendMemberInvite(invite).catch((e) =>
+      console.error('[approve] Invite-Mail fehlgeschlagen:', e?.message ?? e)
+    )
   }
 
   return NextResponse.json({ ok: true })

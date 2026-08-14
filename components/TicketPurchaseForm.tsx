@@ -1,5 +1,6 @@
 'use client'
 
+import { errorMessage } from '@/lib/form-error'
 import { useState } from 'react'
 
 export type TicketTypeWithAvailability = {
@@ -49,7 +50,7 @@ export function TicketPurchaseForm({
     const json = await res.json().catch(() => ({}))
 
     if (!res.ok) {
-      setErrorMsg(json.error ?? 'Etwas ist schiefgelaufen.')
+      setErrorMsg(errorMessage(json.error, 'Etwas ist schiefgelaufen.'))
       setState('error')
       return
     }

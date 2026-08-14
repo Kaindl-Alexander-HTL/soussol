@@ -1,11 +1,9 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { SettingsPage } from '@/components/admin/SettingsPage'
+import { FONT_THEMES, DEFAULT_FONT_THEME } from '@/lib/fonts'
 
 export const metadata: Metadata = { title: 'Settings — SOUS SOL Admin' }
-
-// Fallback only — used when no access_code row exists yet
-const THIRTY_DAYS_MS = 30 * 86_400_000
 
 export default async function AdminSettingsPage() {
   const supabase = await createClient()
@@ -16,23 +14,34 @@ export default async function AdminSettingsPage() {
 
   const get = (key: string) => rows?.find((r) => r.key === key)?.value
 
-  const accessCode = (get('access_code') as { code: string; valid_until: string }) ?? {
-    code: '',
-    // eslint-disable-next-line react-hooks/purity
-    valid_until: new Date(Date.now() + THIRTY_DAYS_MS).toISOString(),
-  }
   const manifest = (get('manifest') as { content: string }) ?? { content: '' }
   const instagramUrl = (get('instagram_url') as string) ?? ''
   const stravaClubUrl = (get('strava_club_url') as string) ?? ''
   const contactEmail = (get('contact_email') as string) ?? ''
 
+  // Nur die Metadaten der Font-Paare ins Client-Bundle — lib/fonts.ts selbst
+  // lädt next/font und gehört in den Server-Graph.
+  const fontThemes = FONT_THEMES.map(({ id, label, note, serif, sans }) => ({
+    id,
+    label,
+    note,
+    serif,
+    sans,
+  }))
+  const fontTheme = (get('font_theme') as string) ?? DEFAULT_FONT_THEME.id
+
   return (
     <SettingsPage
-      accessCode={accessCode}
       manifest={manifest}
       instagramUrl={instagramUrl}
       stravaClubUrl={stravaClubUrl}
       contactEmail={contactEmail}
+      fontThemes={fontThemes}
+      fontTheme={fontTheme}
+      applyHeadline={(get('apply_headline') as string) ?? ''}
+      applyIntro={(get('apply_intro') as string) ?? ''}
+      notFoundText={(get('not_found_text') as string) ?? ''}
+      footerCredit={(get('footer_credit') as string) ?? ''}
     />
   )
 }

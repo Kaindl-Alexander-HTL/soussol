@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
 const schema = z.object({
   updates: z.array(
     z.object({
-      id: z.string().uuid(),
+      id: z.guid(),
       x: z.number().int(),
       y: z.number().int(),
       rotation: z.number(),
@@ -17,8 +17,7 @@ const schema = z.object({
 })
 
 export async function PATCH(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getAdminUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json().catch(() => null)

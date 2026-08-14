@@ -1,5 +1,6 @@
 'use client'
 
+import { errorMessage } from '@/lib/form-error'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
@@ -22,8 +23,17 @@ export function MembersManager({
   const router = useRouter()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [showFormer, setShowFormer] = useState(false)
+  const [showApplications, setShowApplications] = useState(true)
 
-  async function call(url: string, method: string, payload: object) {
+  const activeMembers = initialMembers.filter((m) => m.is_active)
+  const formerMembers = initialMembers.filter((m) => !m.is_active)
+
+  async function call(
+    url: string,
+    method: string,
+    payload: object
+  ): Promise<{ ok: boolean; error: string }> {
     setBusy(true)
     setError('')
     const res = await fetch(url, {
@@ -32,30 +42,52 @@ export function MembersManager({
       body: JSON.stringify(payload),
     })
     setBusy(false)
+
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      setError(typeof json.error === 'string' ? json.error : 'Fehler.')
-      return false
+      const message = errorMessage(json.error, 'Fehler.')
+      setError(message)
+      return { ok: false, error: message }
     }
+
     router.refresh()
-    return true
+    return { ok: true, error: '' }
   }
 
   return (
-    <div className="flex flex-col gap-16">
+    <div className="flex flex-col gap-24">
       {error && <p className="font-sans text-[11px] text-white/40">{error}</p>}
 
       {/* ── Bewerbungen ─────────────────────────────────────────── */}
       <section>
-        <h2 className="mb-5 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
+        {/* Standardmäßig offen, solange etwas offen ist — eine unbeantwortete
+            Bewerbung soll man nicht erst aufklappen müssen. */}
+        <button
+          type="button"
+          onClick={() => setShowApplications((v) => !v)}
+          aria-expanded={showApplications}
+          disabled={initialApplications.length === 0}
+          className="mb-8 flex items-center gap-3 font-sans text-[10px] tracking-[0.3em] text-mist uppercase transition-colors hover:text-ash disabled:hover:text-mist"
+        >
+          {initialApplications.length > 0 && (
+            <span
+              aria-hidden="true"
+              className={`inline-block transition-transform duration-300 ${
+                showApplications ? 'rotate-90' : ''
+              }`}
+            >
+              ›
+            </span>
+          )}
           Bewerbungen ({initialApplications.length})
-        </h2>
+        </button>
+
         {initialApplications.length === 0 ? (
           <p className="font-sans text-sm text-mist">Keine offenen Bewerbungen.</p>
-        ) : (
+        ) : !showApplications ? null : (
           <div className="flex flex-col divide-y divide-white/5">
             {initialApplications.map((a) => (
-              <div key={a.id} className="flex flex-col gap-2 py-4">
+              <div key={a.id} className="flex flex-col gap-3 py-6">
                 <div className="flex items-center gap-4">
                   <span className="font-sans text-sm font-light text-ash">{a.name}</span>
                   <span className="font-sans text-[11px] text-mist">{a.email}</span>
@@ -97,16 +129,47 @@ export function MembersManager({
 
       {/* ── Mitglieder ──────────────────────────────────────────── */}
       <section>
-        <h2 className="mb-5 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-          Mitglieder ({initialMembers.length})
+        <h2 className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
+          Mitglieder ({activeMembers.length})
         </h2>
-        {initialMembers.length === 0 ? (
+        {activeMembers.length === 0 ? (
           <p className="font-sans text-sm text-mist">Noch keine Mitglieder.</p>
         ) : (
           <div className="flex flex-col divide-y divide-white/5">
-            {initialMembers.map((m) => (
+            {activeMembers.map((m) => (
               <MemberRow key={m.id} member={m} busy={busy} call={call} />
             ))}
+          </div>
+        )}
+
+        {/* Ehemalige liegen eingeklappt darunter — sie sollen die aktive
+            Liste nicht zustellen, aber auffindbar bleiben. */}
+        {formerMembers.length > 0 && (
+          <div className="mt-14 border-t border-white/5 pt-8">
+            <button
+              type="button"
+              onClick={() => setShowFormer((v) => !v)}
+              aria-expanded={showFormer}
+              className="flex items-center gap-3 font-sans text-[10px] tracking-[0.3em] text-white/25 uppercase transition-colors hover:text-ash"
+            >
+              <span
+                aria-hidden="true"
+                className={`inline-block transition-transform duration-300 ${
+                  showFormer ? 'rotate-90' : ''
+                }`}
+              >
+                ›
+              </span>
+              Ehemalige ({formerMembers.length})
+            </button>
+
+            {showFormer && (
+              <div className="mt-8 flex flex-col divide-y divide-white/5">
+                {formerMembers.map((m) => (
+                  <MemberRow key={m.id} member={m} busy={busy} call={call} />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -119,29 +182,38 @@ function AddMemberForm({
   onCreate,
 }: {
   busy: boolean
-  onCreate: (payload: { name: string; email: string; role: MemberRole }) => Promise<boolean>
+  onCreate: (payload: { name: string; email: string; role: MemberRole }) => Promise<{
+    ok: boolean
+    error: string
+  }>
 }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<MemberRole>('inner')
+  // Eigener Fehler direkt am Formular — die gemeinsame Meldung oben im
+  // Bauteil steht bei langer Mitgliederliste weit außerhalb des Sichtfelds.
+  const [error, setError] = useState('')
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    const ok = await onCreate({ name: name.trim(), email: email.trim(), role })
-    if (ok) {
+    setError('')
+    const result = await onCreate({ name: name.trim(), email: email.trim(), role })
+    if (result.ok) {
       setName('')
       setEmail('')
       setRole('inner')
+    } else {
+      setError(result.error)
     }
   }
 
   return (
     <section>
-      <h2 className="mb-5 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
+      <h2 className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
         Mitglied hinzufügen
       </h2>
-      <form onSubmit={submit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={submit} className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <input
             type="text"
             placeholder="Name"
@@ -175,6 +247,12 @@ function AddMemberForm({
             </button>
           ))}
         </div>
+        {error && (
+          <p className="border-l-2 border-white/25 pl-3 font-sans text-[11px] font-light leading-relaxed text-ash">
+            {error}
+          </p>
+        )}
+
         <button
           type="submit"
           disabled={busy || !name.trim() || !email.trim()}
@@ -197,7 +275,7 @@ function MemberRow({
 }: {
   member: Member
   busy: boolean
-  call: (url: string, method: string, payload: object) => Promise<boolean>
+  call: (url: string, method: string, payload: object) => Promise<{ ok: boolean; error: string }>
 }) {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(member.name)
@@ -205,19 +283,19 @@ function MemberRow({
   const [role, setRole] = useState<MemberRole>(member.role)
 
   async function saveEdit() {
-    const ok = await call('/api/admin/members', 'PATCH', {
+    const result = await call('/api/admin/members', 'PATCH', {
       id: member.id,
       name: name.trim(),
       email: email.trim(),
       role,
     })
-    if (ok) setEditing(false)
+    if (result.ok) setEditing(false)
   }
 
   if (editing) {
     return (
       <div className="flex flex-col gap-4 py-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
         </div>
@@ -267,7 +345,11 @@ function MemberRow({
       <span className="border border-white/10 px-2 py-0.5 font-sans text-[9px] tracking-[0.2em] text-smoke uppercase">
         {member.role}
       </span>
-      {!member.is_active && (
+      {member.is_active ? (
+        <span className="font-sans text-[10px] text-white/25">
+          beigetreten am {format(new Date(member.created_at), 'd. MMMM yyyy', { locale: de })}
+        </span>
+      ) : (
         <span className="font-sans text-[9px] tracking-[0.2em] text-white/30 uppercase">Entfernt</span>
       )}
 
@@ -286,20 +368,26 @@ function MemberRow({
               disabled={busy}
               onClick={() => call('/api/admin/members', 'PATCH', { id: member.id, action: 'resend' })}
               className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash disabled:opacity-30"
+              title="Schickt denselben Zugang nochmal per Mail — der alte Link bleibt gültig."
             >
-              Invite
+              Nochmal senden
             </button>
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                if (confirm('Token neu generieren? Alter Link/Code wird ungültig.')) {
-                  call('/api/admin/members', 'PATCH', { id: member.id, action: 'rotate' })
+                if (
+                  confirm(
+                    `Neuen Zugang für ${member.name} erstellen?\n\nDer bisherige Link und Code werden sofort ungültig. ${member.name} bekommt den neuen Zugang per Mail.`
+                  )
+                ) {
+                  call('/api/admin/members', 'PATCH', { id: member.id, action: 'renew' })
                 }
               }}
               className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash disabled:opacity-30"
+              title="Erzeugt einen neuen Zugang und macht den alten ungültig."
             >
-              Rotieren
+              Neuer Zugang
             </button>
           </>
         )}

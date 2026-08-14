@@ -1,5 +1,6 @@
 'use client'
 
+import { errorMessage } from '@/lib/form-error'
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -76,7 +77,7 @@ export function MementoForm({
     const json = await res.json().catch(() => ({}))
 
     if (!res.ok) {
-      setUploadError(json.error ?? 'Upload fehlgeschlagen.')
+      setUploadError(errorMessage(json.error, 'Upload fehlgeschlagen.'))
     } else {
       set('image_url', json.url)
     }
@@ -108,7 +109,7 @@ export function MementoForm({
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      setError(json.error ?? 'Fehler beim Speichern.')
+      setError(errorMessage(json.error, 'Fehler beim Speichern.'))
       setLoading(false)
       return
     }

@@ -88,6 +88,9 @@ export async function sendMemberInvite(params: MemberInviteParams) {
     'Falls der Link nicht funktioniert, kannst du diesen Code auf der Seite eingeben:',
     accessToken,
     '',
+    'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager,',
+    'damit du ihn später einfach wieder kopieren kannst.',
+    '',
     'Bis bald.',
     '',
     'SOUS SOL — Linz',
@@ -107,6 +110,10 @@ export async function sendMemberInvite(params: MemberInviteParams) {
       `<div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>`,
       paragraph('Gib diesen Code auf der Seite ein:'),
       codeBlock(accessToken),
+      `<div style="height:14px;line-height:14px;font-size:0;">&nbsp;</div>`,
+      paragraph(
+        'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager, damit du ihn später einfach wieder kopieren kannst.'
+      ),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
       label('Bis bald'),
     ].join('\n'),
@@ -139,6 +146,9 @@ export async function sendMemberAccessReminder(params: MemberInviteParams) {
     'Oder mit diesem Code auf der Seite:',
     accessToken,
     '',
+    'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager,',
+    'damit du ihn später einfach wieder kopieren kannst.',
+    '',
     'Bis bald.',
     '',
     'SOUS SOL — Linz',
@@ -158,6 +168,10 @@ export async function sendMemberAccessReminder(params: MemberInviteParams) {
       `<div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>`,
       paragraph('Gib diesen Code auf der Seite ein:'),
       codeBlock(accessToken),
+      `<div style="height:14px;line-height:14px;font-size:0;">&nbsp;</div>`,
+      paragraph(
+        'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager, damit du ihn später einfach wieder kopieren kannst.'
+      ),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
       label('Bis bald'),
     ].join('\n'),
@@ -193,6 +207,9 @@ export async function sendMemberAccessRenewed(params: MemberInviteParams) {
     'Oder mit diesem Code auf der Seite:',
     accessToken,
     '',
+    'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager,',
+    'damit du ihn später einfach wieder kopieren kannst.',
+    '',
     'Bis bald.',
     '',
     'SOUS SOL — Linz',
@@ -214,6 +231,10 @@ export async function sendMemberAccessRenewed(params: MemberInviteParams) {
       `<div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>`,
       paragraph('Gib diesen Code auf der Seite ein:'),
       codeBlock(accessToken),
+      `<div style="height:14px;line-height:14px;font-size:0;">&nbsp;</div>`,
+      paragraph(
+        'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager, damit du ihn später einfach wieder kopieren kannst.'
+      ),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
       label('Bis bald'),
     ].join('\n'),

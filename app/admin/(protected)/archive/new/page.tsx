@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
 import { MementoForm } from '@/components/admin/MementoForm'
 
 export const metadata: Metadata = { title: 'Neues Memento — SOUS SOL Admin' }
 
 export default async function NewMementoPage() {
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
   const { data: events } = await supabase
     .from('events')
     .select('id, title')

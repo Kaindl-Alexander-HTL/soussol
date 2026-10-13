@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { DeleteEventButton } from '@/components/admin/DeleteEventButton'
+import { EventStatusActions } from '@/components/admin/EventStatusActions'
 
 export const metadata: Metadata = { title: 'Events — SOUS SOL Admin' }
 
@@ -30,7 +32,8 @@ export default async function EventsPage({
   const { tab } = await searchParams
   const activeTab: Tab = (tab === 'past' || tab === 'cancelled') ? tab : 'upcoming'
 
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
 
   const [{ data: events }, { data: regCounts }] = await Promise.all([
     supabase
@@ -50,8 +53,8 @@ export default async function EventsPage({
 
   return (
     <div className="max-w-3xl">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="font-serif italic text-3xl text-paper">Events</h1>
+      <div className="mb-12 flex items-center justify-between">
+        <h1 className="font-serif italic text-4xl text-paper">Events</h1>
         <Link
           href="/admin/events/new"
           className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"
@@ -102,10 +105,8 @@ export default async function EventsPage({
                     {countMap[event.id] ?? 0} Anm.
                   </span>
                 )}
-                <span className="font-sans text-[11px] text-white/20 group-hover:text-white/40 transition-colors">
-                  →
-                </span>
               </Link>
+              <EventStatusActions id={event.id} status={activeTab} />
               <DeleteEventButton id={event.id} title={event.title} />
             </div>
           ))}

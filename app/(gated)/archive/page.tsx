@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { headers } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { ArchiveCanvas } from '@/components/ArchiveCanvas'
 import { MementoCard } from '@/components/MementoCard'
+import { getArchiveClient } from '@/lib/member'
+import { signMementoMedia } from '@/lib/archive-media'
 import type { Memento } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Archive — SOUS SOL' }
@@ -23,7 +25,9 @@ export default async function ArchivePage({
   // Mobile devices default to grid; explicit ?view=canvas overrides
   const isGrid = view === 'grid' || (isMobileUA(ua) && view !== 'canvas')
 
-  const supabase = await createClient()
+  const supabase = await getArchiveClient()
+  if (!supabase) redirect('/enter')
+
   const [{ data }, { data: connData }] = await Promise.all([
     supabase
       .from('mementos')
@@ -35,7 +39,7 @@ export default async function ArchivePage({
       .select('id, from_memento_id, to_memento_id'),
   ])
 
-  const mementos = (data ?? []) as Memento[]
+  const mementos = await signMementoMedia((data ?? []) as Memento[])
   const connections = connData ?? []
 
   if (isGrid) {

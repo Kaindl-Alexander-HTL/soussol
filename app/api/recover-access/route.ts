@@ -2,20 +2,33 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendMemberAccessReminder } from '@/lib/email'
+import { RequestBodyError, readJsonBody } from '@/lib/request-body'
+import { checkRateLimits, rateLimitUnavailable } from '@/lib/rate-limit'
 
 const schema = z.object({
   email: z.string().email().max(200),
 })
 
-// Einfache Drossel gegen stumpfes Hämmern: pro Adresse höchstens alle 2 Minuten
-// eine Mail. Der Speicher ist prozesslokal — bei mehreren Instanzen greift das
-// nur pro Instanz. Als harte Grenze dient ohnehin das Limit bei Resend; das
-// hier verhindert, dass jemand einem Mitglied im Sekundentakt Mails schickt.
-const lastSent = new Map<string, number>()
-const THROTTLE_MS = 2 * 60 * 1000
-
 export async function POST(request: NextRequest) {
-  const body = await request.json().catch(() => null)
+  try {
+    const limit = await checkRateLimits(request, [
+      { bucket: 'recover:ip', maxRequests: 10, windowSeconds: 60 * 60 },
+    ])
+    if (!limit.allowed) return NextResponse.json({ ok: true })
+  } catch (error) {
+    console.error('[recover-access] Rate-Limit fehlgeschlagen:', error)
+    return rateLimitUnavailable()
+  }
+
+  let body: unknown
+  try {
+    body = await readJsonBody(request, 2 * 1024)
+  } catch (error) {
+    if (error instanceof RequestBodyError && error.status === 413) {
+      return NextResponse.json({ ok: true }, { status: 413 })
+    }
+    body = null
+  }
   const parsed = schema.safeParse(body)
 
   // Immer dieselbe Antwort — auch bei ungültiger Eingabe. Sonst ließe sich über
@@ -24,11 +37,15 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return ok
 
   const email = parsed.data.email.toLowerCase().trim()
-
-  const now = Date.now()
-  const previous = lastSent.get(email)
-  if (previous && now - previous < THROTTLE_MS) return ok
-  lastSent.set(email, now)
+  try {
+    const limit = await checkRateLimits(request, [
+      { bucket: 'recover:email', identity: email, maxRequests: 3, windowSeconds: 60 * 60 },
+    ])
+    if (!limit.allowed) return ok
+  } catch (error) {
+    console.error('[recover-access] Ziel-Rate-Limit fehlgeschlagen:', error)
+    return rateLimitUnavailable()
+  }
 
   const { data: member } = await supabaseAdmin
     .from('members')

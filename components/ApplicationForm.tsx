@@ -53,9 +53,12 @@ export function ApplicationForm() {
       <p className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">Bewerben</p>
       <form onSubmit={submit} className="flex max-w-sm flex-col gap-7">
         <div className="flex flex-col gap-2">
-          <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">Name *</label>
+          <label htmlFor="application-name" className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">Name *</label>
           <input
+            id="application-name"
+            name="name"
             type="text"
+            autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -65,9 +68,12 @@ export function ApplicationForm() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">E-Mail *</label>
+          <label htmlFor="application-email" className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">E-Mail *</label>
           <input
+            id="application-email"
+            name="email"
             type="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -77,10 +83,12 @@ export function ApplicationForm() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
+          <label htmlFor="application-message" className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
             Erzähl uns von dir
           </label>
           <textarea
+            id="application-message"
+            name="message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={5}

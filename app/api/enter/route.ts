@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { signCookie } from '@/lib/access-cookie'
+import { checkRateLimits, rateLimited, rateLimitUnavailable } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  try {
+    const limit = await checkRateLimits(request, [
+      { bucket: 'enter:ip', maxRequests: 30, windowSeconds: 10 * 60 },
+    ])
+    if (!limit.allowed) return rateLimited(limit.retryAfter)
+  } catch (error) {
+    console.error('[enter] Rate-Limit fehlgeschlagen:', error)
+    return rateLimitUnavailable()
+  }
+
   const token = request.nextUrl.searchParams.get('token')
   const origin = request.nextUrl.origin
 

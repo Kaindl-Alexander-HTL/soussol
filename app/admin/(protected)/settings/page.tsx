@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
 import { SettingsPage } from '@/components/admin/SettingsPage'
 import { FONT_THEMES, DEFAULT_FONT_THEME } from '@/lib/fonts'
 
 export const metadata: Metadata = { title: 'Settings — SOUS SOL Admin' }
 
 export default async function AdminSettingsPage() {
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
 
   const { data: rows } = await supabase
     .from('settings')

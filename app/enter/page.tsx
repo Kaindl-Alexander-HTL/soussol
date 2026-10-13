@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getCurrentMember, hasArchiveAccess } from '@/lib/member'
 import { CodeGateForm } from '@/components/CodeGateForm'
+import { safeAppRedirect } from '@/lib/safe-redirect'
 
 export const metadata: Metadata = {
   title: 'SOUS SOL',
@@ -14,11 +15,12 @@ export default async function EnterPage({
   searchParams: Promise<{ next?: string }>
 }) {
   const { next } = await searchParams
+  const destination = safeAppRedirect(next)
 
   const member = await getCurrentMember()
   if (hasArchiveAccess(member)) {
-    redirect(next ?? '/archive')
+    redirect(destination)
   }
 
-  return <CodeGateForm next={next ?? '/archive'} />
+  return <CodeGateForm next={destination} />
 }

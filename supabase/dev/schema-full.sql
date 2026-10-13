@@ -22,6 +22,7 @@ create table if not exists events (
   registration_enabled boolean not null default true,
   external_signup_url text,
   ticketing_enabled boolean not null default false,
+  visibility text not null default 'public' check (visibility in ('public', 'outer')),
   status text not null default 'upcoming' check (status in ('upcoming', 'past', 'cancelled')),
   created_at timestamptz not null default now()
 );
@@ -29,6 +30,8 @@ create table if not exists events (
 -- Falls events bereits existierte (Teil-Setup): fehlende Spalten nachziehen.
 alter table events add column if not exists external_signup_url text;
 alter table events add column if not exists ticketing_enabled boolean not null default false;
+alter table events add column if not exists visibility text not null default 'public'
+  check (visibility in ('public', 'outer'));
 
 -- ── Basis: Registrierungen (Gratis-RSVP) ────────────────────────────────────
 create table if not exists registrations (
@@ -161,22 +164,90 @@ alter table ticket_orders enable row level security;
 
 -- Öffentlich lesbare Inhalte (Landing/Events/Archiv-Anzeige laufen z.T. über anon).
 drop policy if exists "public read events" on events;
-create policy "public read events" on events for select using (true);
+create policy "public read events" on events
+  for select to anon, authenticated using (
+    visibility = 'public' and status = 'upcoming'
+  );
 
 drop policy if exists "public read settings" on settings;
-create policy "public read settings" on settings for select using (true);
+create policy "public read settings" on settings for select to anon, authenticated using (
+  key = any (array[
+    'manifest', 'instagram_url', 'strava_club_url', 'font_theme',
+    'apply_headline', 'apply_intro', 'not_found_text', 'footer_credit'
+  ])
+);
 
 drop policy if exists "public read mementos" on mementos;
-create policy "public read mementos" on mementos for select using (true);
-
 drop policy if exists "public read gallery_photos" on gallery_photos;
-create policy "public read gallery_photos" on gallery_photos for select using (true);
-
 drop policy if exists "public read memento_connections" on memento_connections;
-create policy "public read memento_connections" on memento_connections for select using (true);
 
 drop policy if exists "public read active ticket_types" on ticket_types;
-create policy "public read active ticket_types" on ticket_types for select using (is_active = true);
+create policy "public read active ticket_types" on ticket_types
+  for select to anon, authenticated using (
+    is_active = true and exists (
+      select 1 from events
+      where events.id = ticket_types.event_id
+        and events.visibility = 'public'
+        and events.status = 'upcoming'
+    )
+  );
+
+-- Gemeinsames, atomares Rate-Limit für alle Server-Instanzen.
+create table if not exists api_rate_limits (
+  bucket text not null,
+  key_hash text not null,
+  window_start timestamptz not null,
+  request_count integer not null default 1 check (request_count > 0),
+  primary key (bucket, key_hash, window_start)
+);
+create index if not exists api_rate_limits_window_start_idx on api_rate_limits(window_start);
+alter table api_rate_limits enable row level security;
+
+create or replace function check_rate_limit(
+  p_bucket text,
+  p_key_hash text,
+  p_window_seconds integer,
+  p_max_requests integer
+) returns table (allowed boolean, retry_after_seconds integer)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_now timestamptz := clock_timestamp();
+  v_window_start timestamptz;
+  v_count integer;
+begin
+  if length(p_bucket) not between 1 and 100
+     or p_key_hash !~ '^[0-9a-f]{64}$'
+     or p_window_seconds not between 1 and 86400
+     or p_max_requests not between 1 and 10000 then
+    raise exception 'invalid rate limit parameters';
+  end if;
+
+  v_window_start := to_timestamp(
+    floor(extract(epoch from v_now) / p_window_seconds) * p_window_seconds
+  );
+
+  insert into api_rate_limits (bucket, key_hash, window_start, request_count)
+  values (p_bucket, p_key_hash, v_window_start, 1)
+  on conflict (bucket, key_hash, window_start)
+  do update set request_count = api_rate_limits.request_count + 1
+  returning request_count into v_count;
+
+  delete from api_rate_limits where window_start < v_now - interval '2 days';
+
+  return query select
+    v_count <= p_max_requests,
+    greatest(1, ceil(extract(epoch from (
+      v_window_start + make_interval(secs => p_window_seconds) - v_now
+    )))::integer);
+end;
+$$;
+
+revoke all on function check_rate_limit(text, text, integer, integer)
+  from public, anon, authenticated;
+grant execute on function check_rate_limit(text, text, integer, integer) to service_role;
 
 -- Grants. service_role (supabaseAdmin) braucht VOLLE Rechte (Admin/Inserts);
 -- anon/authenticated nur SELECT (RLS gated die Zeilen zusätzlich — sensible
@@ -185,8 +256,10 @@ grant usage on schema public to anon, authenticated, service_role;
 grant all on all tables in schema public to service_role;
 grant all on all sequences in schema public to service_role;
 grant select on all tables in schema public to anon, authenticated;
+revoke select on mementos, gallery_photos, memento_connections, api_rate_limits
+  from anon, authenticated;
 
 -- ── Storage-Bucket für Archiv-Bilder ────────────────────────────────────────
 insert into storage.buckets (id, name, public)
-values ('mementos', 'mementos', true)
-on conflict (id) do nothing;
+values ('mementos', 'mementos', false)
+on conflict (id) do update set public = false;

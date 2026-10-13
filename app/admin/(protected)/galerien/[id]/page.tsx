@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { notFound, redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
+import { signGalleryMedia } from '@/lib/archive-media'
 import { GalleryUploader } from '@/components/admin/GalleryUploader'
 
 export const metadata: Metadata = { title: 'Galerie — SOUS SOL Admin' }
@@ -12,7 +13,8 @@ export default async function GalerieEditPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
 
   const [{ data: memento }, { data: photos }] = await Promise.all([
     supabase.from('mementos').select('id, kind, caption, date_label').eq('id', id).single(),
@@ -24,6 +26,7 @@ export default async function GalerieEditPage({
   ])
 
   if (!memento) notFound()
+  const signedPhotos = await signGalleryMedia(photos ?? [])
 
   return (
     <div className="max-w-2xl">
@@ -45,7 +48,7 @@ export default async function GalerieEditPage({
 
       <GalleryUploader
         mementoId={memento.id}
-        initialPhotos={photos ?? []}
+        initialPhotos={signedPhotos}
       />
     </div>
   )

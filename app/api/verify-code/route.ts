@@ -2,13 +2,31 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { signCookie } from '@/lib/access-cookie'
+import { RequestBodyError, readJsonBody } from '@/lib/request-body'
+import { checkRateLimits, rateLimited, rateLimitUnavailable } from '@/lib/rate-limit'
 
 const schema = z.object({
   token: z.string().min(1).max(64),
 })
 
 export async function POST(request: NextRequest) {
-  const body = await request.json().catch(() => null)
+  try {
+    const limit = await checkRateLimits(request, [
+      { bucket: 'verify-code:ip', maxRequests: 20, windowSeconds: 10 * 60 },
+    ])
+    if (!limit.allowed) return rateLimited(limit.retryAfter)
+  } catch (error) {
+    console.error('[verify-code] Rate-Limit fehlgeschlagen:', error)
+    return rateLimitUnavailable()
+  }
+
+  let body: unknown
+  try {
+    body = await readJsonBody(request, 2 * 1024)
+  } catch (error) {
+    const status = error instanceof RequestBodyError ? error.status : 400
+    return NextResponse.json({ ok: false }, { status })
+  }
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ ok: false }, { status: 400 })

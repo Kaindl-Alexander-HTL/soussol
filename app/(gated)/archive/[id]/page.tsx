@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { notFound, redirect } from 'next/navigation'
 import { MementoCard } from '@/components/MementoCard'
+import { getArchiveClient } from '@/lib/member'
+import { signGalleryMedia, signMementoMedia } from '@/lib/archive-media'
 import type { Memento } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Memento — SOUS SOL' }
@@ -14,7 +15,8 @@ export default async function MementoDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await getArchiveClient()
+  if (!supabase) redirect('/enter')
 
   const [{ data: memento }, { data: photos }] = await Promise.all([
     supabase
@@ -33,7 +35,10 @@ export default async function MementoDetailPage({
 
   if (!memento) notFound()
 
-  const hasGallery = (photos?.length ?? 0) > 0
+  const [signedMemento] = await signMementoMedia([memento as Memento])
+  const signedPhotos = await signGalleryMedia(photos ?? [])
+
+  const hasGallery = signedPhotos.length > 0
 
   return (
     <main className="min-h-screen bg-ink px-6 pb-32 pt-16 sm:px-12 md:px-20 lg:px-32">
@@ -46,7 +51,7 @@ export default async function MementoDetailPage({
 
       {/* Memento Card — centered */}
       <div className="mb-16 flex justify-center">
-        <MementoCard memento={memento as Memento} />
+        <MementoCard memento={signedMemento} />
       </div>
 
       {/* Body text */}
@@ -62,7 +67,7 @@ export default async function MementoDetailPage({
       {hasGallery && (
         <div className="mx-auto max-w-lg">
           <div className="mb-4 grid grid-cols-4 gap-2">
-            {photos!.map((photo) => (
+            {signedPhotos.map((photo) => (
               <div key={photo.id} className="relative aspect-square overflow-hidden bg-white/5">
                 <Image
                   src={photo.url}

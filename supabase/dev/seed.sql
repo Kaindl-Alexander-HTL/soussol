@@ -23,7 +23,7 @@ on conflict (email) do update
 -- 1) Gratis-RSVP-Event
 insert into events (id, slug, title, sport, starts_at, meeting_point, description, registration_enabled, ticketing_enabled, status)
 values ('11111111-1111-1111-1111-111111111111', 'sunday-run', 'Sunday Long Run', 'running',
-        '2026-08-16 09:00:00+02', 'Donaulände Linz', 'Lockerer 12k entlang der Donau. Danach Kaffee.',
+        date_trunc('day', now()) + interval '7 days 9 hours', 'Donaulände Linz', 'Lockerer 12k entlang der Donau. Danach Kaffee.',
         true, false, 'upcoming')
 on conflict (id) do update set
   slug = excluded.slug, title = excluded.title, sport = excluded.sport, starts_at = excluded.starts_at,
@@ -31,19 +31,20 @@ on conflict (id) do update set
   registration_enabled = excluded.registration_enabled, ticketing_enabled = excluded.ticketing_enabled, status = excluded.status;
 
 -- 2) Ticket-Event (für Stripe-Test)
-insert into events (id, slug, title, sport, starts_at, meeting_point, description, registration_enabled, ticketing_enabled, status)
+insert into events (id, slug, title, sport, starts_at, meeting_point, description, registration_enabled, ticketing_enabled, visibility, status)
 values ('22222222-2222-2222-2222-222222222222', 'winter-cup', 'Winter Indoor Cup', 'volleyball',
-        '2026-08-30 10:00:00+02', 'Sporthalle Linz', 'Indoor-Turnier. Tickets pro Team oder einzeln.',
-        false, true, 'upcoming')
+        date_trunc('day', now()) + interval '14 days 10 hours', 'Sporthalle Linz', 'Indoor-Turnier. Tickets pro Team oder einzeln.',
+        false, true, 'outer', 'upcoming')
 on conflict (id) do update set
   slug = excluded.slug, title = excluded.title, sport = excluded.sport, starts_at = excluded.starts_at,
   meeting_point = excluded.meeting_point, description = excluded.description,
-  registration_enabled = excluded.registration_enabled, ticketing_enabled = excluded.ticketing_enabled, status = excluded.status;
+  registration_enabled = excluded.registration_enabled, ticketing_enabled = excluded.ticketing_enabled,
+  visibility = excluded.visibility, status = excluded.status;
 
 -- 3) Externes Turnier (Redirect zu Partner)
 insert into events (id, slug, title, sport, starts_at, meeting_point, description, registration_enabled, external_signup_url, ticketing_enabled, status)
 values ('33333333-3333-3333-3333-333333333333', 'volleyball-turnier', 'SOUS SOL Beach Turnier', 'volleyball',
-        '2026-09-06 11:00:00+02', 'Beach Arena Linz', 'Das grosse Turnier. Anmeldung laeuft ueber unseren Partner.',
+        date_trunc('day', now()) + interval '21 days 11 hours', 'Beach Arena Linz', 'Das grosse Turnier. Anmeldung laeuft ueber unseren Partner.',
         false, 'https://shop.good-karma.at/p/beach-volleyball-under-the-bridge-19-09/', false, 'upcoming')
 on conflict (id) do update set
   slug = excluded.slug, title = excluded.title, external_signup_url = excluded.external_signup_url, status = excluded.status;

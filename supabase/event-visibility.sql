@@ -17,8 +17,12 @@ alter table events
   add column if not exists visibility text not null default 'public'
   check (visibility in ('public', 'outer'));
 
--- anon sieht nur öffentliche Events. auth.uid() is not null = eingeloggter
--- Supabase-Auth-User = Admin im Backoffice; der sieht weiterhin alles.
+-- Browser-Clients sehen ausschließlich öffentliche Events. Admins und Mitglieder
+-- lesen nach expliziter Prüfung serverseitig über die Service Role.
 drop policy if exists "public read events" on events;
+drop policy if exists "events_public_read" on events;
+drop policy if exists "events_admin_all" on events;
 create policy "public read events" on events
-  for select using (visibility = 'public' or auth.uid() is not null);
+  for select to anon, authenticated using (
+    visibility = 'public' and status = 'upcoming'
+  );

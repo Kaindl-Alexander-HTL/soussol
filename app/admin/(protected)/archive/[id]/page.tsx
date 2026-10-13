@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { notFound, redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
+import { signMementoMedia } from '@/lib/archive-media'
 import { MementoForm } from '@/components/admin/MementoForm'
 
 export const metadata: Metadata = { title: 'Memento bearbeiten — SOUS SOL Admin' }
@@ -12,7 +13,8 @@ export default async function EditMementoPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
 
   const [{ data: memento }, { data: events }] = await Promise.all([
     supabase.from('mementos').select('*').eq('id', id).single(),
@@ -20,6 +22,7 @@ export default async function EditMementoPage({
   ])
 
   if (!memento) notFound()
+  const [signedMemento] = await signMementoMedia([memento])
 
   return (
     <div className="max-w-xl">
@@ -35,14 +38,14 @@ export default async function EditMementoPage({
       <MementoForm
         events={events ?? []}
         initial={{
-          id: memento.id,
-          kind: memento.kind,
-          image_url: memento.image_url ?? '',
-          caption: memento.caption ?? '',
-          body: memento.body ?? '',
-          date_label: memento.date_label ?? '',
-          event_id: memento.event_id ?? '',
-          is_visible: memento.is_visible,
+          id: signedMemento.id,
+          kind: signedMemento.kind,
+          image_url: signedMemento.image_url ?? '',
+          caption: signedMemento.caption ?? '',
+          body: signedMemento.body ?? '',
+          date_label: signedMemento.date_label ?? '',
+          event_id: signedMemento.event_id ?? '',
+          is_visible: signedMemento.is_visible,
         }}
       />
     </div>

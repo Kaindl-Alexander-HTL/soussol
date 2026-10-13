@@ -18,13 +18,30 @@ const createSchema = z.object({
   max_participants: z.number().int().positive().nullable().optional(),
   registration_enabled: z.boolean().default(true),
   external_signup_url: z.string().url().nullable().optional(),
-  ticketing_enabled: z.boolean().default(false),
   status: statusEnum.default('upcoming'),
   visibility: visibilityEnum.default('public'),
 })
 
-const updateSchema = createSchema.partial().extend({
+// Bewusst NICHT createSchema.partial(): .partial() macht Felder zwar optional,
+// entfernt aber die .default()-Werte nicht. Ein Teil-Update (etwa nur der
+// Status) würde dadurch registration_enabled und vor allem
+// visibility stillschweigend auf den Standard zurücksetzen — ein als "nur für
+// den Outer Circle" markiertes Event wäre danach öffentlich.
+// Hier deshalb reine Optionals ohne Defaults: Was nicht geschickt wird, bleibt
+// in der Datenbank unangetastet.
+const updateSchema = z.object({
   id: z.guid(),
+  title: z.string().min(1).max(255).optional(),
+  sport: sportEnum.optional(),
+  starts_at: z.string().datetime({ offset: true }).optional(),
+  ends_at: z.string().datetime({ offset: true }).nullable().optional(),
+  meeting_point: z.string().max(500).nullable().optional(),
+  description: z.string().nullable().optional(),
+  max_participants: z.number().int().positive().nullable().optional(),
+  registration_enabled: z.boolean().optional(),
+  external_signup_url: z.string().url().nullable().optional(),
+  status: statusEnum.optional(),
+  visibility: visibilityEnum.optional(),
 })
 
 const deleteSchema = z.object({ id: z.guid() })
@@ -73,6 +90,10 @@ export async function PATCH(request: NextRequest) {
   if (title) {
     updates.title = title
     updates.slug = toSlug(title)
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'Keine Änderung angegeben.' }, { status: 400 })
   }
 
   const { data, error } = await supabaseAdmin

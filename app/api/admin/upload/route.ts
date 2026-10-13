@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { randomUUID } from 'crypto'
 import { getAdminUser } from '@/lib/admin'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { createArchiveSignedUrl } from '@/lib/archive-media'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_SIZE_BYTES = 10 * 1024 * 1024 // 10 MB
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const ext = file.type.split('/')[1].replace('jpeg', 'jpg')
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+  const filename = `${randomUUID()}.${ext}`
 
   const buffer = Buffer.from(await file.arrayBuffer())
 
@@ -35,9 +37,11 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  const { data: { publicUrl } } = supabaseAdmin.storage
-    .from('mementos')
-    .getPublicUrl(filename)
+  const signedUrl = await createArchiveSignedUrl(filename)
+  if (!signedUrl) {
+    await supabaseAdmin.storage.from('mementos').remove([filename])
+    return NextResponse.json({ error: 'Upload konnte nicht sicher bereitgestellt werden.' }, { status: 500 })
+  }
 
-  return NextResponse.json({ url: publicUrl })
+  return NextResponse.json({ path: filename, url: signedUrl })
 }

@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { normalizeArchiveMediaRef, signGalleryMedia } from '@/lib/archive-media'
 
 const createSchema = z.object({
   memento_id: z.guid(),
-  url: z.string().url(),
+  url: z.string().min(1).max(2048),
   caption: z.string().max(500).nullable().optional(),
   sort_order: z.number().int().default(0),
 })
@@ -24,14 +25,20 @@ export async function POST(request: NextRequest) {
   const parsed = createSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
+  const normalizedUrl = normalizeArchiveMediaRef(parsed.data.url)
+  if (!normalizedUrl) {
+    return NextResponse.json({ error: 'Ungültige Bildadresse.' }, { status: 400 })
+  }
+
   const { data, error } = await supabaseAdmin
     .from('gallery_photos')
-    .insert(parsed.data)
+    .insert({ ...parsed.data, url: normalizedUrl })
     .select()
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data, { status: 201 })
+  const [signed] = await signGalleryMedia([data])
+  return NextResponse.json(signed, { status: 201 })
 }
 
 export async function DELETE(request: NextRequest) {

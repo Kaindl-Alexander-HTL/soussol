@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { notFound, redirect } from 'next/navigation'
 import { GalleryView } from '@/components/GalleryView'
+import { getArchiveClient } from '@/lib/member'
+import { signGalleryMedia } from '@/lib/archive-media'
 
 export const metadata: Metadata = { title: 'Galerie — SOUS SOL' }
 
@@ -12,7 +13,8 @@ export default async function GaleriePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = await getArchiveClient()
+  if (!supabase) redirect('/enter')
 
   const [{ data: memento }, { data: photos }] = await Promise.all([
     supabase
@@ -29,6 +31,8 @@ export default async function GaleriePage({
 
   if (!memento || !memento.is_visible) notFound()
   if (!photos?.length) notFound()
+
+  const signedPhotos = await signGalleryMedia(photos)
 
   return (
     <div className="min-h-screen bg-ink">
@@ -72,7 +76,7 @@ export default async function GaleriePage({
 
       {/* ── Gallery Grid ─────────────────────────────────────────────── */}
       <div className="pb-4 pt-10">
-        <GalleryView photos={photos} />
+        <GalleryView photos={signedPhotos} />
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────── */}

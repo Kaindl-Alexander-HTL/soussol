@@ -19,7 +19,6 @@ export type EventFormValues = {
   max_participants: string
   registration_enabled: boolean
   external_signup_url: string
-  ticketing_enabled: boolean
   status: Status
   visibility: Visibility
 }
@@ -34,7 +33,6 @@ const defaultValues: EventFormValues = {
   max_participants: '',
   registration_enabled: true,
   external_signup_url: '',
-  ticketing_enabled: false,
   status: 'upcoming',
   visibility: 'public',
 }
@@ -99,7 +97,6 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
       max_participants: values.max_participants ? parseInt(values.max_participants) : null,
       registration_enabled: values.registration_enabled,
       external_signup_url: values.external_signup_url.trim() || null,
-      ticketing_enabled: values.ticketing_enabled,
       status: values.status,
       visibility: values.visibility,
     }
@@ -247,24 +244,6 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
             }`}
           />
           {values.registration_enabled ? 'Aktiviert' : 'Deaktiviert'}
-        </button>
-      </Field>
-
-      {/* Ticketing enabled */}
-      <Field label="Ticket-Verkauf">
-        <button
-          type="button"
-          onClick={() => set('ticketing_enabled', !values.ticketing_enabled)}
-          className={`flex items-center gap-2 font-sans text-[11px] tracking-[0.15em] uppercase transition-colors ${
-            values.ticketing_enabled ? 'text-spark' : 'text-mist'
-          }`}
-        >
-          <span
-            className={`h-4 w-7 rounded-full border transition-colors ${
-              values.ticketing_enabled ? 'border-spark bg-spark/20' : 'border-white/20 bg-transparent'
-            }`}
-          />
-          {values.ticketing_enabled ? 'Aktiviert' : 'Deaktiviert'}
         </button>
       </Field>
 

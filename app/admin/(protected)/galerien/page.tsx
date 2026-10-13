@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
 
 export const metadata: Metadata = { title: 'Galerien — SOUS SOL Admin' }
 
 export default async function GalerienPage() {
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
 
   const { data: mementos } = await supabase
     .from('mementos')

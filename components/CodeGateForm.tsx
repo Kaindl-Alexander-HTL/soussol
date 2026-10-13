@@ -3,12 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useCallback } from 'react'
-
-function safeRedirect(next: string): string {
-  const allowed = ['/archive', '/upcoming', '/event/']
-  if (next && allowed.some((p) => next.startsWith(p))) return next
-  return '/archive'
-}
+import { safeAppRedirect } from '@/lib/safe-redirect'
 
 export function CodeGateForm({ next }: { next: string }) {
   const router = useRouter()
@@ -52,7 +47,7 @@ export function CodeGateForm({ next }: { next: string }) {
       })
 
       if (res.ok) {
-        router.push(safeRedirect(next))
+        router.push(safeAppRedirect(next))
       } else {
         setCode('')
         setLoading(false)
@@ -73,6 +68,8 @@ export function CodeGateForm({ next }: { next: string }) {
       >
         <input
           ref={inputRef}
+          id="access-code"
+          name="accessCode"
           type="text"
           value={code}
           onChange={(e) => setCode(e.target.value)}
@@ -105,6 +102,8 @@ export function CodeGateForm({ next }: { next: string }) {
         ) : recoverOpen ? (
           <div className="flex w-full items-center gap-3">
             <input
+              id="recovery-email"
+              name="email"
               type="email"
               value={recoverEmail}
               onChange={(e) => setRecoverEmail(e.target.value)}

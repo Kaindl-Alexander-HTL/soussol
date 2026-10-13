@@ -1,3 +1,4 @@
+import 'server-only'
 import { randomBytes } from 'crypto'
 import { cookies } from 'next/headers'
 import { verifyCookie } from '@/lib/access-cookie'
@@ -41,4 +42,8 @@ export async function getCurrentMember(): Promise<CurrentMember | null> {
 
 export function hasArchiveAccess(member: CurrentMember | null): boolean {
   return member !== null && (member.role === 'outer' || member.role === 'inner')
+}
+
+export async function getArchiveClient() {
+  return hasArchiveAccess(await getCurrentMember()) ? supabaseAdmin : null
 }

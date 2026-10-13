@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendRegistrationNotification } from '@/lib/email'
+import { RequestBodyError, readJsonBody } from '@/lib/request-body'
+import { checkRateLimits, rateLimited, rateLimitUnavailable } from '@/lib/rate-limit'
+import { getCurrentMember, hasArchiveAccess } from '@/lib/member'
 
 const schema = z.object({
   event_id: z.guid(),
@@ -18,7 +21,23 @@ const schema = z.object({
 
 export async function POST(request: NextRequest) {
   // Events sind öffentlich — die Anmeldung zu offenen Events ist bewusst nicht gated.
-  const body = await request.json().catch(() => null)
+  try {
+    const limit = await checkRateLimits(request, [
+      { bucket: 'register:ip', maxRequests: 20, windowSeconds: 10 * 60 },
+    ])
+    if (!limit.allowed) return rateLimited(limit.retryAfter)
+  } catch (error) {
+    console.error('[register] Rate-Limit fehlgeschlagen:', error)
+    return rateLimitUnavailable()
+  }
+
+  let body: unknown
+  try {
+    body = await readJsonBody(request, 8 * 1024)
+  } catch (error) {
+    const status = error instanceof RequestBodyError ? error.status : 400
+    return NextResponse.json({ error: 'Ungültige Anfrage.' }, { status })
+  }
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
@@ -28,11 +47,15 @@ export async function POST(request: NextRequest) {
 
   const { data: event, error: eventError } = await supabaseAdmin
     .from('events')
-    .select('id, title, starts_at, registration_enabled, max_participants, status')
+    .select('id, title, starts_at, registration_enabled, max_participants, status, visibility')
     .eq('id', event_id)
     .single()
 
   if (eventError || !event) {
+    return NextResponse.json({ error: 'Event nicht gefunden.' }, { status: 404 })
+  }
+
+  if (event.visibility === 'outer' && !hasArchiveAccess(await getCurrentMember())) {
     return NextResponse.json({ error: 'Event nicht gefunden.' }, { status: 404 })
   }
 

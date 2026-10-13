@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
+import { signMementoMedia } from '@/lib/archive-media'
 
 export const metadata: Metadata = { title: 'Archive — SOUS SOL Admin' }
 
@@ -15,12 +17,15 @@ const KIND_LABELS: Record<string, string> = {
 }
 
 export default async function AdminArchivePage() {
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
 
   const { data: mementos } = await supabase
     .from('mementos')
     .select('id, kind, caption, date_label, image_url, is_visible, created_at')
     .order('created_at', { ascending: false })
+
+  const signedMementos = await signMementoMedia(mementos ?? [])
 
   return (
     <div>
@@ -42,11 +47,11 @@ export default async function AdminArchivePage() {
         </div>
       </div>
 
-      {!mementos?.length ? (
+      {!signedMementos.length ? (
         <p className="font-sans text-sm text-mist">Noch keine Mementos.</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {mementos.map((m) => (
+          {signedMementos.map((m) => (
             <Link
               key={m.id}
               href={`/admin/archive/${m.id}`}

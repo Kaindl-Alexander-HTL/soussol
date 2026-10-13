@@ -1,13 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { getAdminClient } from '@/lib/admin'
+import { signMementoMedia } from '@/lib/archive-media'
 import { AdminCanvas } from '@/components/admin/AdminCanvas'
 import type { Memento } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Canvas Layout — SOUS SOL Admin' }
 
 export default async function AdminCanvasPage() {
-  const supabase = await createClient()
+  const supabase = await getAdminClient()
+  if (!supabase) redirect('/admin/login')
 
   const [{ data }, { data: connData }] = await Promise.all([
     supabase
@@ -19,7 +22,7 @@ export default async function AdminCanvasPage() {
       .select('id, from_memento_id, to_memento_id'),
   ])
 
-  const mementos = (data ?? []) as Memento[]
+  const mementos = await signMementoMedia((data ?? []) as Memento[])
   const connections = connData ?? []
 
   if (!mementos.length) {

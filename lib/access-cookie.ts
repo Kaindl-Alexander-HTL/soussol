@@ -1,5 +1,18 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 
+export type AccessSetting = {
+  code: string
+  valid_until?: string | null
+}
+
+export function isAccessSettingActive(setting: AccessSetting | null | undefined): setting is AccessSetting {
+  if (!setting?.code) return false
+  if (!setting.valid_until) return true
+
+  const validUntil = Date.parse(setting.valid_until)
+  return Number.isFinite(validUntil) && validUntil > Date.now()
+}
+
 export function signCookie(code: string): string {
   const sig = createHmac('sha256', process.env.ACCESS_COOKIE_SECRET!)
     .update(code)

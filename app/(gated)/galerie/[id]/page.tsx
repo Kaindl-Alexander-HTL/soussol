@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { GalleryView } from '@/components/GalleryView'
 
 export const metadata: Metadata = { title: 'Galerie — SOUS SOL' }
@@ -12,15 +12,13 @@ export default async function GaleriePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
-
   const [{ data: memento }, { data: photos }] = await Promise.all([
-    supabase
+    supabaseAdmin
       .from('mementos')
       .select('id, caption, date_label, is_visible')
       .eq('id', id)
       .single(),
-    supabase
+    supabaseAdmin
       .from('gallery_photos')
       .select('id, url, caption')
       .eq('memento_id', id)

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { cookies } from 'next/headers'
-import { verifyCookie } from '@/lib/access-cookie'
+import { isAccessSettingActive, verifyCookie, type AccessSetting } from '@/lib/access-cookie'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendRegistrationNotification } from '@/lib/email'
 
@@ -29,8 +29,8 @@ async function isGated(): Promise<boolean> {
     .select('value')
     .eq('key', 'access_code')
     .single()
-  const current = (data?.value as { code: string } | null)?.code
-  return code === current
+  const setting = data?.value as AccessSetting | null
+  return isAccessSettingActive(setting) && code === setting.code
 }
 
 export async function POST(request: NextRequest) {

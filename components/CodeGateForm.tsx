@@ -3,12 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useCallback } from 'react'
-
-function safeRedirect(next: string): string {
-  const allowed = ['/archive', '/upcoming', '/event/']
-  if (next && allowed.some((p) => next.startsWith(p))) return next
-  return '/archive'
-}
+import { safeGatedRedirect } from '@/lib/safe-redirect'
 
 export function CodeGateForm({ next }: { next: string }) {
   const router = useRouter()
@@ -34,7 +29,7 @@ export function CodeGateForm({ next }: { next: string }) {
       })
 
       if (res.ok) {
-        router.push(safeRedirect(next))
+        router.push(safeGatedRedirect(next))
       } else {
         setCode('')
         setLoading(false)

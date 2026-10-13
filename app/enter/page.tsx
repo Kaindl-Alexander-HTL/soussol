@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { verifyCookie } from '@/lib/access-cookie'
+import { isAccessSettingActive, verifyCookie, type AccessSetting } from '@/lib/access-cookie'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { CodeGateForm } from '@/components/CodeGateForm'
+import { safeGatedRedirect } from '@/lib/safe-redirect'
 
 export const metadata: Metadata = {
   title: 'SOUS SOL',
@@ -16,6 +17,7 @@ export default async function EnterPage({
   searchParams: Promise<{ next?: string }>
 }) {
   const { next } = await searchParams
+  const destination = safeGatedRedirect(next)
 
   const cookieStore = await cookies()
   const cookieValue = cookieStore.get('sous_pass')?.value
@@ -28,12 +30,12 @@ export default async function EnterPage({
         .select('value')
         .eq('key', 'access_code')
         .single()
-      const currentCode = (data?.value as { code: string } | null)?.code
-      if (currentCode && code === currentCode) {
-        redirect(next ?? '/archive')
+      const setting = data?.value as AccessSetting | null
+      if (isAccessSettingActive(setting) && code === setting.code) {
+        redirect(destination)
       }
     }
   }
 
-  return <CodeGateForm next={next ?? '/archive'} />
+  return <CodeGateForm next={destination} />
 }

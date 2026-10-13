@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { format, isSameMonth } from 'date-fns'
 import { de } from 'date-fns/locale'
 
@@ -14,9 +14,7 @@ const SPORT_LABELS: Record<string, string> = {
 }
 
 export default async function UpcomingPage() {
-  const supabase = await createClient()
-
-  const { data: events } = await supabase
+  const { data: events } = await supabaseAdmin
     .from('events')
     .select('id, slug, title, sport, starts_at, meeting_point, registration_enabled')
     .eq('status', 'upcoming')

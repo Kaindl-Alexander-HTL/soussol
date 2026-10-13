@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { signCookie } from '@/lib/access-cookie'
+import { isAccessSettingActive, signCookie, type AccessSetting } from '@/lib/access-cookie'
 
 const schema = z.object({
   code: z.string().min(1).max(64),
@@ -26,15 +26,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false }, { status: 500 })
   }
 
-  const setting = data.value as { code: string; valid_until: string }
+  const setting = data.value as AccessSetting
 
-  if (code !== setting.code) {
+  if (!isAccessSettingActive(setting) || code !== setting.code) {
     return NextResponse.json({ ok: false }, { status: 401 })
   }
 
   const signed = signCookie(code)
-  const expires = new Date()
-  expires.setFullYear(expires.getFullYear() + 1)
+  const oneYearFromNow = new Date()
+  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1)
+  const validUntil = setting.valid_until ? new Date(setting.valid_until) : oneYearFromNow
+  const expires = validUntil < oneYearFromNow ? validUntil : oneYearFromNow
 
   const response = NextResponse.json({ ok: true })
   response.cookies.set('sous_pass', signed, {

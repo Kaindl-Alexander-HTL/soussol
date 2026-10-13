@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { MementoCard } from '@/components/MementoCard'
 import type { Memento } from '@/lib/types'
 
@@ -14,16 +14,14 @@ export default async function MementoDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
-
   const [{ data: memento }, { data: photos }] = await Promise.all([
-    supabase
+    supabaseAdmin
       .from('mementos')
       .select('id, kind, image_url, caption, body, date_label, event_id, x, y, rotation, scale, z_index, is_visible')
       .eq('id', id)
       .eq('is_visible', true)
       .single(),
-    supabase
+    supabaseAdmin
       .from('gallery_photos')
       .select('id, url, caption')
       .eq('memento_id', id)

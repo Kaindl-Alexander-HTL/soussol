@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAdminUser } from '@/lib/admin'
 import { AdminNav } from '@/components/admin/AdminNav'
 
 export default async function ProtectedAdminLayout({
@@ -7,10 +7,7 @@ export default async function ProtectedAdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getAdminUser()
 
   if (!user) redirect('/admin/login')
 

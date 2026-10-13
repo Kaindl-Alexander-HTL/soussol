@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { RegistrationForm } from '@/components/RegistrationForm'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
@@ -13,16 +13,7 @@ const SPORT_LABELS: Record<string, string> = {
   other: 'Other',
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}): Promise<Metadata> {
-  const { slug } = await params
-  const supabase = await createClient()
-  const { data } = await supabase.from('events').select('title').eq('slug', slug).single()
-  return { title: data ? `${data.title} — SOUS SOL` : 'SOUS SOL' }
-}
+export const metadata: Metadata = { title: 'Event — SOUS SOL' }
 
 export default async function EventPage({
   params,
@@ -30,9 +21,7 @@ export default async function EventPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const supabase = await createClient()
-
-  const { data: event } = await supabase
+  const { data: event } = await supabaseAdmin
     .from('events')
     .select('*')
     .eq('slug', slug)
@@ -45,7 +34,7 @@ export default async function EventPage({
 
   let spotsLeft: number | null = null
   if (registrationOpen && event.max_participants !== null) {
-    const { count } = await supabase
+    const { count } = await supabaseAdmin
       .from('registrations')
       .select('*', { count: 'exact', head: true })
       .eq('event_id', event.id)

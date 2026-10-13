@@ -2,8 +2,9 @@ import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 
 function allowedAdminEmails(): Set<string> {
+  const configuredEmails = process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? ''
   return new Set(
-    (process.env.ADMIN_EMAILS ?? '')
+    configuredEmails
       .split(',')
       .map((email) => email.trim().toLowerCase())
       .filter(Boolean)
@@ -24,7 +25,7 @@ export async function getAdminUser(): Promise<User | null> {
 
   const allowed = allowedAdminEmails()
   if (allowed.size === 0) {
-    console.error('[admin] ADMIN_EMAILS is missing; denying backoffice access.')
+    console.error('[admin] ADMIN_EMAILS/ADMIN_EMAIL is missing; denying backoffice access.')
     return null
   }
 

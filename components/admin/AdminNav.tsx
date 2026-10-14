@@ -25,9 +25,12 @@ export function AdminNav() {
 
   return (
     <nav className="flex items-center gap-10 border-b border-white/8 px-8 py-6 sm:px-14 lg:px-20">
-      <span className="font-serif text-[10px] tracking-[0.35em] text-mist uppercase">
+      <Link
+        href="/"
+        className="font-serif text-[10px] tracking-[0.35em] text-mist uppercase transition-colors hover:text-ash"
+      >
         SOUS SOL
-      </span>
+      </Link>
       <div className="flex flex-1 flex-wrap items-center gap-x-9 gap-y-3">
         {links.map(({ href, label }) => {
           const active = pathname === href || (href !== '/admin' && pathname.startsWith(href))

@@ -44,7 +44,7 @@ export function ForgotPasswordForm() {
     <main className="flex min-h-screen items-center justify-center bg-ink px-6">
       <div className="w-full max-w-sm">
         <p className="mb-12 font-serif text-[11px] tracking-[0.4em] text-mist uppercase">
-          SOUS SOL — Admin
+          <Link href="/" className="transition-colors hover:text-ash">SOUS SOL</Link> — Admin
         </p>
 
         {sent ? (

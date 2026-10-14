@@ -288,7 +288,7 @@ function TextsSection({
             type="text"
             value={footerCredit}
             onChange={(e) => setFooterCredit(e.target.value)}
-            placeholder="Made by Studioaix"
+            placeholder="Leer lassen = kein Credit"
             className={inputClass}
           />
         </div>

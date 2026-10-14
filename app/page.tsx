@@ -1,4 +1,4 @@
-import { getSettings, text } from '@/lib/settings'
+import { getSettings } from '@/lib/settings'
 import { LandingPage } from '@/components/LandingPage'
 
 export default async function HomePage() {
@@ -6,7 +6,8 @@ export default async function HomePage() {
 
   const manifest = (settings.manifest as { content: string } | null)?.content ?? ''
   const instagramUrl = (settings.instagram_url as string | null) ?? ''
-  const footerCredit = text(settings, 'footer_credit', 'Made by Studioaix')
+  // Kein Fallback: ein leerer Footer-Credit blendet die Zeile aus.
+  const footerCredit = ((settings.footer_credit as string | null) ?? '').trim()
 
   const paragraphs = manifest
     .split('\n\n')

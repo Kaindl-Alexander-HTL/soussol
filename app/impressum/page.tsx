@@ -73,13 +73,6 @@ export default function ImpressumPage() {
           </p>
         </section>
 
-        {/* Co-Founder */}
-        <section className="space-y-1 border-t border-white/5 pt-8">
-          <p className="font-sans text-[10px] text-white/20">
-            Webdesign & Entwicklung: Moritz Aigner / Studioaix — <a href="https://studioaix.at" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-mist transition-colors">studioaix.at</a>
-          </p>
-        </section>
-
       </div>
     </main>
   )

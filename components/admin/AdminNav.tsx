@@ -44,6 +44,12 @@ export function AdminNav() {
           )
         })}
       </div>
+      <Link
+        href="/"
+        className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash"
+      >
+        ← Website
+      </Link>
       <button
         onClick={logout}
         className="font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-white/50"

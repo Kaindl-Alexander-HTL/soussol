@@ -111,9 +111,11 @@ export function LandingPage({
             </a>
           )}
         </nav>
-        <span className="ml-auto font-sans text-[10px] tracking-[0.2em] text-white/15 uppercase">
-          {footerCredit}
-        </span>
+        {footerCredit && (
+          <span className="ml-auto font-sans text-[10px] tracking-[0.2em] text-white/15 uppercase">
+            {footerCredit}
+          </span>
+        )}
       </motion.footer>
     </main>
   )

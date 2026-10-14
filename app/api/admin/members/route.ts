@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
@@ -55,8 +55,12 @@ export async function POST(request: NextRequest) {
   }
 
   if (hasArchiveRole(data.role)) {
-    sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
-      console.error('[members] Invite-Mail (neues Mitglied) fehlgeschlagen:', e?.message ?? e)
+    // after(): sonst friert Vercel die Funktion nach der Antwort ein, bevor die
+    // Mail raus ist.
+    after(() =>
+      sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
+        console.error('[members] Invite-Mail (neues Mitglied) fehlgeschlagen:', e?.message ?? e)
+      )
     )
   }
 
@@ -86,8 +90,10 @@ export async function PATCH(request: NextRequest) {
       .single()
     if (error || !data) return NextResponse.json({ error: 'Zugang konnte nicht erneuert werden.' }, { status: 500 })
     if (hasArchiveRole(data.role)) {
-      sendMemberAccessRenewed({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
-        console.error('[members] Mail "Neuer Zugang" fehlgeschlagen:', e?.message ?? e)
+      after(() =>
+        sendMemberAccessRenewed({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
+          console.error('[members] Mail "Neuer Zugang" fehlgeschlagen:', e?.message ?? e)
+        )
       )
     }
     return NextResponse.json({ ok: true })
@@ -104,8 +110,10 @@ export async function PATCH(request: NextRequest) {
     if (!hasArchiveRole(data.role)) {
       return NextResponse.json({ error: 'Nur outer/inner erhalten Zugang.' }, { status: 409 })
     }
-    sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
-      console.error('[members] Invite-Mail (erneut senden) fehlgeschlagen:', e?.message ?? e)
+    after(() =>
+      sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
+        console.error('[members] Invite-Mail (erneut senden) fehlgeschlagen:', e?.message ?? e)
+      )
     )
     return NextResponse.json({ ok: true })
   }

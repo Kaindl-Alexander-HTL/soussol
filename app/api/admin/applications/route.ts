@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { getAdminUser } from '@/lib/admin'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
@@ -83,8 +83,13 @@ export async function PATCH(request: NextRequest) {
   if (invite) {
     // Fehler nicht verschlucken: sonst meldet das Admin-UI "angenommen",
     // während die Einladung nie rausgeht (z.B. Absender-Domain nicht verifiziert).
-    sendMemberInvite(invite).catch((e) =>
-      console.error('[approve] Invite-Mail fehlgeschlagen:', e?.message ?? e)
+    // after(): sonst friert Vercel die Funktion nach der Antwort ein, bevor die
+    // Mail raus ist.
+    const pending = invite
+    after(() =>
+      sendMemberInvite(pending).catch((e) =>
+        console.error('[approve] Invite-Mail fehlgeschlagen:', e?.message ?? e)
+      )
     )
   }
 

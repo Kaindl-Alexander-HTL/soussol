@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendApplicationNotification, sendApplicationConfirmation } from '@/lib/email'
@@ -59,14 +59,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Fehler beim Speichern.' }, { status: 500 })
   }
 
-  // Fire-and-forget: die Bewerbung ist gespeichert, ein Mailfehler darf sie
-  // nicht scheitern lassen. Aber er wird geloggt — ein stiller Ausfall (z.B.
-  // nicht verifizierte Absender-Domain) wäre sonst unsichtbar.
-  sendApplicationNotification({ name, email, message }).catch((e) =>
-    console.error('[apply] Benachrichtigung an Admin fehlgeschlagen:', e?.message ?? e)
+  // Nach der Antwort senden: die Bewerbung ist gespeichert, ein Mailfehler darf
+  // sie nicht scheitern lassen. Aber er wird geloggt — ein stiller Ausfall (z.B.
+  // nicht verifizierte Absender-Domain) wäre sonst unsichtbar. after() statt
+  // nacktem Promise: auf Vercel wird die Funktion nach der Antwort eingefroren,
+  // ein nicht abgewarteter Versand bricht dann lautlos ab.
+  after(() =>
+    sendApplicationNotification({ name, email, message }).catch((e) =>
+      console.error('[apply] Benachrichtigung an Admin fehlgeschlagen:', e?.message ?? e)
+    )
   )
-  sendApplicationConfirmation({ name, email }).catch((e) =>
-    console.error('[apply] Bestätigung an Bewerber fehlgeschlagen:', e?.message ?? e)
+  after(() =>
+    sendApplicationConfirmation({ name, email }).catch((e) =>
+      console.error('[apply] Bestätigung an Bewerber fehlgeschlagen:', e?.message ?? e)
+    )
   )
 
   return NextResponse.json({ ok: true })

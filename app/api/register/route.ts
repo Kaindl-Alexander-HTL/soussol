@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendRegistrationNotification } from '@/lib/email'
@@ -90,17 +90,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Fehler beim Speichern.' }, { status: 500 })
   }
 
-  // Fire-and-forget — email failure doesn't block the response
-  sendRegistrationNotification({
-    guestName: guest_name,
-    instagramHandle: instagram_handle,
-    stravaHandle: strava_handle,
-    phone,
-    email,
-    eventTitle: event.title,
-    startsAt: event.starts_at,
-    isWaitlist: is_waitlist,
-  }).catch(() => {})
+  // Sent after the response via after() — a bare promise is cut off when Vercel
+  // freezes the function. Email failure doesn't block the response, but is logged.
+  after(() =>
+    sendRegistrationNotification({
+      guestName: guest_name,
+      instagramHandle: instagram_handle,
+      stravaHandle: strava_handle,
+      phone,
+      email,
+      eventTitle: event.title,
+      startsAt: event.starts_at,
+      isWaitlist: is_waitlist,
+    }).catch((e) =>
+      console.error('[register] Benachrichtigung an Admin fehlgeschlagen:', e?.message ?? e)
+    )
+  )
 
   return NextResponse.json({ ok: true, is_waitlist })
 }

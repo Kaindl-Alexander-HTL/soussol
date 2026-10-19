@@ -14,6 +14,12 @@ where key = 'not_found_text'
   and value = '"Nicht gefunden"'::jsonb;
 
 update settings
+set value = '"Didn''t find what you were looking for?"'::jsonb,
+    updated_at = now()
+where key = 'not_found_text'
+  and value = '"Nicht das Richtige gefunden?"'::jsonb;
+
+update settings
 set value = '{"content":"Built in the basement.\n\nRaised in the streets.\n\nRunning. Road cycling. Volleyball. Linz."}'::jsonb,
     updated_at = now()
 where key = 'manifest'

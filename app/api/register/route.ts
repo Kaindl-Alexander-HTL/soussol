@@ -5,6 +5,7 @@ import { sendRegistrationNotification } from '@/lib/email'
 import { RequestBodyError, readJsonBody } from '@/lib/request-body'
 import { checkRateLimits, rateLimited, rateLimitUnavailable } from '@/lib/rate-limit'
 import { getCurrentMember, hasArchiveAccess } from '@/lib/member'
+import { expirePastEvents } from '@/lib/expire-events'
 
 const schema = z.object({
   event_id: z.guid(),
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
 
   const { event_id, guest_name, instagram_handle, strava_handle, phone, email, notes } = parsed.data
 
+  await expirePastEvents()
   const { data: event, error: eventError } = await supabaseAdmin
     .from('events')
     .select('id, title, starts_at, registration_enabled, max_participants, status, visibility')

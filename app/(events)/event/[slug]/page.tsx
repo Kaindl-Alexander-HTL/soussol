@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getEventAccess } from '@/lib/events'
+import { expirePastEvents } from '@/lib/expire-events'
 import { RegistrationForm } from '@/components/RegistrationForm'
 import { formatVienna } from '@/lib/date-time'
 
@@ -35,6 +36,7 @@ export default async function EventPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  await expirePastEvents()
   // Outer-Circle-Events sind auch über die direkte URL nicht erreichbar:
   // Gäste bekommen 404 statt eines Hinweises, dass es das Event gibt.
   const { db, visibilities } = await getEventAccess()

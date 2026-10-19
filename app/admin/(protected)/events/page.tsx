@@ -5,6 +5,7 @@ import { getAdminClient } from '@/lib/admin'
 import { formatVienna } from '@/lib/date-time'
 import { DeleteEventButton } from '@/components/admin/DeleteEventButton'
 import { EventStatusActions } from '@/components/admin/EventStatusActions'
+import { expirePastEvents } from '@/lib/expire-events'
 
 export const metadata: Metadata = { title: 'Events — SOUS SOL Admin' }
 
@@ -33,6 +34,7 @@ export default async function EventsPage({
 
   const supabase = await getAdminClient()
   if (!supabase) redirect('/admin/login')
+  await expirePastEvents()
 
   const [{ data: events }, { data: regCounts }] = await Promise.all([
     supabase

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getEventAccess } from '@/lib/events'
+import { expirePastEvents } from '@/lib/expire-events'
 import { formatVienna, viennaMonthKey } from '@/lib/date-time'
 
 export const metadata: Metadata = { title: 'Upcoming — SOUS SOL' }
@@ -13,6 +14,7 @@ const SPORT_LABELS: Record<string, string> = {
 }
 
 export default async function UpcomingPage() {
+  await expirePastEvents()
   const { db, visibilities } = await getEventAccess()
 
   const { data: events } = await db

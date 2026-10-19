@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getSettings } from '@/lib/settings'
+import { LEGAL_ADDRESS, legalContactEmail } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Datenschutz — SOUS SOL',
   robots: { index: false, follow: false },
 }
 
-export default function DatenschutzPage() {
+export default async function DatenschutzPage() {
+  const contactEmail = legalContactEmail(await getSettings(['contact_email']))
   return (
     <main className="min-h-screen bg-ink px-6 pb-24 pt-16 sm:px-12 md:px-20 lg:px-32">
       <Link
@@ -28,9 +31,9 @@ export default function DatenschutzPage() {
             Verantwortlicher
           </h2>
           <p>
-            Tim Tanzer<br />
-            Mittelpromende 127, 4048 Puchenau<br />
-            E-Mail: <a href="mailto:tim.tobs24@gmail.com" className="text-spark underline underline-offset-2">tim.tobs24@gmail.com</a>
+            {LEGAL_ADDRESS.name}<br />
+            {LEGAL_ADDRESS.street}, {LEGAL_ADDRESS.postalCode} {LEGAL_ADDRESS.city}<br />
+            {contactEmail && <>E-Mail: <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a></>}
           </p>
           <p>
             Für Auskünfte, Berichtigungen oder Löschungen deiner gespeicherten Daten wende
@@ -52,7 +55,7 @@ export default function DatenschutzPage() {
               Deinen Namen (Vor- und Nachname oder Spitzname)
             </li>
             <li className="list-disc list-outside text-ash">
-              Deinen Instagram-Handle
+              Deine freiwilligen Kontaktdaten (Instagram, Strava, Telefon oder E-Mail)
             </li>
             <li className="list-disc list-outside text-ash">
               Optional: eine kurze Notiz
@@ -62,7 +65,7 @@ export default function DatenschutzPage() {
             </li>
           </ul>
           <p>
-            Eine E-Mail-Adresse oder andere Kontaktdaten werden nicht erhoben.
+            Bei einer Bewerbung speichern wir außerdem deine E-Mail-Adresse und deine Nachricht.
           </p>
         </section>
 
@@ -157,7 +160,7 @@ export default function DatenschutzPage() {
           <p>
             Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der
             Verarbeitung sowie Datenübertragbarkeit (Art. 15–20 DSGVO). Wende dich dazu
-            an <a href="mailto:tim.tobs24@gmail.com" className="text-spark underline underline-offset-2">tim.tobs24@gmail.com</a>.
+            {contactEmail ? <>an <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a>.</> : 'direkt an SOUS SOL.'}
           </p>
           <p>
             Du hast außerdem das Recht, Beschwerde bei der österreichischen Datenschutzbehörde

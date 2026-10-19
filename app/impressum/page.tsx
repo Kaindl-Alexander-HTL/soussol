@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getSettings } from '@/lib/settings'
+import { LEGAL_ADDRESS, legalContactEmail } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Impressum — SOUS SOL',
   robots: { index: false, follow: false },
 }
 
-export default function ImpressumPage() {
+export default async function ImpressumPage() {
+  const contactEmail = legalContactEmail(await getSettings(['contact_email']))
   return (
     <main className="min-h-screen bg-ink px-6 pb-24 pt-16 sm:px-12 md:px-20 lg:px-32">
       <Link
@@ -28,14 +31,14 @@ export default function ImpressumPage() {
             Medieninhaber & Betreiber
           </h2>
           <p>
-            Tim Tanzer<br />
-            Mittelpromende 127<br />
-            4048 Puchenau<br />
-            Österreich
+            {LEGAL_ADDRESS.name}<br />
+            {LEGAL_ADDRESS.street}<br />
+            {LEGAL_ADDRESS.postalCode} {LEGAL_ADDRESS.city}<br />
+            {LEGAL_ADDRESS.country}
           </p>
-          <p>
-            E-Mail: <a href="mailto:tim.tobs24@gmail.com" className="text-spark underline underline-offset-2">tim.tobs24@gmail.com</a>
-          </p>
+          {contactEmail && <p>
+            E-Mail: <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a>
+          </p>}
         </section>
 
         {/* Art des Mediums */}

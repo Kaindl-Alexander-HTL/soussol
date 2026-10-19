@@ -9,10 +9,12 @@ const ease = [0.22, 1, 0.36, 1] as const
 export function LandingPage({
   paragraphs,
   instagramUrl,
+  stravaUrl,
   footerCredit,
 }: {
   paragraphs: string[]
   instagramUrl: string
+  stravaUrl: string
   footerCredit: string
 }) {
   // Stagger timing
@@ -100,6 +102,16 @@ export function LandingPage({
           >
             Datenschutz
           </Link>
+          {stravaUrl && (
+            <a
+              href={stravaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
+            >
+              Strava
+            </a>
+          )}
           {instagramUrl && (
             <a
               href={instagramUrl}

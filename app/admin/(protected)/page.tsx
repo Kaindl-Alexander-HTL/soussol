@@ -34,10 +34,10 @@ export default async function AdminDashboard() {
   ])
 
   const stats = [
-    { label: 'Offene Bewerbungen', value: applicationCount ?? 0, href: '/admin/members' },
-    { label: 'Mitglieder', value: memberCount ?? 0, href: '/admin/members' },
+    { label: 'Open applications', value: applicationCount ?? 0, href: '/admin/members' },
+    { label: 'Members', value: memberCount ?? 0, href: '/admin/members' },
     { label: 'Upcoming Events', value: eventCount ?? 0, href: '/admin/events' },
-    { label: 'Anmeldungen', value: registrationCount ?? 0, href: '/admin/events' },
+    { label: 'Registrations', value: registrationCount ?? 0, href: '/admin/events' },
     { label: 'Mementos', value: mementoCount ?? 0, href: '/admin/archive' },
   ]
 

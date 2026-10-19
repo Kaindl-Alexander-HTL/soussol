@@ -41,7 +41,7 @@ export function AdminLoginForm() {
         <form onSubmit={submit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-1.5">
             <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-              E-Mail
+              Email
             </label>
             <input
               type="email"
@@ -56,7 +56,7 @@ export function AdminLoginForm() {
 
           <div className="flex flex-col gap-1.5">
             <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-              Passwort
+              Password
             </label>
             <input
               type="password"
@@ -86,7 +86,7 @@ export function AdminLoginForm() {
               href="/admin/forgot-password"
               className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
             >
-              Passwort vergessen?
+              Forgot password?
             </Link>
           </div>
         </form>

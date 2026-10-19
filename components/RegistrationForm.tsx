@@ -40,7 +40,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
     const json = await res.json().catch(() => ({}))
 
     if (!res.ok) {
-      setErrorMsg(errorMessage(json.error, 'Etwas ist schiefgelaufen.'))
+      setErrorMsg(errorMessage(json.error, 'Something went wrong.'))
       setState('error')
       return
     }
@@ -51,9 +51,9 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
   if (state === 'success') {
     return (
       <div className="border-t border-white/8 pt-12">
-        <p className="opsz-body font-serif italic text-2xl text-paper">Du bist dabei.</p>
+        <p className="opsz-body font-serif italic text-2xl text-paper">You’re in.</p>
         <p className="mt-3 font-sans text-sm font-light text-mist">
-          Bis dann.
+          See you there.
         </p>
       </div>
     )
@@ -62,9 +62,9 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
   if (state === 'waitlist') {
     return (
       <div className="border-t border-white/8 pt-12">
-        <p className="opsz-body font-serif italic text-2xl text-paper">Warteliste.</p>
+        <p className="opsz-body font-serif italic text-2xl text-paper">Waitlist.</p>
         <p className="mt-3 font-sans text-sm font-light text-mist">
-          Du stehst auf der Warteliste. Wir melden uns wenn ein Platz frei wird.
+          You’re on the waitlist. We’ll be in touch if a spot opens up.
         </p>
       </div>
     )
@@ -73,7 +73,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
   return (
     <div className="border-t border-white/8 pt-12">
       <p className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-        Anmelden
+        Sign up
       </p>
       <form onSubmit={submit} className="flex max-w-sm flex-col gap-7">
         <div className="flex flex-col gap-2">
@@ -93,7 +93,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
         {/* Kontakt — mindestens eines erforderlich */}
         <div className="flex flex-col gap-4">
           <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            Kontakt * <span className="normal-case tracking-normal text-white/20">(mind. eine Angabe)</span>
+            Contact * <span className="normal-case tracking-normal text-white/20">(at least one)</span>
           </label>
 
           <div className="flex flex-col gap-px">
@@ -114,13 +114,13 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
                 type="text"
                 value={strava}
                 onChange={(e) => setStrava(e.target.value)}
-                placeholder="Strava-Name"
+                placeholder="Strava name"
                 disabled={state === 'loading'}
                 className={inlineInputClass}
               />
             </div>
             <div className="flex items-center gap-3 border-b border-white/10 py-2 focus-within:border-white/30">
-              <span className="w-24 shrink-0 font-sans text-[9px] tracking-[0.2em] text-mist uppercase">Telefon</span>
+              <span className="w-24 shrink-0 font-sans text-[9px] tracking-[0.2em] text-mist uppercase">Phone</span>
               <input
                 type="tel"
                 value={phone}
@@ -131,7 +131,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
               />
             </div>
             <div className="flex items-center gap-3 border-b border-white/10 py-2 focus-within:border-white/30">
-              <span className="w-24 shrink-0 font-sans text-[9px] tracking-[0.2em] text-mist uppercase">E-Mail</span>
+              <span className="w-24 shrink-0 font-sans text-[9px] tracking-[0.2em] text-mist uppercase">Email</span>
               <input
                 type="email"
                 value={email}
@@ -146,7 +146,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
 
         <div className="flex flex-col gap-2">
           <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            Notiz
+            Note
           </label>
           <textarea
             value={notes}
@@ -166,7 +166,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
           disabled={state === 'loading' || !name.trim() || !hasContact}
           className="self-start font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
         >
-          {state === 'loading' ? '...' : 'Anmelden →'}
+          {state === 'loading' ? '...' : 'Sign up →'}
         </button>
       </form>
     </div>

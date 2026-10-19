@@ -29,12 +29,12 @@ export default async function AdminCanvasPage() {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
-          <p className="font-serif italic text-2xl text-mist">Noch keine Mementos.</p>
+        <p className="font-serif italic text-2xl text-mist">No mementos yet.</p>
           <Link
             href="/admin/archive/new"
             className="mt-6 inline-block font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"
           >
-            Erstes Memento erstellen →
+            Create the first memento →
           </Link>
         </div>
       </div>

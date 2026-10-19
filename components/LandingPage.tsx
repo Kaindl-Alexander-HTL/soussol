@@ -94,13 +94,13 @@ export function LandingPage({
             href="/impressum"
             className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
           >
-            Impressum
+            Legal notice
           </Link>
           <Link
             href="/datenschutz"
             className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
           >
-            Datenschutz
+            Privacy
           </Link>
           {stravaUrl && (
             <a

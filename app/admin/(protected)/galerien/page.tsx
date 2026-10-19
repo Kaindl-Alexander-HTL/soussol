@@ -28,7 +28,7 @@ export default async function GalerienPage() {
       <h1 className="mb-8 font-serif italic text-3xl text-paper">Galerien</h1>
 
       {!mementos?.length ? (
-        <p className="font-sans text-sm text-mist">Noch keine Mementos.</p>
+        <p className="font-sans text-sm text-mist">No mementos yet.</p>
       ) : (
         <div className="flex flex-col divide-y divide-white/5">
           {mementos.map((m) => (

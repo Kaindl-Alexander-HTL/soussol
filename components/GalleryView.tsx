@@ -162,7 +162,7 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
                     onClick={close}
                     className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-spark"
                   >
-                    Schließen ✕
+                    Close ✕
                   </button>
                 </div>
               </div>
@@ -205,7 +205,7 @@ export function GalleryView({ photos }: { photos: Photo[] }) {
                 <button
                   onClick={next}
                   className="shrink-0 font-sans text-[11px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-spark"
-                  aria-label="Nächstes Foto"
+                  aria-label="Next photo"
                 >
                   Next →
                 </button>

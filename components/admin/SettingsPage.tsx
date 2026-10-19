@@ -57,7 +57,7 @@ function SaveButton({ state, disabled }: { state: SaveState; disabled?: boolean 
         state === 'ok' ? 'text-spark' : state === 'error' ? 'text-white/40' : 'text-ash hover:text-spark'
       }`}
     >
-      {state === 'saving' ? '...' : state === 'ok' ? 'Gespeichert ✓' : state === 'error' ? 'Fehler' : 'Speichern →'}
+      {state === 'saving' ? '...' : state === 'ok' ? 'Saved ✓' : state === 'error' ? 'Error' : 'Save →'}
     </button>
   )
 }
@@ -88,10 +88,10 @@ function ManifestSection({ initial }: { initial: string }) {
             onChange={(e) => setContent(e.target.value)}
             rows={12}
             className={`${inputClass} resize-y leading-relaxed`}
-            placeholder="Das Manifest..."
+            placeholder="The manifesto..."
           />
           <p className="font-sans text-[10px] text-white/20">
-            Absätze mit Leerzeile trennen. Erscheint auf der Landing-Page.
+            Separate paragraphs with a blank line. Displayed on the landing page.
           </p>
         </div>
         <SaveButton state={state} />
@@ -149,7 +149,7 @@ function FontSection({
     <section className="border-b border-white/8 pb-16">
       <div className="mb-8 flex items-center gap-4">
         <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-          Schrift
+          Fonts
         </h2>
         <span
           className={`font-sans text-[10px] tracking-[0.2em] uppercase transition-opacity ${
@@ -162,7 +162,7 @@ function FontSection({
                   : 'opacity-0'
           }`}
         >
-          {state === 'saving' ? '...' : state === 'ok' ? 'Gespeichert ✓' : state === 'error' ? 'Fehler' : ''}
+          {state === 'saving' ? '...' : state === 'ok' ? 'Saved ✓' : state === 'error' ? 'Error' : ''}
         </span>
       </div>
       <div className="flex flex-col gap-8">
@@ -238,12 +238,12 @@ function TextsSection({
   return (
     <section className="border-b border-white/8 pb-16">
       <h2 className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-        Texte
+        Copy
       </h2>
       <form onSubmit={onSubmit} className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            Bewerbungsseite — Überschrift
+            Application page — heading
           </label>
           <input
             type="text"
@@ -256,45 +256,45 @@ function TextsSection({
 
         <div className="flex flex-col gap-2">
           <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            Bewerbungsseite — Text
+            Application page — copy
           </label>
           <textarea
             value={applyIntro}
             onChange={(e) => setApplyIntro(e.target.value)}
             rows={4}
-            placeholder="Der Outer Circle ist für Leute mit Drive..."
+            placeholder="The Outer Circle is for people with drive..."
             className={`${inputClass} resize-y leading-relaxed`}
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            404-Seite
+            404 page
           </label>
           <input
             type="text"
             value={notFound}
             onChange={(e) => setNotFound(e.target.value)}
-            placeholder="Nicht gefunden"
+            placeholder="Not found"
             className={inputClass}
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            Footer-Credit
+            Footer credit
           </label>
           <input
             type="text"
             value={footerCredit}
             onChange={(e) => setFooterCredit(e.target.value)}
-            placeholder="Leer lassen = kein Credit"
+            placeholder="Leave empty for no credit"
             className={inputClass}
           />
         </div>
 
         <p className="font-sans text-[10px] leading-relaxed text-white/20">
-          Leer lassen = der im Code hinterlegte Standardtext bleibt stehen.
+          Leave empty to keep the default copy from the code.
         </p>
         <SaveButton state={state} />
       </form>
@@ -355,7 +355,7 @@ function LinksSection({
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">Kontakt-E-Mail</label>
+          <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">Contact email</label>
           <input
             type="email"
             value={email}
@@ -386,7 +386,7 @@ export function SettingsPage({
 }: Props) {
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-16 font-serif italic text-4xl text-paper">Schrift & Texte</h1>
+      <h1 className="mb-16 font-serif italic text-4xl text-paper">Fonts & copy</h1>
       <div className="flex flex-col gap-20">
         <FontSection themes={fontThemes} initial={fontTheme} />
         <ManifestSection initial={manifest.content} />

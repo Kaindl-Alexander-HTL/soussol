@@ -10,7 +10,7 @@ export function DeleteEventButton({ id, title }: { id: string; title: string }) 
   async function handleDelete(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
-    if (!confirm(`„${title}" wirklich löschen?`)) return
+    if (!confirm(`Delete “${title}”?`)) return
     setDeleting(true)
     await fetch('/api/admin/events', {
       method: 'DELETE',

@@ -81,13 +81,13 @@ export function CodeGateForm({ next }: { next: string }) {
           spellCheck={false}
           disabled={loading}
           className="w-44 border-b border-white/15 bg-transparent pb-2 text-center font-serif italic text-2xl tracking-widest text-spark placeholder-white/25 outline-none transition-all duration-500 focus:border-white/35 disabled:opacity-40 sm:w-56 sm:text-3xl"
-          aria-label="Zugangscode oder Token eingeben"
+          aria-label="Enter access code or token"
         />
         <button
           onClick={submit}
           disabled={loading || !code.trim()}
           className="font-sans text-base text-white/25 transition-all duration-300 hover:text-white/70 disabled:opacity-0"
-          aria-label="Bestätigen"
+          aria-label="Confirm"
         >
           →
         </button>
@@ -97,7 +97,7 @@ export function CodeGateForm({ next }: { next: string }) {
       <div className="mt-14 flex min-h-[3.5rem] w-full max-w-xs flex-col items-center px-6">
         {recoverSent ? (
           <p className="text-center font-sans text-[11px] font-light leading-relaxed text-mist">
-            Falls es zu dieser Adresse einen Zugang gibt, liegt er gleich im Postfach.
+            If this address has access, the link will arrive in your inbox shortly.
           </p>
         ) : recoverOpen ? (
           <div className="flex w-full items-center gap-3">
@@ -108,18 +108,18 @@ export function CodeGateForm({ next }: { next: string }) {
               value={recoverEmail}
               onChange={(e) => setRecoverEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && recover()}
-              placeholder="deine@mail.at"
+              placeholder="you@example.com"
               autoComplete="email"
               autoFocus
               disabled={recoverLoading}
               className="w-full border-b border-white/15 bg-transparent pb-1.5 text-center font-sans text-xs font-light text-ash placeholder-white/20 outline-none transition-colors focus:border-white/35 disabled:opacity-40"
-              aria-label="E-Mail-Adresse für den Zugangslink"
+              aria-label="Email address for the access link"
             />
             <button
               onClick={recover}
               disabled={recoverLoading || !recoverEmail.trim()}
               className="font-sans text-sm text-white/25 transition-colors hover:text-white/70 disabled:opacity-0"
-              aria-label="Zugang schicken"
+              aria-label="Send access link"
             >
               →
             </button>
@@ -129,7 +129,7 @@ export function CodeGateForm({ next }: { next: string }) {
             onClick={() => setRecoverOpen(true)}
             className="font-sans text-[10px] tracking-[0.25em] text-white/15 uppercase transition-colors hover:text-white/35"
           >
-            Zugang verloren?
+            Lost access?
           </button>
         )}
       </div>
@@ -139,7 +139,7 @@ export function CodeGateForm({ next }: { next: string }) {
         href="/"
         className="absolute bottom-10 left-1/2 -translate-x-1/2 font-sans text-[10px] tracking-[0.3em] text-white/15 uppercase transition-colors hover:text-white/30"
       >
-        ← Zurück
+        ← Back
       </Link>
     </main>
   )

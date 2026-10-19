@@ -4,11 +4,11 @@ import { getSettings } from '@/lib/settings'
 import { LEGAL_ADDRESS, legalContactEmail } from '@/lib/legal'
 
 export const metadata: Metadata = {
-  title: 'Datenschutz — SOUS SOL',
+  title: 'Privacy policy — SOUS SOL',
   robots: { index: false, follow: false },
 }
 
-export default async function DatenschutzPage() {
+export default async function PrivacyPolicyPage() {
   const contactEmail = legalContactEmail(await getSettings(['contact_email']))
   return (
     <main className="min-h-screen bg-ink px-6 pb-24 pt-16 sm:px-12 md:px-20 lg:px-32">
@@ -20,7 +20,7 @@ export default async function DatenschutzPage() {
       </Link>
 
       <h1 className="mb-12 font-serif italic text-[clamp(2rem,5vw,3.5rem)] leading-tight text-spark">
-        Datenschutzerklärung
+        Privacy policy
       </h1>
 
       <div className="max-w-lg space-y-10 font-sans text-sm font-light leading-relaxed text-ash">
@@ -28,71 +28,66 @@ export default async function DatenschutzPage() {
         {/* Verantwortlicher */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Verantwortlicher
+            Data controller
           </h2>
           <p>
             {LEGAL_ADDRESS.name}<br />
             {LEGAL_ADDRESS.street}, {LEGAL_ADDRESS.postalCode} {LEGAL_ADDRESS.city}<br />
-            {contactEmail && <>E-Mail: <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a></>}
+            {contactEmail && <>Email: <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a></>}
           </p>
           <p>
-            Für Auskünfte, Berichtigungen oder Löschungen deiner gespeicherten Daten wende
-            dich direkt per E-Mail an uns.
+            Contact us by email to request access to, correction of, or deletion of your stored data.
           </p>
         </section>
 
         {/* Welche Daten */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Welche Daten wir verarbeiten
+            Data we process
           </h2>
           <p>
-            Wir erheben nur Daten, die du uns aktiv mitteilst. Bei Anmeldung zu einem Event
-            speichern wir:
+            We only collect data you actively provide. When you register for an event, we store:
           </p>
           <ul className="space-y-1 pl-4">
             <li className="list-disc list-outside text-ash">
-              Deinen Namen (Vor- und Nachname oder Spitzname)
+              Your name (full name or nickname)
             </li>
             <li className="list-disc list-outside text-ash">
-              Deine freiwilligen Kontaktdaten (Instagram, Strava, Telefon oder E-Mail)
+              Your voluntary contact details (Instagram, Strava, phone, or email)
             </li>
             <li className="list-disc list-outside text-ash">
-              Optional: eine kurze Notiz
+              Optionally, a short note
             </li>
             <li className="list-disc list-outside text-ash">
-              Zeitpunkt der Anmeldung
+              The time of registration
             </li>
           </ul>
           <p>
-            Bei einer Bewerbung speichern wir außerdem deine E-Mail-Adresse und deine Nachricht.
+            For applications, we also store your email address and message.
           </p>
         </section>
 
         {/* Zweck */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Zweck der Verarbeitung
+            Purpose of processing
           </h2>
           <p>
-            Die Daten dienen ausschließlich der Organisation des jeweiligen Events
-            (Teilnehmerliste, Kapazitätsplanung). Sie werden nicht an Dritte weitergegeben
-            und nicht für Werbezwecke genutzt.
+            We use this data solely to organise the relevant event (participant list and capacity
+            planning). We do not share it with third parties or use it for advertising.
           </p>
           <p>
-            Rechtsgrundlage: berechtigtes Interesse gemäß Art. 6 Abs. 1 lit. f DSGVO
-            (interne Veranstaltungsorganisation).
+            Legal basis: legitimate interest under Art. 6(1)(f) GDPR (internal event organisation).
           </p>
         </section>
 
         {/* Speicherdauer */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Speicherdauer
+            Retention period
           </h2>
           <p>
-            Anmeldedaten werden nach Durchführung des Events sowie einer Nachfrist von
-            30 Tagen gelöscht.
+            Registration data is deleted after the event and an additional 30-day period.
           </p>
         </section>
 
@@ -102,42 +97,39 @@ export default async function DatenschutzPage() {
             Cookies
           </h2>
           <p>
-            Diese Website setzt genau zwei Arten von Cookies:
+            This website uses exactly two types of cookies:
           </p>
           <ul className="space-y-2 pl-4">
             <li className="list-disc list-outside text-ash">
-              <span className="text-spark">sous_pass</span> — ein technisch notwendiges
-              Zugangs-Cookie. Es enthält einen signierten Zugangscode und ermöglicht den
-              Zugriff auf den geschützten Bereich. Keine personenbezogenen Daten.
-              Läuft mit dem Code-Ablaufdatum automatisch ab.
+              <span className="text-spark">sous_pass</span> — a technically necessary access
+              cookie. It contains a signed access code and enables access to the protected area.
+              It contains no personal data and expires with the access code.
             </li>
             <li className="list-disc list-outside text-ash">
-              <span className="text-spark">Supabase Auth-Cookie</span> — nur im Admin-Bereich
-              für Tim. Verwaltet die Login-Session.
+              <span className="text-spark">Supabase Auth cookie</span> — used only in the admin
+              area for Tim to maintain the login session.
             </li>
           </ul>
           <p>
-            Es gibt keinen Cookie-Banner, da wir kein Tracking, keine Analytics und keine
-            Werbe-Cookies einsetzen.
+            We do not show a cookie banner because we use no tracking, analytics, or advertising cookies.
           </p>
         </section>
 
         {/* Hosting */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Hosting & Infrastruktur
+            Hosting & infrastructure
           </h2>
           <p>
             <span className="text-spark">Vercel Inc.</span> (San Francisco, USA) —
-            Webhosting. Bei Seitenaufruf werden technische Verbindungsdaten (IP-Adresse,
-            Zeitstempel) kurzfristig in Server-Logs erfasst. Vercel verarbeitet Daten
-            auf Basis von Standardvertragsklauseln (SCCs) gemäß Art. 46 DSGVO.
-            Mehr: <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-mist transition-colors">vercel.com/legal/privacy-policy</a>
+            web hosting. When a page is requested, technical connection data (IP address and
+            timestamp) may be retained briefly in server logs. Vercel processes data under
+            Standard Contractual Clauses pursuant to Art. 46 GDPR. More: <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-mist transition-colors">vercel.com/legal/privacy-policy</a>
           </p>
           <p>
-            <span className="text-spark">Supabase Inc.</span> — Datenbank. Instanz läuft
-            in der Region <strong className="text-spark font-normal">EU-West (Frankfurt, Deutschland)</strong>,
-            damit innerhalb der EU. Mehr: <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-mist transition-colors">supabase.com/privacy</a>
+            <span className="text-spark">Supabase Inc.</span> — database. The instance runs in
+            <strong className="text-spark font-normal"> EU West (Frankfurt, Germany)</strong>,
+            within the EU. More: <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-mist transition-colors">supabase.com/privacy</a>
           </p>
         </section>
 
@@ -147,30 +139,30 @@ export default async function DatenschutzPage() {
             Tracking & Analytics
           </h2>
           <p>
-            Wir setzen keinerlei Tracking-Tools, Analytics-Dienste oder Social-Media-Pixel ein.
-            Dein Besuch wird nicht profiliert und nicht an Werbenetze weitergegeben.
+            We use no tracking tools, analytics services, or social-media pixels. Your visit is
+            not profiled or shared with advertising networks.
           </p>
         </section>
 
         {/* Rechte */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Deine Rechte
+            Your rights
           </h2>
           <p>
-            Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der
-            Verarbeitung sowie Datenübertragbarkeit (Art. 15–20 DSGVO). Wende dich dazu
-            {contactEmail ? <>an <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a>.</> : 'direkt an SOUS SOL.'}
+            You have the right to access, correct, delete, restrict processing of, and receive
+            your data (Arts. 15–20 GDPR). Contact{' '}
+            {contactEmail ? <><a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a>.</> : 'SOUS SOL directly.'}
           </p>
           <p>
-            Du hast außerdem das Recht, Beschwerde bei der österreichischen Datenschutzbehörde
-            einzulegen: <a href="https://www.dsb.gv.at" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-mist transition-colors">dsb.gv.at</a>
+            You may also lodge a complaint with the Austrian Data Protection Authority:{' '}
+            <a href="https://www.dsb.gv.at" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-mist transition-colors">dsb.gv.at</a>
           </p>
         </section>
 
         <section className="border-t border-white/5 pt-8">
           <p className="font-sans text-[10px] text-white/20">
-            Stand: Mai 2026
+            Last updated: May 2026
           </p>
         </section>
 

@@ -4,7 +4,7 @@ import { MembersManager } from '@/components/admin/MembersManager'
 import type { Member, Application } from '@/lib/types'
 
 export const metadata: Metadata = {
-  title: 'Mitglieder — SOUS SOL Admin',
+  title: 'Members — SOUS SOL Admin',
   robots: { index: false, follow: false },
 }
 
@@ -27,7 +27,7 @@ export default async function MembersPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-16 font-serif italic text-4xl text-paper">Mitglieder</h1>
+      <h1 className="mb-16 font-serif italic text-4xl text-paper">Members</h1>
       <MembersManager
         initialMembers={(members ?? []) as Member[]}
         initialApplications={(applications ?? []) as Application[]}

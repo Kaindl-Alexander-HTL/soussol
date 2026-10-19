@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { ResetPasswordForm } from '@/components/admin/ResetPasswordForm'
 
 export const metadata: Metadata = {
-  title: 'Passwort — SOUS SOL Admin',
+  title: 'Password — SOUS SOL Admin',
   robots: { index: false, follow: false },
 }
 

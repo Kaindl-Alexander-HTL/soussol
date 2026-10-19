@@ -51,11 +51,11 @@ export async function checkRateLimits(
       p_max_requests: rule.maxRequests,
     })
 
-    if (error) throw new Error(`Rate-Limit nicht verfügbar: ${error.message}`)
+    if (error) throw new Error(`Rate limit unavailable: ${error.message}`)
 
     const row = Array.isArray(data) ? data[0] : data
     if (!row || typeof row.allowed !== 'boolean') {
-      throw new Error('Rate-Limit lieferte keine gültige Antwort')
+      throw new Error('Rate limit returned no valid response')
     }
 
     retryAfter = Math.max(retryAfter, Number(row.retry_after_seconds) || 1)
@@ -67,14 +67,14 @@ export async function checkRateLimits(
 
 export function rateLimited(retryAfter: number) {
   return NextResponse.json(
-    { error: 'Zu viele Anfragen. Bitte später erneut versuchen.' },
+    { error: 'Too many requests. Please try again later.' },
     { status: 429, headers: { 'Retry-After': String(retryAfter) } }
   )
 }
 
 export function rateLimitUnavailable() {
   return NextResponse.json(
-    { error: 'Dienst vorübergehend nicht verfügbar.' },
+    { error: 'Service temporarily unavailable.' },
     { status: 503, headers: { 'Retry-After': '60' } }
   )
 }

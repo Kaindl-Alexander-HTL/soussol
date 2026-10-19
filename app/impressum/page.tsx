@@ -4,11 +4,11 @@ import { getSettings } from '@/lib/settings'
 import { LEGAL_ADDRESS, legalContactEmail } from '@/lib/legal'
 
 export const metadata: Metadata = {
-  title: 'Impressum — SOUS SOL',
+  title: 'Legal notice — SOUS SOL',
   robots: { index: false, follow: false },
 }
 
-export default async function ImpressumPage() {
+export default async function LegalNoticePage() {
   const contactEmail = legalContactEmail(await getSettings(['contact_email']))
   return (
     <main className="min-h-screen bg-ink px-6 pb-24 pt-16 sm:px-12 md:px-20 lg:px-32">
@@ -20,15 +20,15 @@ export default async function ImpressumPage() {
       </Link>
 
       <h1 className="mb-12 font-serif italic text-[clamp(2rem,5vw,3.5rem)] leading-tight text-spark">
-        Impressum
+        Legal notice
       </h1>
 
       <div className="max-w-lg space-y-10 font-sans text-sm font-light leading-relaxed text-ash">
 
-        {/* Medieninhaber */}
+        {/* Site owner */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Medieninhaber & Betreiber
+            Site owner & operator
           </h2>
           <p>
             {LEGAL_ADDRESS.name}<br />
@@ -37,42 +37,41 @@ export default async function ImpressumPage() {
             {LEGAL_ADDRESS.country}
           </p>
           {contactEmail && <p>
-            E-Mail: <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a>
+            Email: <a href={`mailto:${contactEmail}`} className="text-spark underline underline-offset-2">{contactEmail}</a>
           </p>}
         </section>
 
         {/* Art des Mediums */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Art des Mediums
+            Nature of this website
           </h2>
           <p>
-            SOUS SOL ist eine private Initiative und kein eingetragener Verein, kein Unternehmen
-            und kein kommerzielles Angebot. Die Website dient der internen Kommunikation
-            einer Sportcommunity in Linz.
+            SOUS SOL is a private initiative, not a registered association, company, or
+            commercial offering. This website supports communication within a sports community
+            in Linz.
           </p>
         </section>
 
         {/* ECG */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Grundlegende Richtung
+            Editorial purpose
           </h2>
           <p>
-            Dokumentation und Organisation von Sportveranstaltungen einer privaten Community.
-            Kein wirtschaftlicher Zweck.
+            Documenting and organising sports events for a private community. No commercial
+            purpose.
           </p>
         </section>
 
         {/* Haftung */}
         <section className="space-y-3">
           <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-            Haftungsausschluss
+            External links
           </h2>
           <p>
-            Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die
-            Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich
-            deren Betreiber verantwortlich.
+            Despite careful review, we accept no liability for the content of external links.
+            The operators of linked websites are solely responsible for their content.
           </p>
         </section>
 

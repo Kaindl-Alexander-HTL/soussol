@@ -53,11 +53,11 @@ export function ResetPasswordForm() {
     if (loading) return
 
     if (password.length < 8) {
-      setError('Mindestens 8 Zeichen.')
+      setError('At least 8 characters.')
       return
     }
     if (password !== confirm) {
-      setError('Die Passwörter stimmen nicht überein.')
+      setError('The passwords do not match.')
       return
     }
 
@@ -86,29 +86,29 @@ export function ResetPasswordForm() {
 
         {phase === 'checking' && (
           <p className="font-sans text-[11px] tracking-[0.2em] text-mist uppercase">
-            Moment...
+            One moment...
           </p>
         )}
 
         {phase === 'invalid' && (
           <div className="flex flex-col gap-6">
-            <h1 className="font-serif italic text-2xl text-paper">Link abgelaufen.</h1>
+            <h1 className="font-serif italic text-2xl text-paper">Link expired.</h1>
             <p className="font-sans text-[12px] font-light leading-relaxed text-mist">
-              Dieser Link wurde bereits benutzt oder ist nicht mehr gültig.
-              Fordere auf der Login-Seite einen neuen an.
+              This link has already been used or is no longer valid. Request a new one
+              from the login page.
             </p>
             <Link
               href="/admin/login"
               className="self-start font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"
             >
-              Zum Login →
+              Go to login →
             </Link>
           </div>
         )}
 
         {phase === 'done' && (
           <div className="flex flex-col gap-6">
-            <h1 className="font-serif italic text-2xl text-paper">Passwort gesetzt.</h1>
+            <h1 className="font-serif italic text-2xl text-paper">Password set.</h1>
             <button
               onClick={() => {
                 router.push('/admin')
@@ -116,7 +116,7 @@ export function ResetPasswordForm() {
               }}
               className="self-start font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"
             >
-              Ins Backoffice →
+              Go to back office →
             </button>
           </div>
         )}
@@ -125,7 +125,7 @@ export function ResetPasswordForm() {
           <form onSubmit={submit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-1.5">
               <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-                Neues Passwort
+                New password
               </label>
               <input
                 type="password"
@@ -140,7 +140,7 @@ export function ResetPasswordForm() {
 
             <div className="flex flex-col gap-1.5">
               <label className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-                Wiederholen
+                Repeat password
               </label>
               <input
                 type="password"
@@ -160,7 +160,7 @@ export function ResetPasswordForm() {
               disabled={loading || !password || !confirm}
               className="mt-2 self-start font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
             >
-              {loading ? '...' : 'Passwort speichern →'}
+              {loading ? '...' : 'Save password →'}
             </button>
           </form>
         )}

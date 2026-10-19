@@ -6,7 +6,7 @@ import { getCurrentMember, hasArchiveAccess } from '@/lib/member'
 import { getSettings, text } from '@/lib/settings'
 
 export const metadata: Metadata = {
-  title: 'Bewerben — SOUS SOL',
+  title: 'Apply — SOUS SOL',
   robots: { index: false, follow: false },
 }
 
@@ -19,7 +19,7 @@ export default async function ApplyPage() {
   const intro = text(
     settings,
     'apply_intro',
-    'Der Outer Circle ist für Leute mit Drive. Mit Passion. Für die, die wirklich dabei sind. Erzähl uns kurz von dir — Tim entscheidet, wer reinkommt.'
+    'The Outer Circle is for people with drive. With passion. For those who truly show up. Tell us a little about yourself — Tim decides who joins.'
   )
 
   return (
@@ -33,13 +33,13 @@ export default async function ApplyPage() {
         {isMember ? (
           <>
             <p className="mb-6 max-w-xl font-sans text-sm font-light leading-relaxed text-ash">
-              Du bist schon dabei.
+              You’re already in.
             </p>
             <Link
               href="/archive"
               className="font-sans text-[11px] tracking-[0.25em] text-spark uppercase transition-opacity hover:opacity-70"
             >
-              Zum Archive →
+              Go to the archive →
             </Link>
           </>
         ) : (
@@ -52,12 +52,12 @@ export default async function ApplyPage() {
             {/* Wer schon einen Zugangscode hat, soll sich nicht bewerben müssen. */}
             <div className="mt-14 border-t border-white/[0.06] pt-6">
               <p className="font-sans text-[11px] font-light leading-relaxed text-mist">
-                Schon dabei?{' '}
+                Already a member?{' '}
                 <Link
                   href="/enter"
                   className="tracking-[0.15em] text-ash uppercase transition-colors hover:text-paper"
                 >
-                  Mit Code einsteigen →
+                  Enter with a code →
                 </Link>
               </p>
             </div>

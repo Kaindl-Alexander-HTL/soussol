@@ -335,7 +335,7 @@ export function AdminCanvas({ mementos, initialConnections }: { mementos: Mement
               ropeMode ? 'text-spark' : 'text-mist hover:text-ash'
             }`}
           >
-            {ropeMode ? (ropeStart ? 'Ziel wählen …' : 'Seil-Modus ✕') : 'Seil spannen'}
+            {ropeMode ? (ropeStart ? 'Choose target …' : 'Rope mode ✕') : 'Add rope'}
           </button>
         </div>
 
@@ -352,7 +352,7 @@ export function AdminCanvas({ mementos, initialConnections }: { mementos: Mement
               : 'text-white/20'
           } disabled:cursor-default`}
         >
-          {saving ? '...' : saveStatus === 'ok' ? 'Gespeichert ✓' : saveStatus === 'error' ? 'Fehler' : 'Save Layout'}
+          {saving ? '...' : saveStatus === 'ok' ? 'Saved ✓' : saveStatus === 'error' ? 'Error' : 'Save layout'}
         </button>
       </div>
 
@@ -415,7 +415,7 @@ export function AdminCanvas({ mementos, initialConnections }: { mementos: Mement
       {/* Hint */}
       {mementos.length > 0 && (
         <div className="pointer-events-none fixed bottom-8 right-6 z-30 font-sans text-[9px] tracking-[0.2em] text-white/15 uppercase">
-          {ropeMode ? 'Memento A → Memento B = Seil · Seil klicken = löschen' : 'Tap = auswählen · Drag = verschieben'}
+          {ropeMode ? 'Memento A → Memento B = rope · click rope = delete' : 'Tap = select · drag = move'}
         </div>
       )}
     </>

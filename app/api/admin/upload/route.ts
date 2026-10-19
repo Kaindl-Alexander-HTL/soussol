@@ -15,15 +15,15 @@ export async function POST(request: NextRequest) {
   const file = formData?.get('file')
 
   if (!file || !(file instanceof Blob)) {
-    return NextResponse.json({ error: 'Keine Datei gefunden.' }, { status: 400 })
+    return NextResponse.json({ error: 'No file found.' }, { status: 400 })
   }
 
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return NextResponse.json({ error: 'Nur JPG, PNG, WebP und GIF erlaubt.' }, { status: 400 })
+    return NextResponse.json({ error: 'Only JPG, PNG, WebP, and GIF are allowed.' }, { status: 400 })
   }
 
   if (file.size > MAX_SIZE_BYTES) {
-    return NextResponse.json({ error: 'Datei zu groß (max. 10 MB).' }, { status: 400 })
+    return NextResponse.json({ error: 'File too large (max. 10 MB).' }, { status: 400 })
   }
 
   const ext = file.type.split('/')[1].replace('jpeg', 'jpg')
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   const signedUrl = await createArchiveSignedUrl(filename)
   if (!signedUrl) {
     await supabaseAdmin.storage.from('mementos').remove([filename])
-    return NextResponse.json({ error: 'Upload konnte nicht sicher bereitgestellt werden.' }, { status: 500 })
+    return NextResponse.json({ error: 'The upload could not be made available securely.' }, { status: 500 })
   }
 
   return NextResponse.json({ path: filename, url: signedUrl })

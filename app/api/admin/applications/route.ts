@@ -41,7 +41,7 @@ export async function PATCH(request: NextRequest) {
     .single()
 
   if (appError || !application) {
-    return NextResponse.json({ error: 'Bewerbung nicht gefunden.' }, { status: 404 })
+    return NextResponse.json({ error: 'Application not found.' }, { status: 404 })
   }
 
   const access_token = generateAccessToken()

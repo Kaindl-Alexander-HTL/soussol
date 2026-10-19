@@ -42,13 +42,13 @@ export default async function AdminArchivePage() {
             href="/admin/archive/new"
             className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"
           >
-            + Neu
+            + New
           </Link>
         </div>
       </div>
 
       {!signedMementos.length ? (
-        <p className="font-sans text-sm text-mist">Noch keine Mementos.</p>
+        <p className="font-sans text-sm text-mist">No mementos yet.</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {signedMementos.map((m) => (

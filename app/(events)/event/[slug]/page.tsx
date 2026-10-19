@@ -106,7 +106,7 @@ export default async function EventPage({
       {/* Capacity hint — nur beim internen RSVP-Flow */}
       {!event.external_signup_url && registrationOpen && spotsLeft !== null && (
         <p className="mb-8 font-sans text-[11px] tracking-[0.15em] text-mist uppercase">
-          {spotsLeft === 0 ? 'Ausgebucht — Warteliste möglich' : `${spotsLeft} Plätze verfügbar`}
+          {spotsLeft === 0 ? 'Sold out — waitlist available' : `${spotsLeft} spots available`}
         </p>
       )}
 
@@ -119,7 +119,7 @@ export default async function EventPage({
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.35em] text-ash uppercase transition-colors duration-500 hover:text-spark"
           >
-            <span>Anmelden</span>
+            <span>Sign up</span>
             <span
               className="inline-block transition-transform duration-500 group-hover:translate-x-1.5"
               aria-hidden="true"
@@ -132,7 +132,7 @@ export default async function EventPage({
         <RegistrationForm eventId={event.id} />
       ) : (
         <p className="border-t border-white/8 pt-10 font-sans text-sm text-mist">
-          Keine Anmeldung notwendig.
+          No registration required.
         </p>
       )}
     </div>

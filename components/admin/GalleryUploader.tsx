@@ -57,7 +57,7 @@ export function GalleryUploader({
   }
 
   async function deletePhoto(id: string) {
-    if (!confirm('Foto löschen?')) return
+    if (!confirm('Delete this photo?')) return
     await fetch('/api/admin/gallery', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -79,7 +79,7 @@ export function GalleryUploader({
           disabled={uploading}
           className="font-sans text-[10px] tracking-[0.25em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
         >
-          {uploading ? 'Lädt...' : '+ Fotos hinzufügen'}
+          {uploading ? 'Uploading...' : '+ Add photos'}
         </button>
         <input
           ref={fileRef}
@@ -101,7 +101,7 @@ export function GalleryUploader({
           className="flex cursor-pointer items-center justify-center border border-dashed border-white/10 py-12 transition-colors hover:border-white/25"
         >
           <span className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            Fotos hierher ziehen oder klicken
+            Drop photos here or click to upload
           </span>
         </div>
       ) : (

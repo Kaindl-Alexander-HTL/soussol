@@ -59,7 +59,7 @@ export default async function EventsPage({
           href="/admin/events/new"
           className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark"
         >
-          + Neu
+          + New
         </Link>
       </div>
 
@@ -82,7 +82,7 @@ export default async function EventsPage({
 
       {/* List */}
       {!events?.length ? (
-        <p className="font-sans text-sm text-mist">Keine Events.</p>
+        <p className="font-sans text-sm text-mist">No events.</p>
       ) : (
         <div className="flex flex-col divide-y divide-white/5">
           {events.map((event) => (

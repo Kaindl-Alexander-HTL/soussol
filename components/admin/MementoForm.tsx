@@ -109,7 +109,7 @@ export function MementoForm({
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      setError(errorMessage(json.error, 'Fehler beim Speichern.'))
+      setError(errorMessage(json.error, 'Could not save.'))
       setLoading(false)
       return
     }
@@ -120,7 +120,7 @@ export function MementoForm({
 
   async function deleteMemento() {
     if (!initial?.id || deleting) return
-    if (!confirm('Memento wirklich löschen?')) return
+    if (!confirm('Delete this memento?')) return
     setDeleting(true)
     await fetch('/api/admin/mementos', {
       method: 'DELETE',
@@ -182,7 +182,7 @@ export function MementoForm({
                 onClick={() => set('image_url', '')}
                 className="font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-white/50"
               >
-                Entfernen
+                Remove
               </button>
             )}
           </div>
@@ -211,18 +211,18 @@ export function MementoForm({
       </Field>
 
       {/* Body */}
-      <Field label="Body-Text">
+      <Field label="Body text">
         <textarea
           value={values.body}
           onChange={(e) => set('body', e.target.value)}
           rows={4}
-          placeholder={values.kind === 'strava' ? 'Distanz · Pace · Höhenmeter' : 'Längerer Text, Beschreibung...'}
+          placeholder={values.kind === 'strava' ? 'Distance · Pace · Elevation' : 'Longer text, description...'}
           className={`${inputClass} resize-y`}
         />
       </Field>
 
       {/* Date label */}
-      <Field label="Datum-Label">
+      <Field label="Date label">
         <input
           type="text"
           value={values.date_label}
@@ -275,7 +275,7 @@ export function MementoForm({
           disabled={loading || uploading}
           className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
         >
-          {loading ? '...' : isEdit ? 'Speichern →' : 'Erstellen →'}
+          {loading ? '...' : isEdit ? 'Save →' : 'Create →'}
         </button>
         {isEdit && (
           <button
@@ -284,7 +284,7 @@ export function MementoForm({
             disabled={deleting}
             className="ml-auto font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-white/50 disabled:opacity-30"
           >
-            {deleting ? '...' : 'Löschen'}
+            {deleting ? '...' : 'Delete'}
           </button>
         )}
       </div>

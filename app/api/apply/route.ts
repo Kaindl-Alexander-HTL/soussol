@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     body = await readJsonBody(request, 8 * 1024)
   } catch (error) {
     const status = error instanceof RequestBodyError ? error.status : 400
-    return NextResponse.json({ error: 'Ungültige Anfrage.' }, { status })
+    return NextResponse.json({ error: 'Invalid request.' }, { status })
   }
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     // Ursache mitloggen — sonst steht im Log nur "500" und die eigentliche
     // Meldung (fehlende Spalte, RLS, Netzwerk) ist weg.
     console.error('[apply] insert failed:', error.message)
-    return NextResponse.json({ error: 'Fehler beim Speichern.' }, { status: 500 })
+    return NextResponse.json({ error: 'Could not save.' }, { status: 500 })
   }
 
   // Nach der Antwort senden: die Bewerbung ist gespeichert, ein Mailfehler darf
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
   )
   after(() =>
     sendApplicationConfirmation({ name, email }).catch((e) =>
-      console.error('[apply] Bestätigung an Bewerber fehlgeschlagen:', e?.message ?? e)
+      console.error('[apply] Applicant confirmation failed:', e?.message ?? e)
     )
   )
 

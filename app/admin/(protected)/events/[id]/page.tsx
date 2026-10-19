@@ -6,7 +6,7 @@ import { EventForm } from '@/components/admin/EventForm'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 
-export const metadata: Metadata = { title: 'Event bearbeiten — SOUS SOL Admin' }
+export const metadata: Metadata = { title: 'Edit event — SOUS SOL Admin' }
 
 function csvCell(value: string): string {
   const protectedValue = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
@@ -15,7 +15,7 @@ function csvCell(value: string): string {
 
 function csvExport(registrations: { guest_name: string; instagram_handle: string | null; strava_handle: string | null; phone: string | null; email: string | null; is_waitlist: boolean; notes: string | null; created_at: string }[]) {
   const rows = [
-    ['Name', 'Instagram', 'Strava', 'Telefon', 'E-Mail', 'Warteliste', 'Notiz', 'Angemeldet am'],
+    ['Name', 'Instagram', 'Strava', 'Phone', 'Email', 'Waitlist', 'Note', 'Registered at'],
     ...registrations.map((r) => [
       r.guest_name,
       r.instagram_handle ? `@${r.instagram_handle}` : '',
@@ -87,7 +87,7 @@ export default async function EventEditPage({
         <div className="mt-16">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-              Anmeldungen ({registrations?.length ?? 0})
+              Registrations ({registrations?.length ?? 0})
             </h2>
             {(registrations?.length ?? 0) > 0 && (
               <a
@@ -101,7 +101,7 @@ export default async function EventEditPage({
           </div>
 
           {!registrations?.length ? (
-            <p className="font-sans text-sm text-mist">Noch keine Anmeldungen.</p>
+            <p className="font-sans text-sm text-mist">No registrations yet.</p>
           ) : (
             <div className="flex flex-col divide-y divide-white/5">
               {registrations.map((r) => (
@@ -117,7 +117,7 @@ export default async function EventEditPage({
                   </span>
                   {r.is_waitlist && (
                     <span className="font-sans text-[9px] tracking-[0.2em] text-white/30 uppercase">
-                      Warteliste
+                      Waitlist
                     </span>
                   )}
                   <span className="font-sans text-[10px] text-white/20">

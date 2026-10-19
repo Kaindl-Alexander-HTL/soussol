@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     if (error.code === '23505') {
-      return NextResponse.json({ error: 'E-Mail bereits als Mitglied vorhanden.' }, { status: 409 })
+      return NextResponse.json({ error: 'This email already belongs to a member.' }, { status: 409 })
     }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Mail raus ist.
     after(() =>
       sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
-        console.error('[members] Invite-Mail (neues Mitglied) fehlgeschlagen:', e?.message ?? e)
+        console.error('[members] Invite email for new member failed:', e?.message ?? e)
       )
     )
   }
@@ -88,11 +88,11 @@ export async function PATCH(request: NextRequest) {
       .eq('id', id)
       .select('name, email, role, access_token')
       .single()
-    if (error || !data) return NextResponse.json({ error: 'Zugang konnte nicht erneuert werden.' }, { status: 500 })
+    if (error || !data) return NextResponse.json({ error: 'Access could not be renewed.' }, { status: 500 })
     if (hasArchiveRole(data.role)) {
       after(() =>
         sendMemberAccessRenewed({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
-          console.error('[members] Mail "Neuer Zugang" fehlgeschlagen:', e?.message ?? e)
+          console.error('[members] New access email failed:', e?.message ?? e)
         )
       )
     }
@@ -106,9 +106,9 @@ export async function PATCH(request: NextRequest) {
       .select('name, email, role, access_token')
       .eq('id', id)
       .single()
-    if (error || !data) return NextResponse.json({ error: 'Mitglied nicht gefunden.' }, { status: 404 })
+    if (error || !data) return NextResponse.json({ error: 'Member not found.' }, { status: 404 })
     if (!hasArchiveRole(data.role)) {
-      return NextResponse.json({ error: 'Nur outer/inner erhalten Zugang.' }, { status: 409 })
+      return NextResponse.json({ error: 'Only outer and inner members receive access.' }, { status: 409 })
     }
     after(() =>
       sendMemberInvite({ name: data.name, email: data.email, accessToken: data.access_token }).catch((e) =>
@@ -120,13 +120,13 @@ export async function PATCH(request: NextRequest) {
 
   // Normales Update (name/email/role/is_active).
   if (Object.keys(fields).length === 0) {
-    return NextResponse.json({ error: 'Keine Änderung angegeben.' }, { status: 400 })
+    return NextResponse.json({ error: 'No changes provided.' }, { status: 400 })
   }
 
   const { error } = await supabaseAdmin.from('members').update(fields).eq('id', id)
   if (error) {
     if (error.code === '23505') {
-      return NextResponse.json({ error: 'E-Mail bereits vergeben.' }, { status: 409 })
+      return NextResponse.json({ error: 'Email already in use.' }, { status: 409 })
     }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

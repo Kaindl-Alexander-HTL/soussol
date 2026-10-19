@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
   const normalizedImage = normalizeArchiveMediaRef(parsed.data.image_url)
   if (parsed.data.image_url && !normalizedImage) {
-    return NextResponse.json({ error: 'Ungültige Bildadresse.' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid image URL.' }, { status: 400 })
   }
 
   const { data, error } = await supabaseAdmin
@@ -62,7 +62,7 @@ export async function PATCH(request: NextRequest) {
   if ('image_url' in updates) {
     const normalizedImage = normalizeArchiveMediaRef(updates.image_url)
     if (updates.image_url && !normalizedImage) {
-      return NextResponse.json({ error: 'Ungültige Bildadresse.' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid image URL.' }, { status: 400 })
     }
     updates.image_url = normalizedImage
   }

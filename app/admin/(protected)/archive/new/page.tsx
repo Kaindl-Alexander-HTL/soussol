@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { getAdminClient } from '@/lib/admin'
 import { MementoForm } from '@/components/admin/MementoForm'
 
-export const metadata: Metadata = { title: 'Neues Memento — SOUS SOL Admin' }
+export const metadata: Metadata = { title: 'New memento — SOUS SOL Admin' }
 
 export default async function NewMementoPage() {
   const supabase = await getAdminClient()
@@ -23,7 +23,7 @@ export default async function NewMementoPage() {
         >
           ← Archive
         </Link>
-        <h1 className="font-serif italic text-3xl text-paper">Neues Memento</h1>
+        <h1 className="font-serif italic text-3xl text-paper">New memento</h1>
       </div>
       <MementoForm events={events ?? []} />
     </div>

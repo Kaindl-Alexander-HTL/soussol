@@ -109,7 +109,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      setError(errorMessage(json.error, 'Fehler beim Speichern.'))
+      setError(errorMessage(json.error, 'Could not save.'))
       setLoading(false)
       return
     }
@@ -120,7 +120,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
 
   async function deleteEvent() {
     if (!initial?.id || deleting) return
-    if (!confirm('Event wirklich löschen?')) return
+    if (!confirm('Delete this event?')) return
     setDeleting(true)
     await fetch('/api/admin/events', {
       method: 'DELETE',
@@ -214,23 +214,23 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
           value={values.max_participants}
           onChange={(e) => set('max_participants', e.target.value)}
           className={inputClass}
-          placeholder="leer = unbegrenzt"
+          placeholder="empty = unlimited"
         />
       </Field>
 
       {/* External signup URL (z.B. Turnier über Partner) */}
-      <Field label="Externe Anmeldung (URL)">
+      <Field label="External registration (URL)">
         <input
           type="url"
           value={values.external_signup_url}
           onChange={(e) => set('external_signup_url', e.target.value)}
           className={inputClass}
-          placeholder="leer = interne Anmeldung. Sonst: https://…"
+          placeholder="empty = internal registration; otherwise: https://…"
         />
       </Field>
 
       {/* Registration enabled */}
-      <Field label="Anmeldung">
+      <Field label="Registration">
         <button
           type="button"
           onClick={() => set('registration_enabled', !values.registration_enabled)}
@@ -261,11 +261,11 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
               values.visibility === 'outer' ? 'border-spark bg-spark/20' : 'border-white/20 bg-transparent'
             }`}
           />
-          {values.visibility === 'outer' ? 'Nur Outer Circle' : 'Öffentlich'}
+          {values.visibility === 'outer' ? 'Outer Circle only' : 'Public'}
         </button>
         <p className="mt-2 font-sans text-[10px] font-light leading-relaxed text-mist">
           {values.visibility === 'outer'
-            ? 'Nur eingeloggte Mitglieder sehen dieses Event. Gäste bekommen es weder auf /upcoming noch über die direkte URL.'
+            ? 'Only signed-in members can see this event. Guests cannot access it from /upcoming or by direct URL.'
             : 'Jeder sieht dieses Event.'}
         </p>
       </Field>
@@ -301,7 +301,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
           disabled={loading}
           className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
         >
-          {loading ? '...' : isEdit ? 'Speichern →' : 'Erstellen →'}
+          {loading ? '...' : isEdit ? 'Save →' : 'Create →'}
         </button>
         {isEdit && (
           <button
@@ -310,7 +310,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
             disabled={deleting}
             className="ml-auto font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-white/50 disabled:opacity-30"
           >
-            {deleting ? '...' : 'Löschen'}
+            {deleting ? '...' : 'Delete'}
           </button>
         )}
       </div>

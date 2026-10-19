@@ -43,7 +43,7 @@ export default async function GaleriePage({
           href={`/archive/${id}`}
           className="mb-10 inline-block font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-ash"
         >
-          ← Zurück
+          ← Back
         </Link>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -86,7 +86,7 @@ export default async function GaleriePage({
           className="group inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] text-mist uppercase transition-colors hover:text-spark"
         >
           <span className="inline-block transition-transform duration-300 group-hover:-translate-x-1.5">←</span>
-          <span>Zurück zum Memento</span>
+          <span>Back to memento</span>
         </Link>
       </div>
     </div>

@@ -29,7 +29,7 @@ export function ApplicationForm() {
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      setErrorMsg(typeof json.error === 'string' ? json.error : 'Etwas ist schiefgelaufen.')
+      setErrorMsg(typeof json.error === 'string' ? json.error : 'Something went wrong.')
       setState('error')
       return
     }
@@ -40,9 +40,9 @@ export function ApplicationForm() {
   if (state === 'success') {
     return (
       <div className="border-t border-white/8 pt-12">
-        <p className="opsz-body font-serif italic text-2xl text-paper">Danke.</p>
+        <p className="opsz-body font-serif italic text-2xl text-paper">Thank you.</p>
         <p className="mt-3 font-sans text-sm font-light text-mist">
-          Wir haben deine Bewerbung. Du hörst von uns.
+          We received your application. You’ll hear from us.
         </p>
       </div>
     )
@@ -50,7 +50,7 @@ export function ApplicationForm() {
 
   return (
     <div className="border-t border-white/8 pt-12">
-      <p className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">Bewerben</p>
+      <p className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">Apply</p>
       <form onSubmit={submit} className="flex max-w-sm flex-col gap-7">
         <div className="flex flex-col gap-2">
           <label htmlFor="application-name" className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">Name *</label>
@@ -68,7 +68,7 @@ export function ApplicationForm() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="application-email" className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">E-Mail *</label>
+          <label htmlFor="application-email" className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">Email *</label>
           <input
             id="application-email"
             name="email"
@@ -84,7 +84,7 @@ export function ApplicationForm() {
 
         <div className="flex flex-col gap-2">
           <label htmlFor="application-message" className="font-sans text-[10px] tracking-[0.25em] text-mist uppercase">
-            Erzähl uns von dir
+            Tell us about yourself
           </label>
           <textarea
             id="application-message"
@@ -94,7 +94,7 @@ export function ApplicationForm() {
             rows={5}
             disabled={state === 'loading'}
             className={`${inputClass} resize-y`}
-            placeholder="Wie bist du zu SOUS SOL gekommen?"
+            placeholder="How did you find SOUS SOL?"
           />
         </div>
 
@@ -105,7 +105,7 @@ export function ApplicationForm() {
           disabled={state === 'loading' || !name.trim() || !email.trim()}
           className="text-left font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
         >
-          {state === 'loading' ? '...' : 'Absenden →'}
+          {state === 'loading' ? '...' : 'Submit →'}
         </button>
       </form>
     </div>

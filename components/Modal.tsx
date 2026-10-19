@@ -63,7 +63,7 @@ export function Modal({
               <button
                 onClick={onClose}
                 className="absolute right-5 top-5 font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-spark"
-                aria-label="Schließen"
+                aria-label="Close"
               >
                 ✕
               </button>

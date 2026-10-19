@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { EventForm } from '@/components/admin/EventForm'
 
-export const metadata: Metadata = { title: 'Neuer Event — SOUS SOL Admin' }
+export const metadata: Metadata = { title: 'New event — SOUS SOL Admin' }
 
 export default function NewEventPage() {
   return (
@@ -14,7 +14,7 @@ export default function NewEventPage() {
         >
           ← Events
         </Link>
-        <h1 className="font-serif italic text-3xl text-paper">Neuer Event</h1>
+        <h1 className="font-serif italic text-3xl text-paper">New event</h1>
       </div>
       <EventForm />
     </div>

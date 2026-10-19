@@ -9,7 +9,7 @@ const links = [
   { href: '/admin/events', label: 'Events' },
   { href: '/admin/members', label: 'Members' },
   { href: '/admin/archive', label: 'Archive' },
-  { href: '/admin/settings', label: 'Schrift & Texte' },
+  { href: '/admin/settings', label: 'Fonts & copy' },
 ]
 
 export function AdminNav() {

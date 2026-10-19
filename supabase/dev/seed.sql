@@ -5,7 +5,7 @@
 
 -- ── Settings (Landing-Manifest + Links) ─────────────────────────────────────
 insert into settings (key, value) values
-  ('manifest', '{"content": "Built in the basement.\n\nRaised in the streets.\n\nRunning. Rennrad. Volleyball. Linz."}'::jsonb),
+  ('manifest', '{"content": "Built in the basement.\n\nRaised in the streets.\n\nRunning. Road cycling. Volleyball. Linz."}'::jsonb),
   ('instagram_url', '"https://instagram.com/soussol"'::jsonb),
   ('strava_club_url', '"https://strava.com/clubs/soussol"'::jsonb),
   ('contact_email', '"hey@sous.club"'::jsonb)

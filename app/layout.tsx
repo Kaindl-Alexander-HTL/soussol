@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: '%s — SOUS SOL',
   },
   description:
-    'Underground Sport Community in Linz. Running, Rennrad, Volleyball. Built in the basement. Raised in the streets.',
+    'Underground sports community in Linz. Running, road cycling, volleyball. Built in the basement. Raised in the streets.',
   metadataBase: new URL('https://soussol-archive.com'),
   alternates: { canonical: '/' },
   openGraph: {
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     description: 'Underground Sport Community — Linz.',
     url: 'https://soussol-archive.com',
     siteName: 'SOUS SOL',
-    locale: 'de_AT',
+    locale: 'en_AT',
     type: 'website',
   },
   twitter: {
@@ -51,7 +51,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang="de"
+      lang="en"
       className={`${fontVariables} h-full`}
       style={
         {

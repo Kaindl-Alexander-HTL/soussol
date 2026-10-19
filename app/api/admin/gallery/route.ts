@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
   const normalizedUrl = normalizeArchiveMediaRef(parsed.data.url)
   if (!normalizedUrl) {
-    return NextResponse.json({ error: 'Ungültige Bildadresse.' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid image URL.' }, { status: 400 })
   }
 
   const { data, error } = await supabaseAdmin

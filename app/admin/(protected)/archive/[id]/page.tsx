@@ -5,7 +5,7 @@ import { getAdminClient } from '@/lib/admin'
 import { signMementoMedia } from '@/lib/archive-media'
 import { MementoForm } from '@/components/admin/MementoForm'
 
-export const metadata: Metadata = { title: 'Memento bearbeiten — SOUS SOL Admin' }
+export const metadata: Metadata = { title: 'Edit memento — SOUS SOL Admin' }
 
 export default async function EditMementoPage({
   params,

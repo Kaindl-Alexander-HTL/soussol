@@ -223,7 +223,7 @@ export function ArchiveCanvas({ mementos, connections = [] }: { mementos: Mement
         onClick={resetView}
         className="fixed right-6 z-40 font-sans text-[10px] tracking-[0.25em] text-mist uppercase transition-colors hover:text-paper sm:right-12"
         style={{ top: 72 }}
-        aria-label="Ansicht zurücksetzen"
+        aria-label="Reset view"
       >
         Reset
       </button>

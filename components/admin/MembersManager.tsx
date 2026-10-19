@@ -4,7 +4,7 @@ import { errorMessage } from '@/lib/form-error'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import { enGB } from 'date-fns/locale'
 import type { Member, MemberRole, Application } from '@/lib/types'
 
 const ROLES: { value: MemberRole; label: string }[] = [
@@ -45,7 +45,7 @@ export function MembersManager({
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      const message = errorMessage(json.error, 'Fehler.')
+      const message = errorMessage(json.error, 'Error.')
       setError(message)
       return { ok: false, error: message }
     }
@@ -79,11 +79,11 @@ export function MembersManager({
               ›
             </span>
           )}
-          Bewerbungen ({initialApplications.length})
+          Applications ({initialApplications.length})
         </button>
 
         {initialApplications.length === 0 ? (
-          <p className="font-sans text-sm text-mist">Keine offenen Bewerbungen.</p>
+          <p className="font-sans text-sm text-mist">No open applications.</p>
         ) : !showApplications ? null : (
           <div className="flex flex-col divide-y divide-white/5">
             {initialApplications.map((a) => (
@@ -92,7 +92,7 @@ export function MembersManager({
                   <span className="font-sans text-sm font-light text-ash">{a.name}</span>
                   <span className="font-sans text-[11px] text-mist">{a.email}</span>
                   <span className="ml-auto font-sans text-[10px] text-white/20">
-                    {format(new Date(a.created_at), 'd. MMM', { locale: de })}
+                    {format(new Date(a.created_at), 'd MMM', { locale: enGB })}
                   </span>
                 </div>
                 {a.message && (
@@ -107,7 +107,7 @@ export function MembersManager({
                     onClick={() => call('/api/admin/applications', 'PATCH', { id: a.id, action: 'approve' })}
                     className="font-sans text-[10px] tracking-[0.2em] text-spark uppercase transition-colors hover:text-paper disabled:opacity-30"
                   >
-                    Akzeptieren
+                    Accept
                   </button>
                   <button
                     type="button"
@@ -115,7 +115,7 @@ export function MembersManager({
                     onClick={() => call('/api/admin/applications', 'PATCH', { id: a.id, action: 'reject' })}
                     className="font-sans text-[10px] tracking-[0.2em] text-white/25 uppercase transition-colors hover:text-white/50 disabled:opacity-30"
                   >
-                    Ablehnen
+                    Reject
                   </button>
                 </div>
               </div>
@@ -130,10 +130,10 @@ export function MembersManager({
       {/* ── Mitglieder ──────────────────────────────────────────── */}
       <section>
         <h2 className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-          Mitglieder ({activeMembers.length})
+          Members ({activeMembers.length})
         </h2>
         {activeMembers.length === 0 ? (
-          <p className="font-sans text-sm text-mist">Noch keine Mitglieder.</p>
+          <p className="font-sans text-sm text-mist">No members yet.</p>
         ) : (
           <div className="flex flex-col divide-y divide-white/5">
             {activeMembers.map((m) => (
@@ -160,7 +160,7 @@ export function MembersManager({
               >
                 ›
               </span>
-              Ehemalige ({formerMembers.length})
+              Former members ({formerMembers.length})
             </button>
 
             {showFormer && (
@@ -210,7 +210,7 @@ function AddMemberForm({
   return (
     <section>
       <h2 className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-        Mitglied hinzufügen
+        Add member
       </h2>
       <form onSubmit={submit} className="flex flex-col gap-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -224,7 +224,7 @@ function AddMemberForm({
           />
           <input
             type="email"
-            placeholder="E-Mail"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -258,10 +258,10 @@ function AddMemberForm({
           disabled={busy || !name.trim() || !email.trim()}
           className="text-left font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
         >
-          Hinzufügen →
+          Add →
         </button>
         <p className="font-sans text-[10px] text-white/25">
-          outer/inner bekommen automatisch eine Invite-Mail mit Link + Code.
+          Outer and inner members automatically receive an invitation email with a link and code.
         </p>
       </form>
     </section>
@@ -322,14 +322,14 @@ function MemberRow({
             onClick={saveEdit}
             className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
           >
-            Speichern →
+            Save →
           </button>
           <button
             type="button"
             onClick={() => setEditing(false)}
             className="font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-white/50"
           >
-            Abbrechen
+            Cancel
           </button>
         </div>
       </div>
@@ -347,10 +347,10 @@ function MemberRow({
       </span>
       {member.is_active ? (
         <span className="font-sans text-[10px] text-white/25">
-          beigetreten am {format(new Date(member.created_at), 'd. MMMM yyyy', { locale: de })}
+          joined {format(new Date(member.created_at), 'd MMMM yyyy', { locale: enGB })}
         </span>
       ) : (
-        <span className="font-sans text-[9px] tracking-[0.2em] text-white/30 uppercase">Entfernt</span>
+        <span className="font-sans text-[9px] tracking-[0.2em] text-white/30 uppercase">Removed</span>
       )}
 
       <div className="ml-auto flex items-center gap-4">
@@ -359,7 +359,7 @@ function MemberRow({
           onClick={() => setEditing(true)}
           className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash"
         >
-          Bearbeiten
+          Edit
         </button>
         {(member.role === 'outer' || member.role === 'inner') && (
           <>
@@ -368,9 +368,9 @@ function MemberRow({
               disabled={busy}
               onClick={() => call('/api/admin/members', 'PATCH', { id: member.id, action: 'resend' })}
               className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash disabled:opacity-30"
-              title="Schickt denselben Zugang nochmal per Mail — der alte Link bleibt gültig."
+              title="Sends the same access details again; the old link remains valid."
             >
-              Nochmal senden
+              Resend
             </button>
             <button
               type="button"
@@ -378,16 +378,16 @@ function MemberRow({
               onClick={() => {
                 if (
                   confirm(
-                    `Neuen Zugang für ${member.name} erstellen?\n\nDer bisherige Link und Code werden sofort ungültig. ${member.name} bekommt den neuen Zugang per Mail.`
+                    `Create new access details for ${member.name}?\n\nThe current link and code will stop working immediately. ${member.name} will receive the new details by email.`
                   )
                 ) {
                   call('/api/admin/members', 'PATCH', { id: member.id, action: 'renew' })
                 }
               }}
               className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash disabled:opacity-30"
-              title="Erzeugt einen neuen Zugang und macht den alten ungültig."
+              title="Creates new access details and invalidates the old ones."
             >
-              Neuer Zugang
+              New access
             </button>
           </>
         )}
@@ -397,7 +397,7 @@ function MemberRow({
           onClick={() => call('/api/admin/members', 'PATCH', { id: member.id, is_active: !member.is_active })}
           className="font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-white/50 disabled:opacity-30"
         >
-          {member.is_active ? 'Entfernen' : 'Aktivieren'}
+          {member.is_active ? 'Remove' : 'Activate'}
         </button>
       </div>
     </div>

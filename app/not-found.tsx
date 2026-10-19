@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function NotFound() {
   const settings = await getSettings(['not_found_text'])
-  const notFoundText = text(settings, 'not_found_text', 'Nicht gefunden')
+  const notFoundText = text(settings, 'not_found_text', 'Not found')
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-ink px-6">
@@ -27,7 +27,7 @@ export default async function NotFound() {
         href="/"
         className="mt-10 font-sans text-[10px] tracking-[0.3em] text-mist uppercase transition-colors hover:text-ash"
       >
-        ← Zurück
+        ← Back
       </Link>
     </main>
   )

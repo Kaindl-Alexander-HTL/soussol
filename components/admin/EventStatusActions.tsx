@@ -10,11 +10,11 @@ export type EventStatus = 'upcoming' | 'past' | 'cancelled'
 // gehen ergibt keinen Sinn, das wäre nur eine weitere Klickmöglichkeit.
 const TARGETS: Record<EventStatus, { value: EventStatus; label: string }[]> = {
   upcoming: [
-    { value: 'past', label: 'Nach Past' },
+    { value: 'past', label: 'Move to past' },
     { value: 'cancelled', label: 'Absagen' },
   ],
-  past: [{ value: 'upcoming', label: 'Nach Upcoming' }],
-  cancelled: [{ value: 'upcoming', label: 'Nach Upcoming' }],
+  past: [{ value: 'upcoming', label: 'Move to upcoming' }],
+  cancelled: [{ value: 'upcoming', label: 'Move to upcoming' }],
 }
 
 export function EventStatusActions({

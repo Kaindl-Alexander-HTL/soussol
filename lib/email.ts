@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import { enGB } from 'date-fns/locale'
 import {
   shell,
   heading,
@@ -40,22 +40,22 @@ type RegistrationEmailParams = {
 export async function sendRegistrationNotification(params: RegistrationEmailParams) {
   const { guestName, instagramHandle, stravaHandle, phone, email, eventTitle, startsAt, isWaitlist } = params
 
-  const dateStr = format(new Date(startsAt), 'dd. MMMM yyyy, HH:mm', { locale: de })
+  const dateStr = format(new Date(startsAt), 'dd MMMM yyyy, HH:mm', { locale: enGB })
   const subject = isWaitlist
-    ? `[Warteliste] ${guestName} — ${eventTitle}`
-    : `Neue Anmeldung: ${guestName} — ${eventTitle}`
+    ? `[Waitlist] ${guestName} — ${eventTitle}`
+    : `New registration: ${guestName} — ${eventTitle}`
 
   const lines = [
-    isWaitlist ? 'WARTELISTE' : 'NEUE ANMELDUNG',
+    isWaitlist ? 'WAITLIST' : 'NEW REGISTRATION',
     '',
     `Name:      ${guestName}`,
   ]
   if (instagramHandle) lines.push(`Instagram: @${instagramHandle}`)
   if (stravaHandle)    lines.push(`Strava:    ${stravaHandle}`)
-  if (phone)           lines.push(`Telefon:   ${phone}`)
-  if (email)           lines.push(`E-Mail:    ${email}`)
+  if (phone)           lines.push(`Phone:     ${phone}`)
+  if (email)           lines.push(`Email:     ${email}`)
   lines.push(`Event:     ${eventTitle}`)
-  lines.push(`Datum:     ${dateStr}`)
+  lines.push(`Date:      ${dateStr}`)
 
   const text = lines.join('\n')
 
@@ -80,49 +80,48 @@ export async function sendMemberInvite(params: MemberInviteParams) {
   const link = `${siteUrl}/api/enter?token=${accessToken}`
 
   const text = [
-    `Hallo ${name},`,
+    `Hello ${name},`,
     '',
-    'du bist dabei. Über diesen Link kommst du rein:',
+    'you’re in. Use this link to enter:',
     link,
     '',
-    'Falls der Link nicht funktioniert, kannst du diesen Code auf der Seite eingeben:',
+    'If the link does not work, enter this code on the site:',
     accessToken,
     '',
-    'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager,',
-    'damit du ihn später einfach wieder kopieren kannst.',
+    'Save the code in your notes or password manager so you can use it again later.',
     '',
-    'Bis bald.',
+    'See you soon.',
     '',
     'SOUS SOL — Linz',
   ].join('\n')
 
   const html = shell({
-    preheader: 'Du bist dabei.',
+    preheader: 'You’re in.',
     content: [
-      heading('Du bist dabei.'),
+      heading('You’re in.'),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
-      paragraph(`Hallo ${name},`),
-      paragraph('ab jetzt gehörst du zum Outer Circle. Ein Klick, und du bist drin.'),
+      paragraph(`Hello ${name},`),
+      paragraph('you’re now part of the Outer Circle. One click and you’re in.'),
       `<div style="height:6px;line-height:6px;font-size:0;">&nbsp;</div>`,
-      button(link, 'Reinkommen'),
+      button(link, 'Enter'),
       `<div style="height:34px;line-height:34px;font-size:0;">&nbsp;</div>`,
-      label('Falls der Button nicht geht'),
+      label('If the button does not work'),
       `<div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>`,
-      paragraph('Gib diesen Code auf der Seite ein:'),
+      paragraph('Enter this code on the site:'),
       codeBlock(accessToken),
       `<div style="height:14px;line-height:14px;font-size:0;">&nbsp;</div>`,
       paragraph(
-        'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager, damit du ihn später einfach wieder kopieren kannst.'
+        'Save the code in your notes or password manager so you can use it again later.'
       ),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
-      label('Bis bald'),
+      label('See you soon'),
     ].join('\n'),
   })
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
     to: email,
-    subject: 'Willkommen bei SOUS SOL',
+    subject: 'Welcome to SOUS SOL',
     text,
     html,
   })
@@ -138,49 +137,48 @@ export async function sendMemberAccessReminder(params: MemberInviteParams) {
   const link = `${siteUrl}/api/enter?token=${accessToken}`
 
   const text = [
-    `Hallo ${name},`,
+    `Hello ${name},`,
     '',
-    'hier ist dein Zugang nochmal:',
+    'here are your access details again:',
     link,
     '',
-    'Oder mit diesem Code auf der Seite:',
+    'Or enter this code on the site:',
     accessToken,
     '',
-    'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager,',
-    'damit du ihn später einfach wieder kopieren kannst.',
+    'Save the code in your notes or password manager so you can use it again later.',
     '',
-    'Bis bald.',
+    'See you soon.',
     '',
     'SOUS SOL — Linz',
   ].join('\n')
 
   const html = shell({
-    preheader: 'Hier ist dein Zugang.',
+    preheader: 'Here are your access details.',
     content: [
-      heading('Dein Zugang.'),
+      heading('Your access.'),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
-      paragraph(`Hallo ${name},`),
-      paragraph('hier ist dein Zugang nochmal. Ein Klick, und du bist drin.'),
+      paragraph(`Hello ${name},`),
+      paragraph('here are your access details again. One click and you’re in.'),
       `<div style="height:6px;line-height:6px;font-size:0;">&nbsp;</div>`,
-      button(link, 'Reinkommen'),
+      button(link, 'Enter'),
       `<div style="height:34px;line-height:34px;font-size:0;">&nbsp;</div>`,
-      label('Falls der Button nicht geht'),
+      label('If the button does not work'),
       `<div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>`,
-      paragraph('Gib diesen Code auf der Seite ein:'),
+      paragraph('Enter this code on the site:'),
       codeBlock(accessToken),
       `<div style="height:14px;line-height:14px;font-size:0;">&nbsp;</div>`,
       paragraph(
-        'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager, damit du ihn später einfach wieder kopieren kannst.'
+        'Save the code in your notes or password manager so you can use it again later.'
       ),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
-      label('Bis bald'),
+      label('See you soon'),
     ].join('\n'),
   })
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
     to: email,
-    subject: 'Dein Zugang — SOUS SOL',
+    subject: 'Your access — SOUS SOL',
     text,
     html,
   })
@@ -196,54 +194,52 @@ export async function sendMemberAccessRenewed(params: MemberInviteParams) {
   const link = `${siteUrl}/api/enter?token=${accessToken}`
 
   const text = [
-    `Hallo ${name},`,
+    `Hello ${name},`,
     '',
-    'dein Zugang wurde erneuert. Der alte Link und der alte Code funktionieren',
-    'ab sofort nicht mehr.',
+    'your access details have been renewed. The old link and code no longer work.',
     '',
-    'Hier kommst du rein:',
+    'Enter here:',
     link,
     '',
-    'Oder mit diesem Code auf der Seite:',
+    'Or enter this code on the site:',
     accessToken,
     '',
-    'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager,',
-    'damit du ihn später einfach wieder kopieren kannst.',
+    'Save the code in your notes or password manager so you can use it again later.',
     '',
-    'Bis bald.',
+    'See you soon.',
     '',
     'SOUS SOL — Linz',
   ].join('\n')
 
   const html = shell({
-    preheader: 'Dein Zugang wurde erneuert.',
+    preheader: 'Your access was renewed.',
     content: [
-      heading('Neuer Zugang.'),
+      heading('New access.'),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
-      paragraph(`Hallo ${name},`),
+      paragraph(`Hello ${name},`),
       paragraph(
-        'dein Zugang wurde erneuert. Der alte Link und der alte Code funktionieren ab sofort nicht mehr.'
+        'Your access was renewed. The old link and code no longer work.'
       ),
       `<div style="height:6px;line-height:6px;font-size:0;">&nbsp;</div>`,
-      button(link, 'Reinkommen'),
+      button(link, 'Enter'),
       `<div style="height:34px;line-height:34px;font-size:0;">&nbsp;</div>`,
-      label('Falls der Button nicht geht'),
+      label('If the button does not work'),
       `<div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>`,
-      paragraph('Gib diesen Code auf der Seite ein:'),
+      paragraph('Enter this code on the site:'),
       codeBlock(accessToken),
       `<div style="height:14px;line-height:14px;font-size:0;">&nbsp;</div>`,
       paragraph(
-        'Speichere dir den Code am besten in deinen Notizen oder einem Passwortmanager, damit du ihn später einfach wieder kopieren kannst.'
+        'Save the code in your notes or password manager so you can use it again later.'
       ),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
-      label('Bis bald'),
+      label('See you soon'),
     ].join('\n'),
   })
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
     to: email,
-    subject: 'Dein neuer Zugang — SOUS SOL',
+    subject: 'Your new access — SOUS SOL',
     text,
     html,
   })
@@ -262,28 +258,28 @@ export async function sendApplicationNotification(params: ApplicationEmailParams
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sous.club'
 
   const lines = [
-    'NEUE BEWERBUNG',
+    'NEW APPLICATION',
     '',
     `Name:    ${name}`,
-    `E-Mail:  ${email}`,
+    `Email:   ${email}`,
   ]
   if (message) {
-    lines.push('', 'Nachricht:', message)
+    lines.push('', 'Message:', message)
   }
-  lines.push('', `Annehmen oder ablehnen: ${siteUrl}/admin`)
+  lines.push('', `Accept or reject: ${siteUrl}/admin`)
 
   const html = shell({
     preheader: `${name} — ${email}`,
     content: [
-      heading('Neue Bewerbung'),
+      heading('New application'),
       `<div style="height:30px;line-height:30px;font-size:0;">&nbsp;</div>`,
       '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">',
       field('Name', name),
-      field('E-Mail', email),
-      message ? field('Nachricht', message) : '',
+      field('Email', email),
+      message ? field('Message', message) : '',
       '</table>',
       `<div style="height:14px;line-height:14px;font-size:0;">&nbsp;</div>`,
-      button(`${siteUrl}/admin`, 'Im Admin öffnen'),
+      button(`${siteUrl}/admin`, 'Open admin'),
     ].join('\n'),
   })
 
@@ -291,7 +287,7 @@ export async function sendApplicationNotification(params: ApplicationEmailParams
     from: 'SOUS SOL <noreply@soussol-archive.com>',
     to: process.env.ADMIN_EMAIL!,
     replyTo: email,
-    subject: `Neue Bewerbung: ${name}`,
+    subject: `New application: ${name}`,
     text: lines.join('\n'),
     html,
   })
@@ -302,37 +298,36 @@ export async function sendApplicationConfirmation(params: ApplicationEmailParams
   const { name, email } = params
 
   const text = [
-    `Hallo ${name},`,
+    `Hello ${name},`,
     '',
-    'deine Bewerbung ist angekommen.',
+    'we received your application.',
     '',
-    'Tim schaut sie sich an. Wenn es passt, bekommst du von uns einen Zugang —',
-    'mit einem Link und einem Code, über den du reinkommst.',
+    'Tim will review it. If it is a fit, we will send access details with a link and code.',
     '',
-    'Bis dahin.',
+    'Until then.',
     '',
     'SOUS SOL — Linz',
   ].join('\n')
 
   const html = shell({
-    preheader: 'Deine Bewerbung ist angekommen.',
+    preheader: 'We received your application.',
     content: [
-      heading('Angekommen.'),
+      heading('Received.'),
       `<div style="height:26px;line-height:26px;font-size:0;">&nbsp;</div>`,
-      paragraph(`Hallo ${name},`),
-      paragraph('deine Bewerbung ist da. Tim schaut sie sich an.'),
+      paragraph(`Hello ${name},`),
+      paragraph('we received your application. Tim will review it.'),
       paragraph(
-        'Wenn es passt, bekommst du von uns einen Zugang — mit einem Link und einem Code, über den du reinkommst.'
+        'If it is a fit, we will send access details with a link and code.'
       ),
       `<div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div>`,
-      label('Bis dahin'),
+      label('Until then'),
     ].join('\n'),
   })
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
     to: email,
-    subject: 'Deine Bewerbung bei SOUS SOL',
+    subject: 'Your application to SOUS SOL',
     text,
     html,
   })
@@ -351,26 +346,26 @@ type TicketConfirmationParams = {
 export async function sendTicketConfirmation(params: TicketConfirmationParams) {
   const { buyerName, buyerEmail, eventTitle, startsAt, ticketTypeName, quantity, totalAmountCents } = params
 
-  const dateStr = format(new Date(startsAt), 'dd. MMMM yyyy, HH:mm', { locale: de })
+  const dateStr = format(new Date(startsAt), 'dd MMMM yyyy, HH:mm', { locale: enGB })
   const amountStr = (totalAmountCents / 100).toFixed(2).replace('.', ',')
 
   const text = [
-    `Hallo ${buyerName},`,
+    `Hello ${buyerName},`,
     '',
-    `dein Ticket für ${eventTitle} ist bestätigt.`,
+    `your ticket for ${eventTitle} is confirmed.`,
     '',
     `Ticket:  ${ticketTypeName}`,
-    `Menge:   ${quantity}`,
-    `Betrag:  ${amountStr} €`,
-    `Datum:   ${dateStr}`,
+    `Quantity: ${quantity}`,
+    `Amount:   ${amountStr} €`,
+    `Date:     ${dateStr}`,
     '',
-    'Bis dann.',
+    'See you there.',
   ].join('\n')
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
     to: buyerEmail,
-    subject: `Ticket bestätigt — ${eventTitle}`,
+    subject: `Ticket confirmed — ${eventTitle}`,
     text,
   })
 }
@@ -390,18 +385,18 @@ export async function sendTicketSaleNotification(params: TicketSaleNotificationP
 
   const amountStr = (totalAmountCents / 100).toFixed(2).replace('.', ',')
   const subject = overbooked
-    ? `⚠️ ÜBERBUCHT — ${buyerName} — ${eventTitle}`
-    : `Neuer Ticket-Verkauf: ${buyerName} — ${eventTitle}`
+    ? `⚠️ OVERBOOKED — ${buyerName} — ${eventTitle}`
+    : `New ticket sale: ${buyerName} — ${eventTitle}`
 
   const lines = [
-    overbooked ? '⚠️ ÜBERBUCHT — MANUELL PRÜFEN' : 'NEUER TICKET-VERKAUF',
+    overbooked ? '⚠️ OVERBOOKED — REVIEW MANUALLY' : 'NEW TICKET SALE',
     '',
-    `Käufer:  ${buyerName}`,
-    `E-Mail:  ${buyerEmail}`,
+    `Buyer:   ${buyerName}`,
+    `Email:   ${buyerEmail}`,
     `Event:   ${eventTitle}`,
     `Ticket:  ${ticketTypeName}`,
-    `Menge:   ${quantity}`,
-    `Betrag:  ${amountStr} €`,
+    `Quantity: ${quantity}`,
+    `Amount:   ${amountStr} €`,
   ]
 
   await send({

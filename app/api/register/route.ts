@@ -16,7 +16,7 @@ const schema = z.object({
   notes: z.string().max(1000).optional(),
 }).refine(
   (d) => d.instagram_handle || d.strava_handle || d.phone || d.email,
-  { message: 'Mindestens eine Kontaktmöglichkeit angeben.' }
+  { message: 'Provide at least one contact method.' }
 )
 
 export async function POST(request: NextRequest) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     body = await readJsonBody(request, 8 * 1024)
   } catch (error) {
     const status = error instanceof RequestBodyError ? error.status : 400
-    return NextResponse.json({ error: 'Ungültige Anfrage.' }, { status })
+    return NextResponse.json({ error: 'Invalid request.' }, { status })
   }
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
@@ -52,15 +52,15 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (eventError || !event) {
-    return NextResponse.json({ error: 'Event nicht gefunden.' }, { status: 404 })
+    return NextResponse.json({ error: 'Event not found.' }, { status: 404 })
   }
 
   if (event.visibility === 'outer' && !hasArchiveAccess(await getCurrentMember())) {
-    return NextResponse.json({ error: 'Event nicht gefunden.' }, { status: 404 })
+    return NextResponse.json({ error: 'Event not found.' }, { status: 404 })
   }
 
   if (!event.registration_enabled || event.status !== 'upcoming') {
-    return NextResponse.json({ error: 'Anmeldung nicht möglich.' }, { status: 409 })
+    return NextResponse.json({ error: 'Registration is not available.' }, { status: 409 })
   }
 
   let is_waitlist = false
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
   })
 
   if (insertError) {
-    return NextResponse.json({ error: 'Fehler beim Speichern.' }, { status: 500 })
+    return NextResponse.json({ error: 'Could not save.' }, { status: 500 })
   }
 
   // Sent after the response via after() — a bare promise is cut off when Vercel

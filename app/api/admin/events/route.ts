@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     if (error.code === '23505') {
-      return NextResponse.json({ error: 'Slug bereits vergeben — anderen Titel wählen.' }, { status: 409 })
+      return NextResponse.json({ error: 'This slug is already in use — choose another title.' }, { status: 409 })
     }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
@@ -93,7 +93,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (Object.keys(updates).length === 0) {
-    return NextResponse.json({ error: 'Keine Änderung angegeben.' }, { status: 400 })
+    return NextResponse.json({ error: 'No changes provided.' }, { status: 400 })
   }
 
   const { data, error } = await supabaseAdmin

@@ -3,6 +3,7 @@
 import { errorMessage } from '@/lib/form-error'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { fromViennaDatetimeLocal, toViennaDatetimeLocal } from '@/lib/date-time'
 
 type Sport = 'running' | 'cycling' | 'volleyball' | 'other'
 type Status = 'upcoming' | 'past' | 'cancelled'
@@ -39,7 +40,7 @@ const defaultValues: EventFormValues = {
 
 const SPORTS: { value: Sport; label: string }[] = [
   { value: 'running', label: 'Running' },
-  { value: 'cycling', label: 'Rennrad' },
+  { value: 'cycling', label: 'Road cycling' },
   { value: 'volleyball', label: 'Volleyball' },
   { value: 'other', label: 'Other' },
 ]
@@ -50,18 +51,6 @@ const STATUSES: { value: Status; label: string }[] = [
   { value: 'cancelled', label: 'Cancelled' },
 ]
 
-function toLocalDatetime(iso: string): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
-
-function toIso(local: string): string | null {
-  if (!local) return null
-  return new Date(local).toISOString()
-}
-
 export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { id?: string } }) {
   const router = useRouter()
   const isEdit = !!initial?.id
@@ -69,8 +58,8 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
   const [values, setValues] = useState<EventFormValues>({
     ...defaultValues,
     ...initial,
-    starts_at: toLocalDatetime(initial?.starts_at ?? ''),
-    ends_at: toLocalDatetime(initial?.ends_at ?? ''),
+    starts_at: toViennaDatetimeLocal(initial?.starts_at ?? ''),
+    ends_at: toViennaDatetimeLocal(initial?.ends_at ?? ''),
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -86,12 +75,23 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
     setLoading(true)
     setError('')
 
+    let startsAt: string
+    let endsAt: string | null
+    try {
+      startsAt = fromViennaDatetimeLocal(values.starts_at)
+      endsAt = values.ends_at ? fromViennaDatetimeLocal(values.ends_at) : null
+    } catch {
+      setError('Enter a valid local date and time for Vienna.')
+      setLoading(false)
+      return
+    }
+
     const payload = {
       ...(isEdit ? { id: initial!.id } : {}),
       title: values.title,
       sport: values.sport,
-      starts_at: toIso(values.starts_at)!,
-      ends_at: toIso(values.ends_at),
+      starts_at: startsAt,
+      ends_at: endsAt,
       meeting_point: values.meeting_point || null,
       description: values.description || null,
       max_participants: values.max_participants ? parseInt(values.max_participants) : null,
@@ -134,7 +134,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
   return (
     <form onSubmit={submit} className="flex max-w-xl flex-col gap-8">
       {/* Title */}
-      <Field label="Titel *">
+      <Field label="Title *">
         <input
           type="text"
           value={values.title}
@@ -145,7 +145,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
       </Field>
 
       {/* Sport */}
-      <Field label="Sportart">
+      <Field label="Sport">
         <div className="flex gap-2 flex-wrap">
           {SPORTS.map(({ value, label }) => (
             <button
@@ -175,7 +175,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
             className={inputClass}
           />
         </Field>
-        <Field label="Ende">
+        <Field label="End">
           <input
             type="datetime-local"
             value={values.ends_at}
@@ -186,18 +186,18 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
       </div>
 
       {/* Meeting point */}
-      <Field label="Treffpunkt">
+      <Field label="Meeting point">
         <input
           type="text"
           value={values.meeting_point}
           onChange={(e) => set('meeting_point', e.target.value)}
           className={inputClass}
-          placeholder="z.B. Stadtplatz Linz"
+          placeholder="e.g. Stadtplatz Linz"
         />
       </Field>
 
       {/* Description */}
-      <Field label="Beschreibung">
+      <Field label="Description">
         <textarea
           value={values.description}
           onChange={(e) => set('description', e.target.value)}
@@ -207,7 +207,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
       </Field>
 
       {/* Max participants */}
-      <Field label="Max. Teilnehmer">
+      <Field label="Max. participants">
         <input
           type="number"
           min={1}
@@ -243,12 +243,12 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
               values.registration_enabled ? 'border-spark bg-spark/20' : 'border-white/20 bg-transparent'
             }`}
           />
-          {values.registration_enabled ? 'Aktiviert' : 'Deaktiviert'}
+          {values.registration_enabled ? 'Enabled' : 'Disabled'}
         </button>
       </Field>
 
       {/* Sichtbarkeit */}
-      <Field label="Sichtbarkeit">
+      <Field label="Visibility">
         <button
           type="button"
           onClick={() => set('visibility', values.visibility === 'outer' ? 'public' : 'outer')}
@@ -266,7 +266,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> & { 
         <p className="mt-2 font-sans text-[10px] font-light leading-relaxed text-mist">
           {values.visibility === 'outer'
             ? 'Only signed-in members can see this event. Guests cannot access it from /upcoming or by direct URL.'
-            : 'Jeder sieht dieses Event.'}
+            : 'Everyone can see this event.'}
         </p>
       </Field>
 

@@ -1,14 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getEventAccess } from '@/lib/events'
-import { format, isSameMonth } from 'date-fns'
-import { de } from 'date-fns/locale'
+import { formatVienna, viennaMonthKey } from '@/lib/date-time'
 
 export const metadata: Metadata = { title: 'Upcoming — SOUS SOL' }
 
 const SPORT_LABELS: Record<string, string> = {
   running: 'Running',
-  cycling: 'Rennrad',
+  cycling: 'Road cycling',
   volleyball: 'Volleyball',
   other: 'Other',
 }
@@ -23,32 +22,32 @@ export default async function UpcomingPage() {
     .in('visibility', visibilities)
     .order('starts_at', { ascending: true })
 
-  const groups: { month: Date; events: typeof events }[] = []
+  const groups: { monthKey: string; events: NonNullable<typeof events> }[] = []
   for (const event of events ?? []) {
-    const d = new Date(event.starts_at)
+    const monthKey = viennaMonthKey(event.starts_at)
     const last = groups[groups.length - 1]
-    if (last && isSameMonth(d, last.month)) {
-      last.events!.push(event)
+    if (last && last.monthKey === monthKey) {
+      last.events.push(event)
     } else {
-      groups.push({ month: d, events: [event] })
+      groups.push({ monthKey, events: [event] })
     }
   }
 
   return (
     <div className="px-6 pb-32 pt-16 sm:px-12 md:px-20 lg:px-32">
       {!events?.length ? (
-        <p className="font-serif italic text-2xl text-smoke">Bald.</p>
+        <p className="font-serif italic text-2xl text-smoke">Soon.</p>
       ) : (
         <div className="flex flex-col gap-16 sm:gap-24">
-          {groups.map(({ month, events: monthEvents }) => (
-            <section key={month.toISOString()}>
+          {groups.map(({ monthKey, events: monthEvents }) => (
+            <section key={monthKey}>
 
               {/* Month header */}
               <h2
                 className="opsz-display mb-4 sm:mb-6 font-serif italic leading-none text-paper/60 select-none"
                 style={{ fontSize: 'clamp(2.8rem, 12vw, 9rem)' }}
               >
-                {format(month, 'MMMM', { locale: de })}
+                {formatVienna(monthEvents[0].starts_at, 'MMMM')}
               </h2>
 
               {/* Event list */}
@@ -65,7 +64,7 @@ export default async function UpcomingPage() {
                     <div className="flex items-start justify-between gap-4 sm:hidden">
                       <div className="flex flex-col gap-1.5">
                         <span className="font-sans text-[10px] tracking-[0.2em] text-ash uppercase">
-                          {format(new Date(event.starts_at), 'eeee, d. MMM', { locale: de })}
+                          {formatVienna(event.starts_at, 'eeee, d MMM')}
                         </span>
                         <span
                           className="opsz-heading font-serif italic leading-tight text-paper"
@@ -105,7 +104,7 @@ export default async function UpcomingPage() {
                     {/* ── Desktop layout: horizontal ───────────────────── */}
                     <div className="hidden sm:flex items-baseline gap-12">
                       <span className="w-36 shrink-0 font-sans text-[10px] tracking-[0.22em] text-ash uppercase">
-                        {format(new Date(event.starts_at), 'eeee, d. MMM', { locale: de })}
+                        {formatVienna(event.starts_at, 'eeee, d MMM')}
                       </span>
                       <div className="flex flex-1 flex-col gap-2">
                         <span

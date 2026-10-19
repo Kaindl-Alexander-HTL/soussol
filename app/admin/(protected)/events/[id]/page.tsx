@@ -3,8 +3,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { getAdminClient } from '@/lib/admin'
 import { EventForm } from '@/components/admin/EventForm'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import { formatVienna } from '@/lib/date-time'
 
 export const metadata: Metadata = { title: 'Edit event — SOUS SOL Admin' }
 
@@ -22,9 +21,9 @@ function csvExport(registrations: { guest_name: string; instagram_handle: string
       r.strava_handle ?? '',
       r.phone ?? '',
       r.email ?? '',
-      r.is_waitlist ? 'Ja' : 'Nein',
+      r.is_waitlist ? 'Yes' : 'No',
       r.notes ?? '',
-      format(new Date(r.created_at), 'dd.MM.yyyy HH:mm'),
+      formatVienna(r.created_at, 'dd/MM/yyyy HH:mm'),
     ]),
   ]
   return rows.map((r) => r.map(csvCell).join(',')).join('\n')
@@ -92,7 +91,7 @@ export default async function EventEditPage({
             {(registrations?.length ?? 0) > 0 && (
               <a
                 href={csvHref}
-                download={`${event.slug}-registrierungen.csv`}
+                download={`${event.slug}-registrations.csv`}
                 className="font-sans text-[10px] tracking-[0.2em] text-mist uppercase transition-colors hover:text-ash"
               >
                 CSV ↓
@@ -121,7 +120,7 @@ export default async function EventEditPage({
                     </span>
                   )}
                   <span className="font-sans text-[10px] text-white/20">
-                    {format(new Date(r.created_at), 'd. MMM', { locale: de })}
+                    {formatVienna(r.created_at, 'd MMM')}
                   </span>
                 </div>
               ))}

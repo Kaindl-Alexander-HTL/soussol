@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getAdminClient } from '@/lib/admin'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import { formatVienna } from '@/lib/date-time'
 import { DeleteEventButton } from '@/components/admin/DeleteEventButton'
 import { EventStatusActions } from '@/components/admin/EventStatusActions'
 
@@ -19,7 +18,7 @@ const TABS: { value: Tab; label: string }[] = [
 
 const SPORT_LABELS: Record<string, string> = {
   running: 'Running',
-  cycling: 'Rennrad',
+  cycling: 'Road cycling',
   volleyball: 'Volleyball',
   other: 'Other',
 }
@@ -92,7 +91,7 @@ export default async function EventsPage({
                 className="flex flex-1 items-center gap-6 transition-colors"
               >
                 <span className="w-28 shrink-0 font-sans text-[11px] text-mist">
-                  {format(new Date(event.starts_at), 'd. MMM yyyy', { locale: de })}
+                  {formatVienna(event.starts_at, 'd MMM yyyy')}
                 </span>
                 <span className="flex-1 font-sans text-sm font-light text-ash group-hover:text-spark transition-colors">
                   {event.title}
@@ -102,7 +101,7 @@ export default async function EventsPage({
                 </span>
                 {event.registration_enabled && (
                   <span className="font-sans text-[11px] text-mist">
-                    {countMap[event.id] ?? 0} Anm.
+                    {countMap[event.id] ?? 0} reg.
                   </span>
                 )}
               </Link>

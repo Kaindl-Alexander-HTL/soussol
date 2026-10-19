@@ -78,7 +78,7 @@ export default async function ArchivePage({
     <>
       {mementos.length === 0 ? (
         <div className="flex h-screen items-center justify-center">
-          <p className="font-serif italic text-2xl text-mist">Bald.</p>
+          <p className="font-serif italic text-2xl text-mist">Soon.</p>
         </div>
       ) : (
         <ArchiveCanvas mementos={mementos} connections={connections} />

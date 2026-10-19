@@ -1,6 +1,5 @@
 import { Resend } from 'resend'
-import { format } from 'date-fns'
-import { enGB } from 'date-fns/locale'
+import { formatVienna } from '@/lib/date-time'
 import {
   shell,
   heading,
@@ -40,7 +39,7 @@ type RegistrationEmailParams = {
 export async function sendRegistrationNotification(params: RegistrationEmailParams) {
   const { guestName, instagramHandle, stravaHandle, phone, email, eventTitle, startsAt, isWaitlist } = params
 
-  const dateStr = format(new Date(startsAt), 'dd MMMM yyyy, HH:mm', { locale: enGB })
+  const dateStr = formatVienna(startsAt, 'dd MMMM yyyy, HH:mm')
   const subject = isWaitlist
     ? `[Waitlist] ${guestName} — ${eventTitle}`
     : `New registration: ${guestName} — ${eventTitle}`
@@ -346,7 +345,7 @@ type TicketConfirmationParams = {
 export async function sendTicketConfirmation(params: TicketConfirmationParams) {
   const { buyerName, buyerEmail, eventTitle, startsAt, ticketTypeName, quantity, totalAmountCents } = params
 
-  const dateStr = format(new Date(startsAt), 'dd MMMM yyyy, HH:mm', { locale: enGB })
+  const dateStr = formatVienna(startsAt, 'dd MMMM yyyy, HH:mm')
   const amountStr = (totalAmountCents / 100).toFixed(2).replace('.', ',')
 
   const text = [

@@ -4,12 +4,11 @@ import Link from 'next/link'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getEventAccess } from '@/lib/events'
 import { RegistrationForm } from '@/components/RegistrationForm'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import { formatVienna } from '@/lib/date-time'
 
 const SPORT_LABELS: Record<string, string> = {
   running: 'Running',
-  cycling: 'Rennrad',
+  cycling: 'Road cycling',
   volleyball: 'Volleyball',
   other: 'Other',
 }
@@ -61,9 +60,9 @@ export default async function EventPage({
     spotsLeft = Math.max(0, event.max_participants - (count ?? 0))
   }
 
-  const dateStr = format(new Date(event.starts_at), 'eeee, d. MMMM yyyy', { locale: de })
-  const timeStr = format(new Date(event.starts_at), 'HH:mm')
-  const endsStr = event.ends_at ? format(new Date(event.ends_at), 'HH:mm') : null
+  const dateStr = formatVienna(event.starts_at, 'eeee, d MMMM yyyy')
+  const timeStr = formatVienna(event.starts_at, 'HH:mm')
+  const endsStr = event.ends_at ? formatVienna(event.ends_at, 'HH:mm') : null
 
   return (
     <div className="px-6 pb-32 pt-16 sm:pt-24 sm:px-12 md:px-20 lg:px-32">

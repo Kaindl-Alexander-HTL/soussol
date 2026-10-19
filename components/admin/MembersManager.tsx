@@ -3,8 +3,7 @@
 import { errorMessage } from '@/lib/form-error'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
-import { enGB } from 'date-fns/locale'
+import { formatVienna } from '@/lib/date-time'
 import type { Member, MemberRole, Application } from '@/lib/types'
 
 const ROLES: { value: MemberRole; label: string }[] = [
@@ -92,7 +91,7 @@ export function MembersManager({
                   <span className="font-sans text-sm font-light text-ash">{a.name}</span>
                   <span className="font-sans text-[11px] text-mist">{a.email}</span>
                   <span className="ml-auto font-sans text-[10px] text-white/20">
-                    {format(new Date(a.created_at), 'd MMM', { locale: enGB })}
+                    {formatVienna(a.created_at, 'd MMM')}
                   </span>
                 </div>
                 {a.message && (
@@ -347,7 +346,7 @@ function MemberRow({
       </span>
       {member.is_active ? (
         <span className="font-sans text-[10px] text-white/25">
-          joined {format(new Date(member.created_at), 'd MMMM yyyy', { locale: enGB })}
+          joined {formatVienna(member.created_at, 'd MMMM yyyy')}
         </span>
       ) : (
         <span className="font-sans text-[9px] tracking-[0.2em] text-white/30 uppercase">Removed</span>

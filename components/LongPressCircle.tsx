@@ -53,12 +53,13 @@ export function LongPressCircle({ href = '/apply' }: { href?: string }) {
     <>
       <button
         type="button"
-        aria-label="Halten zum Bewerben"
+        aria-label="Hold to apply"
         onPointerDown={begin}
         onPointerUp={cancel}
         onPointerLeave={cancel}
         onPointerCancel={cancel}
-        className={`group fixed right-6 top-6 z-50 flex h-16 w-16 items-center justify-center rounded-full outline-none transition-colors duration-300 sm:right-9 sm:top-9 ${
+        onContextMenu={(event) => event.preventDefault()}
+        className={`no-touch-selection group fixed right-6 top-6 z-50 flex h-16 w-16 items-center justify-center rounded-full outline-none transition-colors duration-300 sm:right-9 sm:top-9 ${
           active ? 'text-ink' : 'text-paper'
         }`}
         style={{ touchAction: 'none' }}

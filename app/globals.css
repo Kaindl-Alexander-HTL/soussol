@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+.no-touch-selection,
+.no-touch-selection * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 @theme {
   /* ── Farben ──────────────────────────────────────────────────────────────── */
   --color-ink:   #0A0A0A;

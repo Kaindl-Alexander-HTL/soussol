@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/browser'
+import { publicSiteUrl } from '@/lib/public-site-url'
 
 const inputClass =
   'border-b border-white/15 bg-transparent py-2 font-sans text-sm font-light text-spark outline-none transition-colors focus:border-white/35 disabled:opacity-40'
@@ -21,7 +22,7 @@ export function ForgotPasswordForm() {
 
     const supabase = createClient()
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/admin/reset-password`,
+      redirectTo: `${publicSiteUrl(process.env.NEXT_PUBLIC_SITE_URL, window.location.origin)}/admin/reset-password`,
     })
 
     // Nach außen bleibt die Meldung immer gleich — sonst verrät die Seite,

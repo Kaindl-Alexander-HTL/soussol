@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getSettings } from '@/lib/settings'
-import { LEGAL_ADDRESS, legalContactEmail } from '@/lib/legal'
+import { getLegalContactEmail } from '@/lib/legal-contact'
+import { LEGAL_ADDRESS } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Privacy policy — SOUS SOL',
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 }
 
 export default async function PrivacyPolicyPage() {
-  const contactEmail = legalContactEmail(await getSettings(['contact_email']))
+  const contactEmail = await getLegalContactEmail()
   return (
     <main className="min-h-screen bg-ink px-6 pb-24 pt-16 sm:px-12 md:px-20 lg:px-32">
       <Link

@@ -24,3 +24,11 @@ test('legal pages contain no former private contact details', () => {
   assert.doesNotMatch(legalSource, /tim\.tobs24@gmail\.com/i)
   assert.doesNotMatch(legalSource, /Mittelpromende/i)
 })
+
+test('legal pages read contact_email past the anon settings allowlist', () => {
+  for (const page of ['../app/impressum/page.tsx', '../app/datenschutz/page.tsx']) {
+    const source = readFileSync(new URL(page, import.meta.url), 'utf8')
+    assert.match(source, /getLegalContactEmail\(\)/)
+    assert.doesNotMatch(source, /getSettings\(\[\s*'contact_email'/)
+  }
+})

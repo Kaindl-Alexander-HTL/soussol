@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getEventAccess } from '@/lib/events'
 import { expirePastEvents } from '@/lib/expire-events'
+import { getCurrentMember } from '@/lib/member'
+import { findRegistrationByEmail } from '@/lib/registration'
 import { RegistrationForm } from '@/components/RegistrationForm'
 import { formatVienna } from '@/lib/date-time'
 
@@ -60,6 +62,18 @@ export default async function EventPage({
       .eq('event_id', event.id)
       .eq('is_waitlist', false)
     spotsLeft = Math.max(0, event.max_participants - (count ?? 0))
+  }
+
+  // Signed-in members get a one-click sign-up instead of the guest form.
+  const member = await getCurrentMember()
+  let memberRegistration: { is_waitlist: boolean } | undefined
+  if (member && registrationOpen && !event.external_signup_url) {
+    const { data: registrations } = await supabaseAdmin
+      .from('registrations')
+      .select('email, is_waitlist')
+      .eq('event_id', event.id)
+      .not('email', 'is', null)
+    memberRegistration = findRegistrationByEmail(registrations ?? [], member.email)
   }
 
   const dateStr = formatVienna(event.starts_at, 'eeee, d MMMM yyyy')
@@ -130,7 +144,11 @@ export default async function EventPage({
           </a>
         </div>
       ) : registrationOpen ? (
-        <RegistrationForm eventId={event.id} />
+        <RegistrationForm
+          eventId={event.id}
+          member={member ? { name: member.name } : null}
+          registered={memberRegistration ? (memberRegistration.is_waitlist ? 'waitlist' : 'success') : null}
+        />
       ) : (
         <p className="border-t border-white/8 pt-10 font-sans text-sm text-mist">
           No registration required.

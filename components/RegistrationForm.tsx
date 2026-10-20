@@ -5,20 +5,27 @@ import { useState } from 'react'
 
 type State = 'idle' | 'loading' | 'success' | 'waitlist' | 'error'
 
-export function RegistrationForm({ eventId }: { eventId: string }) {
+type Props = {
+  eventId: string
+  // Set when a member is signed in: they sign up with one click.
+  member?: { name: string } | null
+  // Set when that member is already on the list for this event.
+  registered?: 'success' | 'waitlist' | null
+}
+
+export function RegistrationForm({ eventId, member = null, registered = null }: Props) {
   const [name, setName] = useState('')
   const [instagram, setInstagram] = useState('')
   const [strava, setStrava] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [notes, setNotes] = useState('')
-  const [state, setState] = useState<State>('idle')
+  const [state, setState] = useState<State>(registered ?? 'idle')
   const [errorMsg, setErrorMsg] = useState('')
 
   const hasContact = instagram.trim() || strava.trim() || phone.trim() || email.trim()
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault()
+  async function send(payload: Record<string, unknown>) {
     if (state === 'loading') return
     setState('loading')
     setErrorMsg('')
@@ -26,15 +33,7 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event_id: eventId,
-        guest_name: name.trim(),
-        instagram_handle: instagram.trim() || undefined,
-        strava_handle: strava.trim() || undefined,
-        phone: phone.trim() || undefined,
-        email: email.trim() || undefined,
-        notes: notes.trim() || undefined,
-      }),
+      body: JSON.stringify({ event_id: eventId, ...payload }),
     })
 
     const json = await res.json().catch(() => ({}))
@@ -46,6 +45,18 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
     }
 
     setState(json.is_waitlist ? 'waitlist' : 'success')
+  }
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault()
+    send({
+      guest_name: name.trim(),
+      instagram_handle: instagram.trim() || undefined,
+      strava_handle: strava.trim() || undefined,
+      phone: phone.trim() || undefined,
+      email: email.trim() || undefined,
+      notes: notes.trim() || undefined,
+    })
   }
 
   if (state === 'success') {
@@ -66,6 +77,30 @@ export function RegistrationForm({ eventId }: { eventId: string }) {
         <p className="mt-3 font-sans text-sm font-light text-mist">
           You’re on the waitlist. We’ll be in touch if a spot opens up.
         </p>
+      </div>
+    )
+  }
+
+  if (member) {
+    return (
+      <div className="border-t border-white/8 pt-12">
+        <p className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
+          Sign up
+        </p>
+        <p className="mb-7 font-sans text-sm font-light text-mist">
+          Signed in as <span className="text-paper">{member.name}</span>
+        </p>
+        {state === 'error' && (
+          <p className="mb-5 font-sans text-[11px] text-white/40">{errorMsg}</p>
+        )}
+        <button
+          type="button"
+          onClick={() => send({ as_member: true })}
+          disabled={state === 'loading'}
+          className="font-sans text-[11px] tracking-[0.3em] text-ash uppercase transition-colors hover:text-spark disabled:opacity-30"
+        >
+          {state === 'loading' ? '...' : 'Sign up →'}
+        </button>
       </div>
     )
   }

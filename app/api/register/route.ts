@@ -1,24 +1,11 @@
 import { NextRequest, NextResponse, after } from 'next/server'
-import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendRegistrationNotification } from '@/lib/email'
 import { RequestBodyError, readJsonBody } from '@/lib/request-body'
 import { checkRateLimits, rateLimited, rateLimitUnavailable } from '@/lib/rate-limit'
-import { getCurrentMember, hasArchiveAccess } from '@/lib/member'
+import { getCurrentMember, hasArchiveAccess, type CurrentMember } from '@/lib/member'
 import { expirePastEvents } from '@/lib/expire-events'
-
-const schema = z.object({
-  event_id: z.guid(),
-  guest_name: z.string().min(1).max(200),
-  instagram_handle: z.string().max(100).transform((v) => v.replace(/^@/, '')).optional(),
-  strava_handle: z.string().max(100).optional(),
-  phone: z.string().max(30).optional(),
-  email: z.string().email().max(200).optional(),
-  notes: z.string().max(1000).optional(),
-}).refine(
-  (d) => d.instagram_handle || d.strava_handle || d.phone || d.email,
-  { message: 'Provide at least one contact method.' }
-)
+import { findRegistrationByEmail, registrationSchema, type GuestRegistration } from '@/lib/registration'
 
 export async function POST(request: NextRequest) {
   // Events sind öffentlich — die Anmeldung zu offenen Events ist bewusst nicht gated.
@@ -39,12 +26,26 @@ export async function POST(request: NextRequest) {
     const status = error instanceof RequestBodyError ? error.status : 400
     return NextResponse.json({ error: 'Invalid request.' }, { status })
   }
-  const parsed = schema.safeParse(body)
+  const parsed = registrationSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { event_id, guest_name, instagram_handle, strava_handle, phone, email, notes } = parsed.data
+  // Members register with their profile; guests with what they typed.
+  let member: CurrentMember | null = null
+  let registrant: Omit<GuestRegistration, 'event_id' | 'as_member'>
+  if ('as_member' in parsed.data) {
+    member = await getCurrentMember()
+    if (!member) {
+      return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 })
+    }
+    registrant = { guest_name: member.name, email: member.email }
+  } else {
+    registrant = parsed.data
+  }
+
+  const { event_id } = parsed.data
+  const { guest_name, instagram_handle, strava_handle, phone, email, notes } = registrant
 
   await expirePastEvents()
   const { data: event, error: eventError } = await supabaseAdmin
@@ -57,12 +58,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Event not found.' }, { status: 404 })
   }
 
-  if (event.visibility === 'outer' && !hasArchiveAccess(await getCurrentMember())) {
+  if (event.visibility === 'outer' && !hasArchiveAccess(member ?? await getCurrentMember())) {
     return NextResponse.json({ error: 'Event not found.' }, { status: 404 })
   }
 
   if (!event.registration_enabled || event.status !== 'upcoming') {
     return NextResponse.json({ error: 'Registration is not available.' }, { status: 409 })
+  }
+
+  if (member) {
+    const { data: existing, error: existingError } = await supabaseAdmin
+      .from('registrations')
+      .select('email, is_waitlist')
+      .eq('event_id', event_id)
+      .not('email', 'is', null)
+    if (existingError) {
+      return NextResponse.json({ error: 'Could not save.' }, { status: 500 })
+    }
+    const already = findRegistrationByEmail(existing ?? [], member.email)
+    if (already) {
+      return NextResponse.json({ ok: true, is_waitlist: already.is_waitlist, already_registered: true })
+    }
   }
 
   let is_waitlist = false

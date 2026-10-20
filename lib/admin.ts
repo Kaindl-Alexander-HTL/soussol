@@ -2,15 +2,12 @@ import 'server-only'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { adminEmails } from '@/lib/admin-emails'
 
 // Ein Supabase-Auth-Account allein macht noch keinen Admin — nur Adressen aus
-// ADMIN_EMAIL und ADMIN_EMAILS kommen ins Backoffice.
-//
-// ADMIN_EMAIL ist der Haupt-Admin: darf rein UND bekommt die Benachrichtigungen
-// (Bewerbungen, Anmeldungen). ADMIN_EMAILS (kommagetrennt) sind zusätzliche
-// Admins, die nur reinschauen dürfen, aber keine Mails bekommen. Beide Listen
-// werden vereinigt — wer ADMIN_EMAILS setzt, kann so den Haupt-Admin nicht
-// versehentlich aussperren.
+// ADMIN_EMAIL und ADMIN_EMAILS kommen ins Backoffice (siehe lib/admin-emails.ts).
+// Beide Listen werden vereinigt — wer ADMIN_EMAILS setzt, kann so den
+// Haupt-Admin nicht versehentlich aussperren.
 //
 // Hintergrund: Vorher genügte "irgendein Auth-User". Da Supabase die öffentliche
 // Registrierung erlauben kann und der anon key im Browser-Bundle steht, hätte
@@ -20,11 +17,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 // rein. Ein stiller Rückfall auf "alle dürfen" wäre genau die Lücke, die das
 // hier schließen soll — deshalb lieber ein lauter Fehler im Log.
 function allowedEmails(): string[] {
-  return [process.env.ADMIN_EMAIL ?? '', process.env.ADMIN_EMAILS ?? '']
-    .join(',')
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean)
+  return adminEmails(process.env.ADMIN_EMAIL, process.env.ADMIN_EMAILS)
 }
 
 export async function getAdminUser(): Promise<User | null> {

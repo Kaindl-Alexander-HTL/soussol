@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { formatVienna } from '@/lib/date-time'
+import { adminEmails } from '@/lib/admin-emails'
 import {
   shell,
   heading,
@@ -11,6 +12,11 @@ import {
 } from '@/lib/email-template'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+
+// Admin notifications go to the main admin and every extra admin.
+function adminRecipients(): string[] {
+  return adminEmails(process.env.ADMIN_EMAIL, process.env.ADMIN_EMAILS)
+}
 
 type EmailPayload = Parameters<typeof resend.emails.send>[0]
 
@@ -60,7 +66,7 @@ export async function sendRegistrationNotification(params: RegistrationEmailPara
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
-    to: process.env.ADMIN_EMAIL!,
+    to: adminRecipients(),
     subject,
     text,
   })
@@ -284,7 +290,7 @@ export async function sendApplicationNotification(params: ApplicationEmailParams
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
-    to: process.env.ADMIN_EMAIL!,
+    to: adminRecipients(),
     replyTo: email,
     subject: `New application: ${name}`,
     text: lines.join('\n'),
@@ -400,7 +406,7 @@ export async function sendTicketSaleNotification(params: TicketSaleNotificationP
 
   await send({
     from: 'SOUS SOL <noreply@soussol-archive.com>',
-    to: process.env.ADMIN_EMAIL!,
+    to: adminRecipients(),
     subject,
     text: lines.join('\n'),
   })

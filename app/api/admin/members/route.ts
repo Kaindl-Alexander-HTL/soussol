@@ -22,6 +22,8 @@ const patchSchema = z.object({
   action: z.enum(['renew', 'resend']).optional(),
 })
 
+const deleteSchema = z.object({ id: z.guid() })
+
 async function requireAdmin() {
   return getAdminUser()
 }
@@ -130,5 +132,32 @@ export async function PATCH(request: NextRequest) {
     }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+  return NextResponse.json({ ok: true })
+}
+
+// Permanently deletes a former member (e.g. a GDPR erasure request). Only
+// members already removed via is_active = false can be deleted, so an active
+// member is never wiped by a single misclick.
+export async function DELETE(request: NextRequest) {
+  const user = await requireAdmin()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await request.json().catch(() => null)
+  const parsed = deleteSchema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
+
+  const { data: member, error: findError } = await supabaseAdmin
+    .from('members')
+    .select('is_active')
+    .eq('id', parsed.data.id)
+    .maybeSingle()
+  if (findError) return NextResponse.json({ error: findError.message }, { status: 500 })
+  if (!member) return NextResponse.json({ error: 'Member not found.' }, { status: 404 })
+  if (member.is_active) {
+    return NextResponse.json({ error: 'Remove the member before deleting them.' }, { status: 409 })
+  }
+
+  const { error } = await supabaseAdmin.from('members').delete().eq('id', parsed.data.id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }

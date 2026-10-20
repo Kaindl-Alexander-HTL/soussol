@@ -408,6 +408,24 @@ function MemberRow({
         >
           {member.is_active ? 'Remove' : 'Activate'}
         </button>
+        {!member.is_active && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              if (
+                confirm(
+                  `Delete ${member.name} permanently?\n\nName, email and access link are erased from the database. This cannot be undone.`
+                )
+              ) {
+                call('/api/admin/members', 'DELETE', { id: member.id })
+              }
+            }}
+            className="font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-red-400/80 disabled:opacity-30"
+          >
+            Delete permanently
+          </button>
+        )}
       </div>
     </div>
   )

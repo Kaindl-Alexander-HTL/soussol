@@ -63,7 +63,7 @@ export function CodeGateForm({ next }: { next: string }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-ink">
       <div
-        className="flex items-center gap-5 transition-transform"
+        className="relative transition-transform"
         style={shaking ? { animation: 'shake 0.45s ease-in-out' } : undefined}
       >
         <input
@@ -86,7 +86,7 @@ export function CodeGateForm({ next }: { next: string }) {
         <button
           onClick={submit}
           disabled={loading || !code.trim()}
-          className="font-sans text-base text-white/25 transition-all duration-300 hover:text-white/70 disabled:opacity-0"
+          className="absolute left-full top-1/2 ml-5 -translate-y-1/2 font-sans text-base text-white/25 transition-all duration-300 hover:text-white/70 disabled:opacity-0"
           aria-label="Confirm"
         >
           →
@@ -100,7 +100,7 @@ export function CodeGateForm({ next }: { next: string }) {
             If this address has access, the link will arrive in your inbox shortly.
           </p>
         ) : recoverOpen ? (
-          <div className="flex w-full items-center gap-3">
+          <div className="relative w-full">
             <input
               id="recovery-email"
               name="email"
@@ -118,7 +118,7 @@ export function CodeGateForm({ next }: { next: string }) {
             <button
               onClick={recover}
               disabled={recoverLoading || !recoverEmail.trim()}
-              className="font-sans text-sm text-white/25 transition-colors hover:text-white/70 disabled:opacity-0"
+              className="absolute left-full top-1/2 ml-3 -translate-y-1/2 font-sans text-sm text-white/25 transition-colors hover:text-white/70 disabled:opacity-0"
               aria-label="Send access link"
             >
               →

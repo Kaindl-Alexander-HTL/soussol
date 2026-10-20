@@ -393,7 +393,17 @@ function MemberRow({
         <button
           type="button"
           disabled={busy}
-          onClick={() => call('/api/admin/members', 'PATCH', { id: member.id, is_active: !member.is_active })}
+          onClick={() => {
+            if (
+              member.is_active &&
+              !confirm(
+                `Remove ${member.name}?\n\n${member.name} loses access immediately: no Outer Circle events, no archive, and the access link stops working.`
+              )
+            ) {
+              return
+            }
+            call('/api/admin/members', 'PATCH', { id: member.id, is_active: !member.is_active })
+          }}
           className="font-sans text-[10px] tracking-[0.2em] text-white/20 uppercase transition-colors hover:text-white/50 disabled:opacity-30"
         >
           {member.is_active ? 'Remove' : 'Activate'}

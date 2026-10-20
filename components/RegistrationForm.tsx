@@ -84,9 +84,6 @@ export function RegistrationForm({ eventId, member = null, registered = null }: 
   if (member) {
     return (
       <div className="border-t border-white/8 pt-12">
-        <p className="mb-8 font-sans text-[10px] tracking-[0.3em] text-mist uppercase">
-          Sign up
-        </p>
         <p className="mb-7 font-sans text-sm font-light text-mist">
           Signed in as <span className="text-paper">{member.name}</span>
         </p>
